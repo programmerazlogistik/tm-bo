@@ -12,98 +12,29 @@ const Sidebar = () => {
 
   const menuItems = [
     {
-      name: "CMS Homepage",
+      name: "Paket Subscription TM",
       icon: "/icons/sidebar/icon-cms-homepage.svg",
-      href: "/cms-homepage",
-      expandable: true,
-      children: [
-        {
-          name: "Banner Ads",
-          href: "/cms-homepage/banner-ads",
-        },
-        {
-          name: "Banner Event",
-          href: "/cms-homepage/banner-event",
-        },
-        {
-          name: "Supplier",
-          href: "/cms-homepage/supplier",
-        },
-        {
-          name: "Section Promo",
-          href: "/cms-homepage/section-promo",
-        },
-      ],
+      href: "/paket-subscription",
     },
     {
-      name: "Pusat Bantuan",
-      icon: "/icons/application.svg",
-      href: "/help-center",
-      expandable: true,
-      children: [
-        {
-          name: "Master Tipe",
-          href: "/master-type",
-        },
-        {
-          name: "Pusat Bantuan",
-          href: "/help-center",
-        },
-        {
-          name: "Konten FAQ",
-          href: "/master-faq",
-        },
-      ],
+      name: "Promo Subscription TM",
+      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      href: "/promo-subscription",
     },
     {
-      name: "Vendor Domestik",
-      icon: "/icons/nav/user.svg",
-      href: "/vendor-domestik",
-      expandable: true,
-      children: [
-        {
-          name: "Register Vendor Baru",
-          href: "/vendor-domestik/register",
-        },
-        {
-          name: "Vendor Terdaftar",
-          href: "/vendor-domestik/vendor-terdaftar",
-        },
-        {
-          name: "Vendor Nonaktif",
-          href: "/vendor-domestik/vendor-nonaktif",
-        },
-      ],
+      name: "Setting Pengurangan",
+      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      href: "/setting-pengurangan",
     },
     {
-      name: "Vendor International",
-      icon: "/icons/nav/user.svg",
-      href: "/vendor-internasional",
-      expandable: true,
-      children: [
-        {
-          name: "Register Vendor Baru",
-          href: "/vendor-internasional/register",
-        },
-        {
-          name: "Vendor Terdaftar",
-          href: "/vendor-internasional/vendor-terdaftar",
-        },
-        {
-          name: "Vendor Nonaktif",
-          href: "/vendor-internasional/vendor-nonaktif",
-        },
-      ],
+      name: "FAQ",
+      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      href: "/paket-subscription",
     },
     {
-      name: "Setting Promo Subscription",
-      icon: "/icons/tags-outline.svg",
-      href: "/setting-promo-subscription",
-    },
-    {
-      name: "Permintaan Kontrak",
-      icon: "/icons/nav/kontrak.svg",
-      href: "/permintaan-kontrak",
+      name: "Testimonials",
+      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      href: "/testimonials",
     },
   ];
 
