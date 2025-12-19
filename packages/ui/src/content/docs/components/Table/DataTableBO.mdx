@@ -1,0 +1,643 @@
+---
+title: "DataTableBO"
+description: "A comprehensive data table component with search, pagination, and sorting capabilities"
+---
+
+import { DataTableBOPreview } from "../../preview/DataTableBO.preview";
+
+## Usage
+
+<DataTableBOPreview />
+
+```jsx
+import { useMemo, useState } from "react";
+
+import { DataTableBO, TableBO } from "@muatmuat/ui/Table";
+
+function EmployeeDirectoryExample() {
+  const [data] = useState([
+    {
+      id: 1,
+      name: "John Doe",
+      email: "john@example.com",
+      role: "Developer",
+      department: "Engineering",
+      status: "Active",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      email: "jane@example.com",
+      role: "Designer",
+      department: "Design",
+      status: "Active",
+    },
+    {
+      id: 3,
+      name: "Bob Johnson",
+      email: "bob@example.com",
+      role: "Manager",
+      department: "Management",
+      status: "Inactive",
+    },
+    {
+      id: 4,
+      name: "Alice Brown",
+      email: "alice@example.com",
+      role: "Developer",
+      department: "Engineering",
+      status: "Active",
+    },
+    {
+      id: 5,
+      name: "Charlie Wilson",
+      email: "charlie@example.com",
+      role: "Designer",
+      department: "Design",
+      status: "Pending",
+    },
+  ]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+  const [sorting, setSorting] = useState([{ id: "name", desc: false }]);
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "id",
+        header: "ID",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "role",
+        header: "Role",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "department",
+        header: "Department",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: (info) => (
+          <span
+            className={`rounded px-2 py-1 text-xs ${
+              info.getValue() === "Active"
+                ? "bg-green-100 text-green-800"
+                : info.getValue() === "Inactive"
+                  ? "bg-red-100 text-red-800"
+                  : "bg-yellow-100 text-yellow-800"
+            }`}
+          >
+            {info.getValue()}
+          </span>
+        ),
+      },
+    ],
+    []
+  );
+
+  const paginationData = {
+    currentPage: pagination.pageIndex + 1,
+    itemsPerPage: pagination.pageSize,
+    totalItems: data.length,
+    totalPages: Math.ceil(data.length / pagination.pageSize),
+  };
+
+  return (
+    <DataTableBO.Root
+      data={data}
+      columns={columns}
+      pagination={pagination}
+      onPaginationChange={setPagination}
+      sorting={sorting}
+      onSortingChange={setSorting}
+      searchTerm={searchTerm}
+      onSearchChange={setSearchTerm}
+      paginationData={paginationData}
+    >
+      <DataTableBO.Header>
+        <DataTableBO.Search />
+      </DataTableBO.Header>
+      <DataTableBO.Content Table={TableBO} />
+      <DataTableBO.Pagination />
+    </DataTableBO.Root>
+  );
+}
+
+// Custom header example
+function CustomHeaderExample() {
+  const [data] = useState([
+    {
+      id: 1,
+      product: "Laptop",
+      price: 999,
+      category: "Electronics",
+      stock: 15,
+    },
+    { id: 2, product: "Mouse", price: 29, category: "Accessories", stock: 50 },
+    {
+      id: 3,
+      product: "Keyboard",
+      price: 79,
+      category: "Accessories",
+      stock: 25,
+    },
+  ]);
+
+  const columns = [
+    { accessorKey: "product", header: "Product" },
+    { accessorKey: "price", header: "Price" },
+    { accessorKey: "category", header: "Category" },
+    { accessorKey: "stock", header: "Stock" },
+  ];
+
+  return (
+    <DataTableBO.Root
+      data={data}
+      columns={columns}
+      pagination={{ pageIndex: 0, pageSize: 10 }}
+      onPaginationChange={() => {}}
+      paginationData={{
+        currentPage: 1,
+        itemsPerPage: 10,
+        totalItems: 3,
+        totalPages: 1,
+      }}
+    >
+      <DataTableBO.Header className="border-b pb-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Product Inventory</h2>
+          <DataTableBO.Search />
+        </div>
+      </DataTableBO.Header>
+      <DataTableBO.Content Table={TableBO} />
+    </DataTableBO.Root>
+  );
+}
+```
+
+## API Reference
+
+### Components
+
+#### DataTable.Root
+
+| Prop               | Type                       | Default                                               | Description                                 |
+| ------------------ | -------------------------- | ----------------------------------------------------- | ------------------------------------------- | ------------------------- |
+| data               | `TData[]`                  | `[]`                                                  | Array of data objects                       |
+| columns            | `Column<TData>[]`          | `[]`                                                  | Column definitions from TanStack Table      |
+| pageCount          | `number`                   | `-1`                                                  | Total page count for server-side pagination |
+| pagination         | `PaginationState`          | -                                                     | Current pagination state                    |
+| onPaginationChange | `(updater: PaginationState | ((old: PaginationState) => PaginationState)) => void` | -                                           | Pagination change handler |
+| sorting            | `SortingState`             | -                                                     | Current sorting state                       |
+| onSortingChange    | `(updater: SortingState    | ((old: SortingState) => SortingState)) => void`       | -                                           | Sorting change handler    |
+| searchTerm         | `string`                   | -                                                     | Current search term                         |
+| onSearchChange     | `(value: string) => void`  | -                                                     | Search change handler                       |
+| paginationData     | `PaginationData`           | -                                                     | Pagination metadata                         |
+| children           | `React.ReactNode`          | -                                                     | Child components                            |
+
+#### DataTable.Header
+
+| Prop      | Type              | Default | Description            |
+| --------- | ----------------- | ------- | ---------------------- |
+| className | `string`          | -       | Additional CSS classes |
+| children  | `React.ReactNode` | -       | Header content         |
+
+#### DataTable.Search
+
+| Prop      | Type     | Default | Description            |
+| --------- | -------- | ------- | ---------------------- |
+| className | `string` | -       | Additional CSS classes |
+
+#### DataTable.Content
+
+| Prop  | Type             | Default   | Description                   |
+| ----- | ---------------- | --------- | ----------------------------- |
+| Table | `typeof TableBO` | `TableBO` | Custom table component to use |
+
+#### DataTable.Pagination
+
+No additional props beyond those provided by the context.
+
+### Types
+
+```typescript
+export interface DataTableContextValue<TData> {
+  table: Table<TData>;
+  columns: Column<TData>[];
+  data: TData[];
+  searchTerm?: string;
+  onSearchChange?: (value: string) => void;
+  pagination?: PaginationState;
+  onPaginationChange?: (
+    updater: PaginationState | ((old: PaginationState) => PaginationState)
+  ) => void;
+  sorting?: SortingState;
+  onSortingChange?: (
+    updater: SortingState | ((old: SortingState) => SortingState)
+  ) => void;
+  paginationData?: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
+export interface DataTableRootProps<TData> {
+  children: React.ReactNode;
+  data: TData[];
+  columns: Column<TData>[];
+  pageCount?: number;
+  pagination?: PaginationState;
+  onPaginationChange?: (
+    updater: PaginationState | ((old: PaginationState) => PaginationState)
+  ) => void;
+  sorting?: SortingState;
+  onSortingChange?: (
+    updater: SortingState | ((old: SortingState) => SortingState)
+  ) => void;
+  searchTerm?: string;
+  onSearchChange?: (value: string) => void;
+  paginationData?: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
+export interface PaginationData {
+  currentPage: number;
+  itemsPerPage: number;
+  totalItems: number;
+  totalPages: number;
+}
+```
+
+## Behavior
+
+- Built on TanStack Table for robust data management and performance
+- Compound component architecture with context-based state management
+- Search functionality with real-time filtering
+- Pagination with customizable page sizes and navigation controls
+- Column sorting with visual indicators
+- Responsive design with horizontal scrolling
+- Empty state handling when no data is available
+- Loading states during data fetching
+- Keyboard navigation support
+- Mobile-friendly with touch interactions
+- Customizable styling and layout
+- Server-side pagination support
+- Type-safe with TypeScript integration
+
+**Variants**: Standard data table with search, pagination, and sorting capabilities
+**Sizes**: Responsive width with configurable pagination and search areas
+**Key Guidelines**: Use for large datasets, admin panels, data management interfaces, and scenarios requiring advanced table features like search, pagination, and sorting
+
+## Component Code
+
+```tsx
+import * as React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import { Input, Select } from "@muatmuat/ui/Form";
+import {
+  Column,
+  PaginationState,
+  SortingState,
+  Table,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import { TableBO } from "./TableBO";
+import { usePagination } from "./usePagination";
+
+// --- Type Definitions ---
+export interface DataTableContextValue<TData> {
+  table: Table<TData>;
+  columns: Column<TData>[];
+  data: TData[];
+  searchTerm?: string;
+  inputValue?: string;
+  onSearchChange?: (value: string) => void;
+  pagination?: PaginationState;
+  onPaginationChange?: (
+    updater: PaginationState | ((old: PaginationState) => PaginationState)
+  ) => void;
+  sorting?: SortingState;
+  onSortingChange?: (
+    updater: SortingState | ((old: SortingState) => SortingState)
+  ) => void;
+  paginationData?: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
+export interface DataTableRootProps<TData> {
+  children: React.ReactNode;
+  data: TData[];
+  columns: Column<TData>[];
+  pageCount?: number;
+  pagination?: PaginationState;
+  onPaginationChange?: (
+    updater: PaginationState | ((old: PaginationState) => PaginationState)
+  ) => void;
+  sorting?: SortingState;
+  onSortingChange?: (
+    updater: SortingState | ((old: SortingState) => SortingState)
+  ) => void;
+  searchTerm?: string;
+  inputValue?: string;
+  onSearchChange?: (value: string) => void;
+  paginationData?: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
+export interface DataTableHeaderProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export interface DataTableSearchProps {
+  className?: string;
+}
+
+export interface DataTableContentProps {
+  Table?: typeof TableBO;
+}
+
+// --- DataTable Compound Component Definition ---
+const DataTableContext = React.createContext<DataTableContextValue<any> | null>(
+  null
+);
+export const useDataTableContext = <
+  TData = any,
+>(): DataTableContextValue<TData> => {
+  const context = React.useContext(DataTableContext);
+  if (!context) {
+    throw new Error("useDataTableContext must be used within a DataTable.Root");
+  }
+  return context as DataTableContextValue<TData>;
+};
+
+const DataTableRoot = <TData,>({
+  children,
+  ...props
+}: DataTableRootProps<TData>) => {
+  const table = useReactTable({
+    data: props.data || [],
+    columns: props.columns,
+    pageCount: props.pageCount ?? -1,
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    manualSorting: true,
+    state: {
+      pagination: props.pagination,
+      sorting: props.sorting,
+    },
+    onPaginationChange: props.onPaginationChange,
+    onSortingChange: props.onSortingChange,
+  });
+
+  return (
+    <DataTableContext.Provider value={{ table, ...props }}>
+      {children}
+    </DataTableContext.Provider>
+  );
+};
+
+const DataTableHeader: React.FC<DataTableHeaderProps> = ({
+  children,
+  className,
+}) => (
+  <div
+    className={cn("flex items-center justify-between gap-4 pb-2.5", className)}
+  >
+    {children}
+  </div>
+);
+
+const DataTableSearch: React.FC<DataTableSearchProps> = () => {
+  const { inputValue, onSearchChange } = useDataTableContext();
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-xs text-[#1B1B1B]">Pencarian :</span>
+      <div className="relative">
+        <Input
+          value={inputValue || ""}
+          onChange={(e) => onSearchChange?.(e.target.value)}
+          placeholder="Minimal 3 karakter untuk mencari"
+          className="h-8 w-[232px] rounded-[6px] border-[#A8A8A8] pr-8 text-xs"
+        />
+        {inputValue && inputValue.length > 0 && inputValue.length < 3 && (
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 transform">
+            <span className="text-xs text-gray-400">{inputValue.length}/3</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const DataTableContent: React.FC<DataTableContentProps> = React.memo(
+  ({ Table = TableBO }) => {
+    const { table, columns, searchTerm } = useDataTableContext();
+
+    // Determine the appropriate empty state message
+    const getEmptyStateMessage = () => {
+      if (searchTerm && searchTerm.trim().length > 0) {
+        return "Pencarian tidak ditemukan";
+      }
+      return "Tidak ada dalam tabel";
+    };
+
+    return (
+      <div className="rounded-[10px] border border-[#A8A8A8] bg-white px-2">
+        <Table.Root>
+          <Table.Header>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Table.Row
+                key={headerGroup.id}
+                className="border-b-[2px] border-[#C6CBD4] hover:bg-white"
+              >
+                {headerGroup.headers.map((header) => (
+                  <Table.Head key={header.id} column={header.column}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </Table.Head>
+                ))}
+              </Table.Row>
+            ))}
+          </Table.Header>
+          <Table.Body>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <Table.Row
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className="h-[51px]"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <Table.Cell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </Table.Cell>
+                  ))}
+                </Table.Row>
+              ))
+            ) : (
+              <Table.Row>
+                <Table.Cell
+                  colSpan={columns.length}
+                  className="py-3 text-center text-sm font-medium"
+                >
+                  {getEmptyStateMessage()}
+                </Table.Cell>
+              </Table.Row>
+            )}
+          </Table.Body>
+        </Table.Root>
+      </div>
+    );
+  }
+);
+DataTableContent.displayName = "DataTableContent";
+
+const DataTablePagination: React.FC = () => {
+  const { table, paginationData } = useDataTableContext();
+  const {
+    currentPage = 1,
+    itemsPerPage = 10,
+    totalItems = 0,
+    totalPages = 0,
+  } = paginationData || {};
+
+  const paginationRange = usePagination({
+    currentPage,
+    totalPages,
+  });
+
+  if (!paginationData || paginationData.totalItems === 0) {
+    return null;
+  }
+
+  const firstItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+  const lastItem = Math.min(
+    (currentPage || 1) * (itemsPerPage || 10),
+    totalItems
+  );
+  const pageSizeOptions = [10, 20, 30, 40, 50].map((size) => ({
+    value: String(size),
+    label: String(size),
+  }));
+
+  return (
+    <div className="flex items-center justify-between pb-3 pt-2.5">
+      <p className="flex-1 text-sm font-medium text-[#1B1B1B]">
+        Menampilkan {firstItem} - {lastItem} data dari total {totalItems} data
+      </p>
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm text-[#1B1B1B]">Menampilkan</span>
+          <Select
+            options={pageSizeOptions}
+            value={String(table.getState().pagination.pageSize)}
+            onChange={(value) => table.setPageSize(Number(value))}
+            className="h-[33px] w-[55px] rounded-[6px] border-[#A8A8A8] text-xs font-medium"
+          />
+          <span className="text-sm text-[#1B1B1B]">data</span>
+        </div>
+        <div className="mx-2 h-5 w-px bg-[#C6CBD4]" />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ChevronLeft
+              size={24}
+              className={cn(
+                "text-[#868686]",
+                !table.getCanPreviousPage() && "text-[#D7D7D7]"
+              )}
+            />
+          </button>
+          {paginationRange.map((pageNumber, index) =>
+            pageNumber === "..." ? (
+              <span
+                key={`dots-${index}`}
+                className="px-1 py-1 text-sm font-medium text-[#868686]"
+              >
+                ...
+              </span>
+            ) : (
+              <button
+                key={pageNumber}
+                onClick={() => table.setPageIndex(Number(pageNumber) - 1)}
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-[6px] p-1.5 text-sm font-medium",
+                  currentPage === pageNumber
+                    ? "bg-[#176CF7] text-white"
+                    : "bg-transparent text-[#868686] hover:bg-neutral-100"
+                )}
+              >
+                {pageNumber}
+              </button>
+            )
+          )}
+          <button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <ChevronRight
+              size={24}
+              className={cn(
+                "text-[#868686]",
+                !table.getCanNextPage() && "text-[#D7D7D7]"
+              )}
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const DataTableBO = {
+  Root: DataTableRoot,
+  Header: DataTableHeader,
+  Search: DataTableSearch,
+  Content: DataTableContent,
+  Pagination: DataTablePagination,
+};
+```

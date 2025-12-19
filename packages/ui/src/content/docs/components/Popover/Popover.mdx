@@ -1,0 +1,225 @@
+---
+title: "Popover"
+description: "A floating popover component built on Radix UI with customizable positioning, animations, and accessibility features."
+---
+
+import { PopoverPreview } from "../../preview/Popover.preview";
+
+## Usage
+
+<PopoverPreview />
+
+```jsx
+import { useState } from "react";
+
+import {
+  Popover,
+  PopoverArrow,
+  PopoverContent,
+  PopoverTrigger,
+} from "@muatmuat/ui/Popover";
+
+function PopoverExample() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <button className="rounded bg-primary-500 px-4 py-2 text-white hover:bg-primary-600">
+          Show Popover
+        </button>
+      </PopoverTrigger>
+
+      <PopoverContent side="top" align="center" sideOffset={8}>
+        <div className="space-y-3">
+          <h3 className="font-semibold">Popover Content</h3>
+          <p className="text-sm text-gray-600">
+            This is a popover with rich content. You can add any React
+            components inside.
+          </p>
+          <div className="flex gap-2">
+            <button className="rounded bg-blue-500 px-3 py-1 text-sm text-white">
+              Action 1
+            </button>
+            <button className="rounded border px-3 py-1 text-sm">
+              Action 2
+            </button>
+          </div>
+        </div>
+        <PopoverArrow />
+      </PopoverContent>
+    </Popover>
+  );
+}
+```
+
+## API Reference
+
+### Components
+
+#### Popover (Root)
+
+| Prop         | Type       | Default | Description                                          |
+| ------------ | ---------- | ------- | ---------------------------------------------------- |
+| open         | `boolean`  | -       | Whether the popover is open (controlled)             |
+| defaultOpen  | `boolean`  | false   | Whether the popover is initially open (uncontrolled) |
+| onOpenChange | `function` | -       | Callback fired when the open state changes           |
+
+#### PopoverTrigger
+
+| Prop    | Type      | Default | Description                            |
+| ------- | --------- | ------- | -------------------------------------- |
+| asChild | `boolean` | false   | Whether to render as the child element |
+
+#### PopoverContent
+
+| Prop                   | Type                               | Default     | Description                                  |
+| ---------------------- | ---------------------------------- | ----------- | -------------------------------------------- | ------------------------------------------- |
+| className              | `string`                           | -           | Additional CSS classes for the content       |
+| side                   | `"top"\|"right"\|"bottom"\|"left"` | "top"       | Preferred side of the trigger                |
+| align                  | `"start"\|"center"\|"end"`         | "center"    | Alignment along the chosen side              |
+| sideOffset             | `number`                           | 5           | Distance from the trigger                    |
+| alignOffset            | `number`                           | 0           | Offset along the alignment axis              |
+| avoidCollisions        | `boolean`                          | true        | Whether to avoid viewport collisions         |
+| collisionBoundary      | `Element                           | Element[]`  | -                                            | Boundary element(s) for collision detection |
+| collisionPadding       | `number                            | object`     | 0                                            | Padding from collision boundaries           |
+| sticky                 | `"partial"\|"always"`              | "partial"   | Sticky positioning behavior                  |
+| hideWhenDetached       | `boolean`                          | false       | Whether to hide when detached                |
+| updatePositionStrategy | `"optimized"\|"always"`            | "optimized" | Position update strategy                     |
+| onOpenAutoFocus        | `function`                         | -           | Callback when popover opens and focuses      |
+| onCloseAutoFocus       | `function`                         | -           | Callback when popover closes and focuses     |
+| onEscapeKeyDown        | `function`                         | -           | Callback when escape key is pressed          |
+| onPointerDownOutside   | `function`                         | -           | Callback when pointer is pressed outside     |
+| onFocusOutside         | `function`                         | -           | Callback when focus moves outside            |
+| onInteractOutside      | `function`                         | -           | Callback when any interaction occurs outside |
+
+#### PopoverArrow
+
+| Prop      | Type     | Default | Description                          |
+| --------- | -------- | ------- | ------------------------------------ |
+| className | `string` | -       | Additional CSS classes for the arrow |
+
+### Types
+
+```typescript
+interface PopoverArrowProps {
+  className?: string;
+}
+
+interface PopoverContentProps {
+  className?: string;
+  children: React.ReactNode;
+  sideOffset?: number;
+  align?: "start" | "center" | "end";
+  alignOffset?: number;
+  avoidCollisions?: boolean;
+  collisionBoundary?: Element | Element[];
+  collisionPadding?:
+    | number
+    | `Partial<Record<"top" | "right" | "bottom" | "left", number>>`;
+  sticky?: "partial" | "always";
+  hideWhenDetached?: boolean;
+  updatePositionStrategy?: "optimized" | "always";
+  onOpenAutoFocus?: (event: Event) => void;
+  onCloseAutoFocus?: (event: Event) => void;
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  onPointerDownOutside?: (event: Event) => void;
+  onFocusOutside?: (event: Event) => void;
+  onInteractOutside?: (event: Event) => void;
+}
+```
+
+## Behavior
+
+- Renders floating content anchored to a trigger element with smart positioning
+- Automatically adjusts position to avoid viewport edges and collisions
+- Supports controlled and uncontrolled open state management
+- Provides smooth slide and fade animations based on placement
+- Includes focus management and keyboard navigation support
+- Click outside or press escape key to close the popover
+- Customizable arrow pointing to the trigger element
+- Portal rendering to avoid z-index and overflow issues
+- Full accessibility support with proper ARIA attributes
+
+**Variants**: top, bottom, left, right placement; with/without arrow; controlled/uncontrolled
+**Sizes**: Content-based sizing with maximum width constraints
+
+**Key Guidelines**:
+
+- Use for contextual information, menus, or forms that should appear on demand
+- Ensure trigger content clearly indicates the popover's purpose
+- Leverage collision avoidance to prevent content from being hidden
+- Include proper focus management for form content within popovers
+- Test across different screen sizes and viewport dimensions
+- Consider adding a close button for longer content or mobile accessibility
+
+## Component Code
+
+```tsx
+import React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
+import type {
+  PopoverArrowProps as RadixPopoverArrowProps,
+  PopoverContentProps as RadixPopoverContentProps,
+} from "@radix-ui/react-popover";
+
+export const Popover = PopoverPrimitive.Root;
+export const PopoverTrigger = PopoverPrimitive.Trigger;
+export const PopoverClose = PopoverPrimitive.Close;
+
+export type PopoverArrowProps = RadixPopoverArrowProps & {
+  className?: string;
+};
+
+export type PopoverContentProps = RadixPopoverContentProps & {
+  className?: string;
+};
+
+export const PopoverArrow: React.FC<PopoverArrowProps> = () => (
+  <PopoverPrimitive.Arrow
+    className="h-[11px] w-4 fill-white"
+    style={{
+      filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
+    }}
+  />
+);
+
+const PopoverContentComponent = (
+  { className, children, ...props }: PopoverContentProps,
+  ref: React.ForwardedRef<HTMLDivElement>
+) => (
+  <PopoverPrimitive.Portal>
+    <PopoverPrimitive.Content
+      ref={ref}
+      sideOffset={5}
+      className={cn(
+        "z-[52] rounded-md border bg-white p-4 shadow-md outline-none",
+
+        // --- FULLY CUSTOM ANIMATIONS ---
+        // Removed `animate-in` and `animate-out`. We now only use our custom keyframes.
+
+        // OPENING ANIMATIONS
+        "data-[side=bottom]:animate-slide-up-and-fade",
+        "data-[side=top]:animate-slide-down-and-fade",
+
+        // CLOSING ANIMATIONS
+        "data-[state=closed][data-side=bottom]:animate-slide-up-and-fade-out",
+        "data-[state=closed][data-side=top]:animate-slide-down-and-fade-out",
+
+        // Anti-glitch fixes are still useful with transform-based animations
+        "data-[state=closed]:scrollbar-hide data-[state=closed]:overflow-hidden",
+
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </PopoverPrimitive.Content>
+  </PopoverPrimitive.Portal>
+);
+
+export const PopoverContent = React.forwardRef(PopoverContentComponent);
+PopoverContent.displayName = "PopoverContent";
+```

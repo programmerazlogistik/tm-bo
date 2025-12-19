@@ -1,0 +1,624 @@
+---
+title: "MapWithPath"
+description: "Advanced Google Maps component with path visualization, multiple markers, and animated truck tracking"
+---
+
+import { MapWithPathPreview } from "../../preview/MapWithPath.preview";
+
+## Usage
+
+<MapWithPathPreview />
+
+```jsx
+"use client";
+
+import { useState } from "react";
+
+import { MapWithPath } from "@muatmuat/ui/Maps";
+
+export function MapWithPathExample() {
+  const [showTruck, setShowTruck] = useState(true);
+  const [pathColor, setPathColor] = useState("#DD7B02");
+  const [showPath, setShowPath] = useState(true);
+
+  // Mock location data
+  const locationMarkers = [
+    {
+      title: "Warehouse",
+      position: { lat: -7.2575, lng: 112.7521 },
+      type: "pickup",
+      icon: "/icons/warehouse-icon.svg",
+      onClick: (marker) => console.log("Warehouse clicked:", marker),
+    },
+    {
+      title: "Customer Location",
+      position: { lat: -7.2755, lng: 112.7631 },
+      type: "dropoff",
+      icon: "/icons/customer-icon.svg",
+      onClick: (marker) => console.log("Customer location clicked:", marker),
+    },
+    {
+      title: "Distribution Center",
+      position: { lat: -7.2405, lng: 112.7451 },
+      type: "pickup",
+      icon: "/icons/distribution-icon.svg",
+      onClick: (marker) => console.log("Distribution center clicked:", marker),
+    },
+  ];
+
+  const locationPolyline = [
+    { lat: -7.2575, lng: 112.7521 },
+    { lat: -7.2605, lng: 112.7551 },
+    { lat: -7.2655, lng: 112.7581 },
+    { lat: -7.2705, lng: 112.7611 },
+    { lat: -7.2755, lng: 112.7631 },
+  ];
+
+  const encodedTruckPolyline = "_p~iF~ps|U_ulLnnqC_mqNvxq`@";
+
+  const pathOptions = {
+    strokeColor: pathColor,
+    strokeOpacity: 1,
+    strokeWeight: 6,
+  };
+
+  const truckPathOptions = {
+    strokeColor: "#FFC217",
+    strokeOpacity: 1,
+    strokeWeight: 6,
+    strokeDashArray: "10,5",
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Main Map Display */}
+      <div className="rounded-lg border border-gray-200 p-4">
+        <h3 className="mb-2 font-medium">Logistics Route Tracking</h3>
+        <MapWithPath
+          apiKey="AIzaSyDw_9D9-4zTechHn1wMEILZqiBv51Q7jHU"
+          mapContainerStyle={{ width: "100%", height: "500px" }}
+          center={{ lat: -7.2575, lng: 112.7521 }}
+          zoom={12}
+          locationMarkers={locationMarkers}
+          locationPolyline={showPath ? locationPolyline : []}
+          encodedTruckPolyline={encodedTruckPolyline}
+          pathOptions={pathOptions}
+          truckPathOptions={truckPathOptions}
+          showTruck={showTruck}
+          truckIcon="/icons/truck-icon.svg"
+        />
+      </div>
+
+      {/* Controls */}
+      <div className="rounded-lg border bg-white p-4">
+        <h4 className="mb-2 font-medium">Display Controls</h4>
+        <div className="flex flex-wrap gap-4">
+          <button
+            onClick={() => setShowTruck(!showTruck)}
+            className={`rounded px-4 py-2 ${
+              showTruck
+                ? "bg-green-500 text-white"
+                : "bg-gray-300 text-gray-700"
+            }`}
+          >
+            {showTruck ? "Hide Truck" : "Show Truck"}
+          </button>
+
+          <button
+            onClick={() => setShowPath(!showPath)}
+            className={`rounded px-4 py-2 ${
+              showPath ? "bg-blue-500 text-white" : "bg-gray-300 text-gray-700"
+            }`}
+          >
+            {showPath ? "Hide Path" : "Show Path"}
+          </button>
+
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium">Path Color:</label>
+            <select
+              value={pathColor}
+              onChange={(e) => setPathColor(e.target.value)}
+              className="rounded border px-2 py-1 text-sm"
+            >
+              <option value="#DD7B02">Orange</option>
+              <option value="#059669">Green</option>
+              <option value="#dc2626">Red</option>
+              <option value="#2563eb">Blue</option>
+              <option value="#7c3aed">Purple</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Route Information */}
+      <div className="rounded-lg border bg-gray-50 p-4">
+        <h4 className="mb-2 font-medium">Route Information</h4>
+        <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-3">
+          <div>
+            <span className="font-medium">Total Stops:</span>{" "}
+            {locationMarkers.length}
+          </div>
+          <div>
+            <span className="font-medium">Pickup Points:</span>{" "}
+            {locationMarkers.filter((m) => m.type === "pickup").length}
+          </div>
+          <div>
+            <span className="font-medium">Dropoff Points:</span>{" "}
+            {locationMarkers.filter((m) => m.type === "dropoff").length}
+          </div>
+        </div>
+      </div>
+
+      {/* Feature List */}
+      <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+        <h4 className="mb-2 font-medium text-green-900">Features</h4>
+        <ul className="list-inside text-sm text-green-800">
+          <li>• Multiple location markers with custom icons</li>
+          <li>• Animated truck tracking with rotation based on direction</li>
+          <li>• Customizable path styling and colors</li>
+          <li>• Mobile-responsive marker labels</li>
+          <li>• Click handlers for location interactions</li>
+          <li>• Support for encoded polylines from Google Maps API</li>
+          <li>• Separate truck route and location path visualization</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop                 | Type                                | Default                                                                                  | Description                                                  |
+| -------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| apiKey               | `string`                            | "AIzaSyDw_9D9-4zTechHn1wMEILZqiBv51Q7jHU"                                                | Google Maps API key                                          |
+| mapContainerStyle    | `React.CSSProperties`               | `{ width: "100%", height: "400px" }`                                                     | Custom CSS styles for the map container                      |
+| center               | `{lat: number, lng: number}`        | `{ lat: -7.2575, lng: 112.7521 }`                                                        | Map center coordinates                                       |
+| zoom                 | `number`                            | 13                                                                                       | Map zoom level                                               |
+| locationMarkers      | `Array<LocationMarker>`             | []                                                                                       | Array of location markers to display on the map              |
+| locationPolyline     | `Array<{lat: number, lng: number}>` | []                                                                                       | Array of coordinates forming the path between locations      |
+| encodedTruckPolyline | `string`                            | ""                                                                                       | Encoded polyline string for truck route from Google Maps API |
+| pathOptions          | `google.maps.PolylineOptions`       | `{ strokeColor: "#DD7B02", strokeOpacity: 1, strokeWeight: 6 }`                          | Custom styling options for the location path                 |
+| truckPathOptions     | `google.maps.PolylineOptions`       | `{ strokeColor: "#DD7B02", strokeOpacity: 1, strokeWeight: 6, strokeDashArray: "10,5" }` | Custom styling options for the truck path                    |
+| mapOptions           | `google.maps.MapOptions`            | `{}`                                                                                     | Additional Google Maps options                               |
+| showTruck            | `boolean`                           | true                                                                                     | Whether to show the animated truck marker                    |
+| truckIcon            | `string`                            | "/icons/truck-icon.svg"                                                                  | Custom truck icon URL                                        |
+
+### Types
+
+```typescript
+interface LocationMarker {
+  position: any;
+  title: string;
+  type: "pickup" | "dropoff";
+  icon: string;
+  onClick?: (marker: LocationMarker) => void;
+}
+
+interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+interface MapWithPathProps {
+  apiKey?: string;
+  mapContainerStyle?: any;
+  center?: LatLng;
+  zoom?: number;
+  locationMarkers?: LocationMarker[];
+  locationPolyline?: any[];
+  encodedTruckPolyline?: string;
+  pathOptions?: any;
+  truckPathOptions?: any;
+  mapOptions?: any;
+  showTruck?: boolean;
+  truckIcon?: string;
+}
+```
+
+## Behavior
+
+- Advanced Google Maps component designed for logistics and delivery tracking
+- Supports multiple location markers with different types (pickup/dropoff) and custom icons
+- Visualizes routes between locations using polylines with customizable styling
+- Features animated truck tracking that rotates based on direction of travel
+- Handles both standard coordinate arrays and Google Maps encoded polylines
+- Mobile-responsive design with simplified marker labels on mobile devices
+- Provides loading states and error handling for Google Maps API failures
+- Supports separate styling for location paths and truck routes
+
+**Markers**: Support for pickup and dropoff types with custom icons and click handlers
+**Paths**: Separate visualization for location connections and truck movement routes
+**Truck Animation**: Automatically calculates bearing and rotation for realistic truck orientation
+**Mobile Responsive**: Simplified marker labels and optimized display for smaller screens
+**Key Guidelines**:
+
+- Use locationMarkers array to define pickup and dropoff points with custom icons
+- Provide locationPolyline for route visualization between locations
+- Use encodedTruckPolyline for separate truck route tracking from backend services
+- Customize path appearance using pathOptions and truckPathOptions
+- Handle marker click events via onClick callbacks in locationMarker definitions
+- Ensure proper Google Maps API key with sufficient API quota and enabled services
+
+## Component Code
+
+```tsx
+import { useEffect, useMemo } from "react";
+
+import { useDevice } from "@muatmuat/hooks/use-device";
+import { ImageComponent } from "@muatmuat/ui/ImageComponent";
+import {
+  GoogleMap,
+  Marker,
+  OverlayView,
+  Polyline,
+  useLoadScript,
+} from "@react-google-maps/api";
+
+import { getAssetPath } from "../../lib/asset-path";
+
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
+interface LocationMarker {
+  position: any;
+  title: string;
+  type: "pickup" | "dropoff";
+  icon: string;
+  onClick?: (marker: LocationMarker) => void;
+  showLabel?: boolean;
+}
+
+interface ProcessedLocationMarker {
+  position: any;
+  title: string;
+  type: "pickup" | "dropoff";
+  icon: {
+    url: string;
+    scaledSize: any;
+    anchor: any;
+  };
+  onClick?: (marker: LocationMarker) => void;
+  showLabel: boolean;
+}
+
+interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+interface MapWithPathProps {
+  apiKey?: string;
+  mapContainerStyle?: any;
+  center?: LatLng;
+  zoom?: number;
+  locationMarkers?: LocationMarker[];
+  locationPolyline?: any[];
+  encodedTruckPolyline?: string;
+  pathOptions?: any;
+  truckPathOptions?: any;
+  mapOptions?: any;
+  showTruck?: boolean;
+  truckIcon?: string;
+}
+
+// Remove unused imports and code
+const defaultMapContainerStyle = { width: "100%", height: "400px" };
+const defaultCenter = { lat: -7.2575, lng: 112.7521 }; // Default to Surabaya
+const defaultZoom = 13;
+const defaultPathOptions = {
+  strokeColor: "#DD7B02",
+  strokeOpacity: 1,
+  strokeWeight: 6,
+};
+const defaultTruckPathOptions = {
+  strokeColor: "#DD7B02",
+  strokeOpacity: 1,
+  strokeWeight: 6,
+  strokeDashArray: "10,5", // Dashed line to differentiate
+};
+
+const defaultMapOptions = {
+  disableDefaultUI: false,
+  zoomControl: false,
+  streetViewControl: false,
+  mapTypeControl: false,
+  cameraControl: false,
+  fullscreenControl: false,
+};
+
+// Function to calculate bearing between two points
+const calculateBearing = (start: any, end: any) => {
+  const startLat = start.lat * (Math.PI / 180);
+  const startLng = start.lng * (Math.PI / 180);
+  const endLat = end.lat * (Math.PI / 180);
+  const endLng = end.lng * (Math.PI / 180);
+
+  const dLng = endLng - startLng;
+  const y = Math.sin(dLng) * Math.cos(endLat);
+  const x =
+    Math.cos(startLat) * Math.sin(endLat) -
+    Math.sin(startLat) * Math.cos(endLat) * Math.cos(dLng);
+
+  const bearing = Math.atan2(y, x) * (180 / Math.PI);
+  const result = (bearing + 360) % 360;
+  return result; // Normalize to 0-360 degrees
+};
+
+/**
+ * Advanced Google Maps component with path visualization, multiple markers, and animated truck tracking.
+ * Perfect for logistics, delivery tracking, and route optimization interfaces.
+ */
+export const MapWithPath = ({
+  apiKey = "AIzaSyDw_9D9-4zTechHn1wMEILZqiBv51Q7jHU",
+  mapContainerStyle = defaultMapContainerStyle,
+  center = defaultCenter,
+  zoom = defaultZoom,
+  locationMarkers = [],
+  locationPolyline = [], // Regular waypoints for connecting locations
+  encodedTruckPolyline = "", // Separate truck waypoints from backend
+  pathOptions = defaultPathOptions,
+  truckPathOptions = defaultTruckPathOptions,
+  mapOptions = {},
+  showTruck = true,
+  truckIcon = "/icons/truck-icon.svg", // Path to truck icon
+}: MapWithPathProps) => {
+  pathOptions = { ...defaultPathOptions, ...pathOptions };
+  truckPathOptions = { ...defaultTruckPathOptions, ...truckPathOptions };
+  const { isMobile } = useDevice();
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: apiKey,
+    libraries: ["places", "geometry"],
+  });
+
+  const truckPolyline = useMemo(() => {
+    if (!encodedTruckPolyline || !isLoaded) {
+      return [];
+    }
+    return window.google.maps.geometry.encoding.decodePath(
+      encodedTruckPolyline
+    );
+  }, [encodedTruckPolyline, isLoaded]);
+
+  // Calculate truck position and rotation based on truck waypoints
+  const truckMarker = useMemo(() => {
+    if (!truckPolyline || truckPolyline.length < 2 || !showTruck || !isLoaded) {
+      return null;
+    }
+
+    const lastPoint = truckPolyline[truckPolyline.length - 1];
+    const secondLastPoint = truckPolyline[truckPolyline.length - 2];
+
+    const startCoords = {
+      lat: secondLastPoint.lat(),
+      lng: secondLastPoint.lng(),
+    };
+    const endCoords = { lat: lastPoint.lat(), lng: lastPoint.lng() };
+
+    const bearing = calculateBearing(startCoords, endCoords);
+
+    return {
+      position: lastPoint,
+      rotation: bearing,
+    };
+  }, [truckPolyline, showTruck, isLoaded]);
+
+  // Process markers with proper icons when Google Maps is loaded
+  const processedMarkers = useMemo((): ProcessedLocationMarker[] => {
+    if (!isLoaded || !window.google) return [];
+
+    // Track pickup and dropoff counters for proper indexing
+    let pickupCounter = 0;
+    let dropoffCounter = 0;
+
+    // First pass: count pickups and dropoffs
+    locationMarkers.forEach((marker) => {
+      if (marker.type === "pickup") {
+        pickupCounter++;
+      } else if (marker.type === "dropoff") {
+        dropoffCounter++;
+      }
+    });
+
+    // Reset counters for second pass
+    pickupCounter = 0;
+    dropoffCounter = 0;
+
+    return locationMarkers.map((marker): ProcessedLocationMarker => {
+      let title = marker.title;
+      const showLabel = pickupCounter > 1 || dropoffCounter > 1;
+
+      if (isMobile) {
+        // Group indices by type: pickup or dropoff
+        if (marker.type === "pickup") {
+          pickupCounter++;
+          title = pickupCounter.toString();
+        } else if (marker.type === "dropoff") {
+          dropoffCounter++;
+          title = dropoffCounter.toString();
+        } else {
+          title = "?";
+        }
+      } else {
+        // Show full title when not mobile
+        title = marker.title;
+      }
+
+      return {
+        ...marker,
+        title,
+        showLabel,
+        icon: {
+          url: getAssetPath(marker.icon),
+
+          scaledSize: new window.google.maps.Size(45, 58),
+          anchor: new window.google.maps.Point(22.5, 48), // Center bottom of the marker
+        },
+      };
+    });
+  }, [locationMarkers, isLoaded, isMobile]);
+
+  // Add styles for marker labels
+  useEffect(() => {
+    // Add CSS for marker labels
+    const style = document.createElement("style");
+    if (isMobile) {
+      style.textContent = `
+      .marker-label {
+        position: relative;
+        background: #EE4343;
+        color: white;
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        font-size: text-xs;
+        font-weight: bold;
+        white-space: nowrap;
+        transform: translate(11px, -22px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+    `;
+    } else {
+      style.textContent = `
+      .marker-label {
+        position: relative;
+        background: black;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: text-xs;
+        font-weight: bold;
+        white-space: nowrap;
+        transform: translateY(-38px);
+      }
+    `;
+    }
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, [isMobile]);
+
+  const combinedMapOptions = useMemo(
+    () => ({
+      ...defaultMapOptions,
+      ...mapOptions,
+    }),
+    [mapOptions]
+  );
+
+  if (loadError) {
+    return (
+      <div className="flex h-96 items-center justify-center rounded-lg border-2 border-dashed border-red-300 bg-red-50">
+        <div className="text-center">
+          <p className="mb-2 text-red-600">Error loading Google Maps</p>
+          <p className="text-sm text-red-500">{(loadError as any).message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="flex h-96 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
+        <div className="flex items-center space-x-2">
+          <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"></div>
+          <span className="text-gray-700">Loading maps...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!apiKey) {
+    return (
+      <div className="flex h-96 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-100">
+        <div className="text-center">
+          <p className="mb-2 text-gray-600">Google Maps API Key Required</p>
+          <p className="text-sm text-gray-500">
+            Please provide a valid Google Maps API key
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        center={center}
+        zoom={zoom}
+        options={combinedMapOptions}
+      >
+        {/* Render path between waypoints (location connections) */}
+        {locationPolyline.length >= 2 && (
+          <Polyline path={locationPolyline} options={pathOptions} />
+        )}
+
+        {/* Render truck path (separate from location connections) */}
+        {truckPolyline.length >= 2 && (
+          <Polyline
+            path={truckPolyline}
+            options={{ ...truckPathOptions, strokeColor: "#FFC217" }}
+          />
+        )}
+
+        {/* Render custom markers */}
+        {processedMarkers.map((marker, index) => (
+          <Marker
+            key={marker.title}
+            position={marker.position}
+            icon={marker.icon}
+            onClick={() =>
+              marker.onClick?.(marker as unknown as LocationMarker)
+            }
+            label={
+              marker.showLabel
+                ? {
+                    text: marker.title,
+                    className: "marker-label",
+                    color: "white",
+                  }
+                : undefined
+            }
+          />
+        ))}
+
+        {/* Render truck marker at the end of the path */}
+        {truckMarker && (
+          <OverlayView
+            position={truckMarker.position}
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            getPixelPositionOffset={(width, height) => ({
+              x: -(width / 2),
+              y: -(height / 2),
+            })}
+          >
+            <div
+              style={{
+                transform: `rotate(${truckMarker.rotation}deg)`,
+                transformOrigin: "center center",
+              }}
+            >
+              <ImageComponent
+                src={truckIcon}
+                alt="Truck"
+                width={30}
+                className="translate-x-[5px] object-contain"
+              />
+            </div>
+          </OverlayView>
+        )}
+      </GoogleMap>
+    </div>
+  );
+};
+```

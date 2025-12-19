@@ -1,0 +1,48 @@
+/* src/styles/datepicker-custom.css */
+
+.muat-datepicker {
+  @apply w-full border-none bg-white font-sans;
+}
+
+.muat-datepicker .react-datepicker__header {
+  @apply border-none bg-white p-0;
+}
+
+.muat-datepicker .react-datepicker__month-container {
+  @apply w-full;
+}
+
+.muat-datepicker .react-datepicker__day-names {
+  @apply mb-2 flex justify-around;
+}
+
+.muat-datepicker .react-datepicker__day-name {
+  @apply m-0 h-8 w-8 text-xs font-medium uppercase text-neutral-500;
+  line-height: 2rem;
+}
+
+.muat-datepicker .react-datepicker__week {
+  @apply flex justify-around;
+}
+
+.muat-datepicker .react-datepicker__day {
+  @apply m-0 h-8 w-8 text-sm font-medium text-neutral-600;
+  line-height: 2rem;
+}
+
+.muat-datepicker .react-datepicker__day:hover {
+  @apply rounded-full bg-neutral-100;
+}
+
+.muat-datepicker .react-datepicker__day--selected,
+.muat-datepicker .react-datepicker__day--keyboard-selected {
+  @apply rounded-full bg-primary-700 text-white;
+}
+
+.muat-datepicker .react-datepicker__day--outside-month {
+  @apply text-neutral-400;
+}
+
+.muat-datepicker .react-datepicker__day--disabled {
+  @apply text-neutral-300;
+}

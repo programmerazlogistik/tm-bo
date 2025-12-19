@@ -1,0 +1,16 @@
+import * as React from "react";
+import type { SVGProps } from "react";
+
+export const Time = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    {...props}
+  >
+    <path
+      fill={"currentColor"}
+      d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12 6.615 2.25 12 2.25m0 1.5a8.25 8.25 0 1 0 0 16.5 8.25 8.25 0 0 0 0-16.5m-.062 1.589a.75.75 0 0 1 .75.75v5.375h3.567l.077.004a.75.75 0 0 1 0 1.492l-.077.004h-4.317a.75.75 0 0 1-.75-.75V6.089a.75.75 0 0 1 .75-.75"
+    />
+  </svg>
+);

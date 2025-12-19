@@ -1,0 +1,174 @@
+---
+title: "Form"
+description: "Consistent form layouts and labeling system for responsive forms"
+---
+
+import { FormPreview } from "../../preview/Form.preview";
+
+## Usage
+
+<FormPreview />
+
+```jsx
+import { FormContainer, FormLabel } from "@muatmuat/ui/Form";
+
+export function FormExample() {
+  return (
+    <FormContainer>
+      <FormLabel required>First Name *</FormLabel>
+      <input
+        type="text"
+        className="w-full rounded border border-neutral-300 px-3 py-2"
+        placeholder="Enter first name"
+      />
+
+      <FormLabel optional>Middle Name</FormLabel>
+      <input
+        type="text"
+        className="w-full rounded border border-neutral-300 px-3 py-2"
+        placeholder="Enter middle name"
+      />
+
+      <FormLabel required>Email Address *</FormLabel>
+      <input
+        type="email"
+        className="w-full rounded border border-neutral-300 px-3 py-2"
+        placeholder="Enter email"
+      />
+    </FormContainer>
+  );
+}
+```
+
+## API Reference
+
+### FormContainer Props
+
+| Prop      | Type              | Default | Description                                      |
+| --------- | ----------------- | ------- | ------------------------------------------------ |
+| children  | `React.ReactNode` | -       | Content to be rendered inside the form container |
+| className | `string`          | -       | Additional CSS classes for the container         |
+
+### FormLabel Props
+
+| Prop      | Type               | Default | Description                             |
+| --------- | ------------------ | ------- | --------------------------------------- |
+| children  | `React.ReactNode`  | -       | Content to be displayed as the label    |
+| variant   | `"big" \| "small"` | "big"   | Visual size variant for the label       |
+| required  | `boolean`          | false   | Whether to show required indicator (\*) |
+| optional  | `boolean`          | false   | Whether to show optional text           |
+| tooltip   | `React.ReactNode`  | -       | Additional tooltip or info element      |
+| t         | `function`         | tMockFn | Translation function for optional text  |
+| className | `string`           | -       | Additional CSS classes for the label    |
+
+### Types
+
+```typescript
+export type FormLabelVariant = "big" | "small";
+
+export type TranslationFunction = (
+  key: string,
+  options?: Record<string, any>,
+  defaultValue?: string
+) => string;
+```
+
+## Behavior
+
+- Provides responsive grid layout (stacked on mobile, side-by-side on desktop)
+- Supports required/optional field indicators with internationalization
+- Maintains consistent label styling across form elements
+- Handles both string and React children content for flexible labeling
+- Responsive design with proper text wrapping and sizing
+
+**Variants**: big (desktop height), small (compact height)
+**Sizes**: Responsive (mobile-first design)
+
+**Key Guidelines**:
+
+- Use FormContainer for consistent form field layout
+- Apply required prop for mandatory fields
+- Use optional prop for non-mandatory fields
+- Combine with other form components for complete form solutions
+- Leverage tooltip prop for additional field information
+
+## Component Code
+
+```tsx
+import React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+
+import { type TranslationFunction, tMockFn } from "../../lib/mock-t";
+
+export interface FormContainerProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export interface FormLabelProps {
+  children: React.ReactNode;
+  className?: string;
+  variant?: "big" | "small";
+  required?: boolean;
+  optional?: boolean;
+  tooltip?: React.ReactNode;
+  t?: TranslationFunction;
+}
+
+export type FormLabelVariant = "big" | "small";
+
+export const FormContainer: React.FC<FormContainerProps> = ({
+  children,
+  className,
+}) => (
+  <div
+    className={cn(
+      "grid grid-cols-1 items-start gap-4 bg-white md:grid-cols-[174px_1fr] md:gap-8",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
+
+export const FormLabel: React.FC<FormLabelProps> = ({
+  t = tMockFn,
+  variant = "big",
+  required = false,
+  optional = false,
+  className,
+  children,
+  tooltip,
+}) => {
+  return (
+    <div
+      className={cn(
+        "flex w-full items-center gap-1 text-sm font-semibold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600",
+        variant === "big" && "md:h-8",
+        className
+      )}
+    >
+      {typeof children === "string" ? (
+        <label>
+          {children}
+          {required && <span>*</span>}
+          {optional && (
+            <>
+              &nbsp;
+              <span className="text-xxs md:text-xs md:font-normal md:italic md:text-neutral-500">
+                {t("FormLabel.optional", {}, "(Opsional)")}
+              </span>
+            </>
+          )}
+        </label>
+      ) : (
+        children
+      )}
+
+      {/* If you need to add like InfoTooltip, you can add via tooltip props */}
+      <div className="flex-shrink-0">{tooltip}</div>
+    </div>
+  );
+};
+```

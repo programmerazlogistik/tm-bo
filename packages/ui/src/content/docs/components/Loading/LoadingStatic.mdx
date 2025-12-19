@@ -1,0 +1,97 @@
+---
+title: "LoadingStatic"
+description: "SSR/RSC friendly loading component that always renders a full-screen loading overlay"
+---
+
+import { LoadingStaticPreview } from "../../preview/LoadingStatic.preview";
+
+## Usage
+
+<LoadingStaticPreview />
+
+```jsx
+import { LoadingStatic } from "@muatmuat/ui/Loading";
+
+export function LoadingExample() {
+  return (
+    <div className="relative">
+      <LoadingStatic />
+
+      <div className="space-y-4 p-8">
+        <h2 className="text-2xl font-bold">Page Content</h2>
+        <p className="text-neutral-600">
+          This content is behind the static loading overlay.
+        </p>
+
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-6">
+          <h4 className="mb-2 font-medium text-blue-900">✅ Use Cases:</h4>
+          <ul className="space-y-1 text-sm text-blue-800">
+            <li>• Server-side rendered applications</li>
+            <li>• React Server Components</li>
+            <li>• Suspense fallbacks</li>
+            <li>• Static site generation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop   | Type | Default | Description                         |
+| ------ | ---- | ------- | ----------------------------------- |
+| (none) | -    | -       | Component has no configurable props |
+
+### Types
+
+```typescript
+export interface LoadingStaticProps {}
+```
+
+## Behavior
+
+- Always renders full-screen loading overlay regardless of application state
+- SSR/RSC friendly with no client-side dependencies or state management
+- Uses fixed positioning with z-index 50 for consistent overlay behavior
+- Centers loading animation with backdrop blur effect
+- Self-contained with no external dependencies or props
+
+**Key Guidelines**:
+
+- Perfect for server-side rendering and React Server Components
+- Use as Suspense fallback component
+- No client-side hooks or state management required
+- Consistent appearance across all rendering environments
+- Ideal for static site generation and pre-rendering scenarios
+
+## Component Code
+
+```tsx
+import * as React from "react";
+
+import { ImageComponent } from "@muatmuat/ui/ImageComponent";
+
+export interface LoadingStaticProps {}
+
+/**
+ * SSR / RSC Friendly Loading Component that always renders a full-screen loading overlay.
+ * Perfect for server-side rendered applications, React Server Components, and Suspense boundaries.
+ */
+export const LoadingStatic = (): React.ReactElement => {
+  return (
+    <div className="fixed left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-black/10 backdrop-blur-md">
+      <ImageComponent
+        src={"/img/loading-animation.webp"}
+        width={100}
+        height={100}
+        alt="loading"
+        unoptimized
+      />
+    </div>
+  );
+};
+```

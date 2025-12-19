@@ -1,0 +1,204 @@
+---
+title: "SimpleDropdown"
+description: "A simplified dropdown component with declarative API for basic menu functionality"
+---
+
+import { SimpleDropdownPreview } from "../../preview/SimpleDropdown.preview";
+
+## Usage
+
+<SimpleDropdownPreview />
+
+```jsx
+import { SimpleDropdown } from "@muatmuat/ui/Dropdown";
+
+function Example() {
+  const items = [
+    {
+      id: "view",
+      label: "View Details",
+      onClick: () => console.log("View clicked"),
+    },
+    {
+      id: "edit",
+      label: "Edit Item",
+      onClick: () => console.log("Edit clicked"),
+    },
+    {
+      id: "delete",
+      label: "Delete Item",
+      onClick: () => console.log("Delete clicked"),
+    },
+  ];
+
+  return (
+    <SimpleDropdown
+      trigger={
+        <button className="rounded-md border border-neutral-300 px-4 py-2">
+          Actions
+        </button>
+      }
+      items={items}
+      className="w-fit"
+    />
+  );
+}
+
+// Custom trigger example
+function CustomTriggerExample() {
+  const menuItems = [
+    {
+      id: "profile",
+      label: "My Profile",
+      onClick: () => console.log("Profile"),
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      onClick: () => console.log("Settings"),
+    },
+    { id: "logout", label: "Sign Out", onClick: () => console.log("Logout") },
+  ];
+
+  return (
+    <SimpleDropdown
+      trigger={
+        <div className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-800 px-3 py-1 text-white">
+          <div className="h-6 w-6 rounded-full bg-gray-600">JD</div>
+          <span>John Doe</span>
+        </div>
+      }
+      items={menuItems}
+    />
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop      | Type              | Default | Description                              |
+| --------- | ----------------- | ------- | ---------------------------------------- |
+| trigger   | `React.ReactNode` | -       | Trigger element that opens the dropdown  |
+| items     | `DropdownItem[]`  | -       | Array of menu items to display           |
+| className | `string`          | -       | Additional CSS classes for the container |
+
+### Types
+
+```typescript
+export interface SimpleDropdownProps {
+  /** Trigger element */
+  trigger: React.ReactNode;
+  /** Dropdown items */
+  items: Array<{
+    id: string;
+    label: string;
+    onClick?: () => void;
+  }>;
+  /** Additional classes */
+  className?: string;
+}
+
+export interface DropdownItem {
+  id: string;
+  label: string;
+  onClick?: () => void;
+}
+```
+
+## Behavior
+
+- Provides a simple declarative API for dropdown functionality
+- Built on top of SimpleDropdownMenu components
+- Manages trigger and items through props array
+- Click-to-open behavior with backdrop dismiss
+- Automatic positioning relative to trigger
+- Proper accessibility with keyboard navigation
+- Mobile-friendly touch interactions
+- Clean styling with consistent appearance
+- Handles click events for each menu item
+- Supports any React node as trigger element
+
+**Variants**: Standard simple dropdown with customizable trigger and items
+**Sizes**: Trigger size determined by content, dropdown fixed width (194px)
+**Key Guidelines**: Use for basic action menus, simple user menus, and scenarios where items can be defined declaratively without complex nested structures
+
+## Component Code
+
+```tsx
+/**
+ * SimpleDropdown Component
+ * A simplified dropdown component built on SimpleDropdownMenu
+ */
+import React from "react";
+
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+
+import {
+  SimpleDropdownContent,
+  SimpleDropdownItem,
+  SimpleDropdownTrigger,
+} from "./SimpleDropdownMenu";
+
+export interface SimpleDropdownProps {
+  /** Trigger element */
+  trigger?: React.ReactNode;
+  /** Dropdown items */
+  items?: Array<{
+    id: string;
+    label: string;
+    onClick?: () => void;
+  }>;
+  /** Additional classes */
+  className?: string;
+  /** Children for compound usage */
+  children?: React.ReactNode;
+}
+
+// Legacy interface for backward compatibility
+export interface SimpleDropdownLegacyProps {
+  trigger: React.ReactNode;
+  items: Array<{
+    id: string;
+    label: string;
+    onClick?: () => void;
+  }>;
+  className?: string;
+}
+
+// Create the main component
+const SimpleDropdownComponent = React.forwardRef<
+  HTMLDivElement,
+  SimpleDropdownProps & {
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+    defaultOpen?: boolean;
+  }
+>(({ children, ...props }, _ref) => {
+  return (
+    <DropdownMenuPrimitive.Root {...props}>
+      {children}
+    </DropdownMenuPrimitive.Root>
+  );
+});
+
+SimpleDropdownComponent.displayName = "SimpleDropdownComponent";
+
+// Create compound component with sub-components
+const SimpleDropdown =
+  SimpleDropdownComponent as typeof SimpleDropdownComponent & {
+    Trigger: typeof SimpleDropdownTrigger;
+    Content: typeof SimpleDropdownContent;
+    Item: typeof SimpleDropdownItem;
+  };
+
+// Attach sub-components for compound usage
+SimpleDropdown.Trigger = SimpleDropdownTrigger;
+SimpleDropdown.Content = SimpleDropdownContent;
+SimpleDropdown.Item = SimpleDropdownItem;
+
+SimpleDropdown.displayName = "SimpleDropdown";
+
+export { SimpleDropdown };
+```

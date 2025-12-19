@@ -1,0 +1,210 @@
+---
+title: "Button Plus Minus"
+description: "Compact numeric input with increment/decrement buttons for quantity controls"
+---
+
+import { ButtonPlusMinusPreview } from "../../preview/ButtonPlusMinus.preview";
+
+## Usage
+
+<ButtonPlusMinusPreview />
+
+```jsx
+import { useState } from "react";
+
+import { ButtonPlusMinus } from "@muatmuat/ui/Form";
+
+export function ButtonPlusMinusExample() {
+  const [quantity, setQuantity] = useState(1);
+  const [passengers, setPassengers] = useState(2);
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="mb-2 block text-sm font-medium">Quantity</label>
+        <ButtonPlusMinus
+          value={quantity}
+          onChange={setQuantity}
+          minValue={1}
+          maxValue={10}
+        />
+      </div>
+
+      <div>
+        <label className="mb-2 block text-sm font-medium">Passengers</label>
+        <ButtonPlusMinus
+          value={passengers}
+          onChange={setPassengers}
+          minValue={1}
+          maxValue={8}
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop        | Type       | Default | Description                              |
+| ----------- | ---------- | ------- | ---------------------------------------- |
+| value       | `number`   | 0       | Current numeric value                    |
+| onChange    | `function` | -       | Callback fired when value changes        |
+| onIncrement | `function` | -       | Callback fired specifically on increment |
+| onDecrement | `function` | -       | Callback fired specifically on decrement |
+| minValue    | `number`   | 0       | Minimum allowed value                    |
+| maxValue    | `number`   | -       | Maximum allowed value                    |
+| disabled    | `boolean`  | false   | Whether the component is disabled        |
+
+## Behavior
+
+- Compact input with integrated increment/decrement buttons
+- Handles numeric input validation and constraints
+- Provides visual feedback for disabled states
+- Supports both controlled and uncontrolled modes
+- Prevents values outside min/max range
+- Handles keyboard input and button clicks
+
+**Use Cases**: Quantity selectors, passenger counts, item quantities
+**States**: default, disabled, at-min, at-max
+
+**Key Guidelines**:
+
+- Use for small numeric ranges (typically 0-99)
+- Set appropriate min/max constraints
+- Provide clear labels for accessibility
+- Consider using for quantity controls in shopping carts
+- Ensure buttons are easily tappable on mobile
+
+## Component Code
+
+```tsx
+import * as React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+
+import { IconComponent } from "../IconComponent";
+
+export interface ButtonPlusMinusProps {
+  value?: number;
+  onChange?: (value: number) => void;
+  onIncrement?: (value: number) => void;
+  onDecrement?: (value: number) => void;
+  minValue?: number;
+  maxValue?: number;
+  disabled?: boolean;
+}
+
+/**
+ * ButtonPlusMinus component for incrementing/decrementing numeric values
+ */
+const ButtonPlusMinus: React.FC<ButtonPlusMinusProps> = ({
+  value = 0,
+  onChange,
+  onIncrement,
+  onDecrement,
+  minValue = 0,
+  maxValue,
+  disabled = false,
+}) => {
+  // Ensure value is always a number
+  const numericValue = isNaN(value) ? 0 : Number(value);
+  const disabledDecrement = disabled || numericValue === minValue;
+  const disabledIncrement = disabled || numericValue === maxValue;
+
+  const handleDecrement = () => {
+    if (disabledDecrement || numericValue <= minValue) {
+      return;
+    }
+
+    const newValue = numericValue - 1;
+    onChange?.(newValue);
+    onDecrement?.(newValue);
+  };
+
+  const handleIncrement = () => {
+    if (
+      disabledIncrement ||
+      (maxValue !== undefined && numericValue >= maxValue)
+    ) {
+      return;
+    }
+
+    const newValue = numericValue + 1;
+    onChange?.(newValue);
+    onIncrement?.(newValue);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
+
+    const inputValue = e.target.value;
+
+    // Only allow numeric values
+    if (/^\d*$/.test(inputValue)) {
+      const newValue =
+        inputValue === ""
+          ? 0
+          : parseInt(inputValue.replace(/^0+/, "") || "0", 10);
+      onChange?.(newValue);
+    }
+  };
+
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (disabled) return;
+
+    let newValue = parseInt(e.target.value, 10);
+
+    // Apply constraints
+    if (isNaN(newValue)) newValue = 0;
+    if (maxValue !== undefined && newValue > maxValue) newValue = maxValue;
+    if (newValue < minValue) newValue = minValue;
+
+    onChange?.(newValue);
+  };
+
+  return (
+    <div
+      className={`flex h-8 w-[110px] items-center justify-between rounded-md border border-neutral-600 px-3 ${disabled ? "bg-neutral-200" : ""}`}
+    >
+      <button
+        className="disabled:cursor-not-allowed"
+        onClick={handleDecrement}
+        disabled={disabledDecrement}
+      >
+        <IconComponent
+          className={disabledDecrement ? "icon-stroke-neutral-500" : ""}
+          src="/icons/minus16.svg"
+        />
+      </button>
+
+      <input
+        type="number"
+        className={cn(
+          "w-full max-w-4 select-none text-xs font-medium leading-[14.4px] outline-none",
+          disabled ? "text-neutral-500" : "text-neutral-900"
+        )}
+        value={numericValue}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        disabled={disabled}
+      />
+
+      <button
+        className="disabled:cursor-not-allowed"
+        onClick={handleIncrement}
+        disabled={disabledIncrement}
+      >
+        <IconComponent
+          className={disabledIncrement ? "icon-stroke-neutral-500" : ""}
+          src="/icons/plus16.svg"
+        />
+      </button>
+    </div>
+  );
+};
+
+export { ButtonPlusMinus };
+```

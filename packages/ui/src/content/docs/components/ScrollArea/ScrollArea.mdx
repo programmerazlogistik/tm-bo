@@ -1,0 +1,158 @@
+---
+title: "ScrollArea"
+description: "Custom scrollbars with improved accessibility and responsive behavior"
+---
+
+import { ScrollAreaPreview } from "../../preview/ScrollArea.preview";
+
+## Usage
+
+<ScrollAreaPreview />
+
+```jsx
+import { ScrollArea, ScrollBar } from "@muatmuat/ui/ScrollArea";
+
+// Basic scrollable content
+<ScrollArea className="h-[200px] w-[350px]">
+  <div className="p-4">
+    <p>Long content that needs scrolling...</p>
+    {/* More content */}
+  </div>
+</ScrollArea>
+
+// With both vertical and horizontal scrollbars
+<ScrollArea className="h-[200px] w-[350px]">
+  <div className="w-[500px] p-4">
+    {/* Wide content that requires horizontal scrolling */}
+  </div>
+  <ScrollBar orientation="horizontal" />
+</ScrollArea>
+
+// Custom styling
+<ScrollArea className="h-[300px] rounded-lg border">
+  <div className="p-4">
+    {/* Scrollable content with custom container styling */}
+  </div>
+</ScrollArea>
+```
+
+## API Reference
+
+### ScrollArea Props
+
+| Prop      | Type              | Default  | Description                                          |
+| --------- | ----------------- | -------- | ---------------------------------------------------- |
+| children  | `React.ReactNode` | Required | Content to be rendered inside the scroll area        |
+| className | `string`          | `""`     | Additional CSS classes for the scroll area container |
+
+### ScrollBar Props
+
+| Prop        | Type                         | Default      | Description                              |
+| ----------- | ---------------------------- | ------------ | ---------------------------------------- |
+| orientation | `"vertical" \| "horizontal"` | `"vertical"` | Orientation of the scrollbar             |
+| className   | `string`                     | `""`         | Additional CSS classes for the scrollbar |
+
+### Types
+
+```typescript
+export interface ScrollAreaProps
+  extends React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> {
+  className?: string;
+  children: React.ReactNode;
+}
+
+export interface ScrollBarProps
+  extends React.ComponentPropsWithoutRef<
+    typeof ScrollAreaPrimitive.ScrollAreaScrollbar
+  > {
+  className?: string;
+  orientation?: "vertical" | "horizontal";
+}
+```
+
+## Behavior
+
+- Built on Radix UI ScrollArea primitive for accessibility and cross-browser compatibility
+- Custom styled scrollbars with consistent appearance across platforms
+- Supports both vertical and horizontal scrolling orientations
+- Responsive design with proper touch support on mobile devices
+- Maintains aspect ratio and prevents layout shifts during scrolling
+- Keyboard accessible with proper focus management
+- Smooth scrolling behavior with customizable scroll containers
+- Automatic corner element when both scrollbars are present
+
+## Component Code
+
+```tsx
+import React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
+
+export interface ScrollAreaProps
+  extends React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> {
+  className?: string;
+  children: React.ReactNode;
+}
+
+export const ScrollArea = React.forwardRef<
+  React.ElementRef<typeof ScrollAreaPrimitive.Root>,
+  ScrollAreaProps
+>(({ className, children, ...props }, ref) => {
+  return (
+    <ScrollAreaPrimitive.Root
+      ref={ref}
+      data-slot="scroll-area"
+      className={cn("relative", className)}
+      {...props}
+    >
+      <ScrollAreaPrimitive.Viewport
+        data-slot="scroll-area-viewport"
+        className="focus-visible:ring-ring/50 h-full w-full rounded-[inherit] outline-none transition-[color,box-shadow] focus-visible:outline-1 focus-visible:ring-[3px]"
+      >
+        {children}
+      </ScrollAreaPrimitive.Viewport>
+      <ScrollBar />
+      <ScrollAreaPrimitive.Corner />
+    </ScrollAreaPrimitive.Root>
+  );
+});
+
+export interface ScrollBarProps
+  extends React.ComponentPropsWithoutRef<
+    typeof ScrollAreaPrimitive.ScrollAreaScrollbar
+  > {
+  className?: string;
+  orientation?: "vertical" | "horizontal";
+}
+
+export const ScrollBar = React.forwardRef<
+  React.ElementRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,
+  ScrollBarProps
+>(({ className, orientation = "vertical", ...props }, ref) => {
+  return (
+    <ScrollAreaPrimitive.ScrollAreaScrollbar
+      ref={ref}
+      data-slot="scroll-area-scrollbar"
+      orientation={orientation}
+      className={cn(
+        "flex touch-none select-none p-px transition-colors",
+        orientation === "vertical" &&
+          "h-full w-2.5 border-l border-l-transparent",
+        orientation === "horizontal" &&
+          "h-2.5 flex-col border-t border-t-transparent",
+        className
+      )}
+      {...props}
+    >
+      <ScrollAreaPrimitive.ScrollAreaThumb
+        data-slot="scroll-area-thumb"
+        className="bg-border relative flex-1 rounded-full"
+      />
+    </ScrollAreaPrimitive.ScrollAreaScrollbar>
+  );
+});
+
+ScrollArea.displayName = "ScrollArea";
+ScrollBar.displayName = "ScrollBar";
+```

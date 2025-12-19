@@ -1,0 +1,183 @@
+---
+title: "SimpleDropdownMenu"
+description: "Lightweight wrapper around Radix UI dropdown primitives for basic menu functionality"
+---
+
+import { SimpleDropdownMenuPreview } from "../../preview/SimpleDropdownMenu.preview";
+
+## Usage
+
+<SimpleDropdownMenuPreview />
+
+```jsx
+import {
+  SimpleDropdown,
+  SimpleDropdownContent,
+  SimpleDropdownItem,
+  SimpleDropdownTrigger,
+} from "@muatmuat/ui/Dropdown";
+
+function Example() {
+  return (
+    <SimpleDropdown>
+      <SimpleDropdownTrigger asChild>
+        <button className="rounded-md border border-neutral-300 px-4 py-2">
+          Menu
+        </button>
+      </SimpleDropdownTrigger>
+      <SimpleDropdownContent>
+        <SimpleDropdownItem onClick={() => console.log("Option 1")}>
+          Option 1
+        </SimpleDropdownItem>
+        <SimpleDropdownItem onClick={() => console.log("Option 2")}>
+          Option 2
+        </SimpleDropdownItem>
+        <SimpleDropdownItem onClick={() => console.log("Option 3")}>
+          Option 3
+        </SimpleDropdownItem>
+      </SimpleDropdownContent>
+    </SimpleDropdown>
+  );
+}
+
+// With custom positioning
+function CustomPositioning() {
+  return (
+    <SimpleDropdown>
+      <SimpleDropdownTrigger asChild>
+        <button className="rounded-md bg-blue-600 px-4 py-2 text-white">
+          Right Menu
+        </button>
+      </SimpleDropdownTrigger>
+      <SimpleDropdownContent side="right" align="start">
+        <SimpleDropdownItem onClick={() => console.log("First item")}>
+          First Item
+        </SimpleDropdownItem>
+        <SimpleDropdownItem onClick={() => console.log("Second item")}>
+          Second Item
+        </SimpleDropdownItem>
+      </SimpleDropdownContent>
+    </SimpleDropdown>
+  );
+}
+```
+
+## API Reference
+
+### Components
+
+#### SimpleDropdown (Root)
+
+Built on Radix UI DropdownMenu primitives, provides context for menu functionality.
+
+#### SimpleDropdownTrigger
+
+| Prop    | Type      | Default | Description                        |
+| ------- | --------- | ------- | ---------------------------------- |
+| asChild | `boolean` | `false` | Whether to render as child element |
+
+#### SimpleDropdownContent
+
+| Prop      | Type                                     | Default    | Description                        |
+| --------- | ---------------------------------------- | ---------- | ---------------------------------- |
+| side      | `"top" \| "right" \| "bottom" \| "left"` | `"bottom"` | Which side to display the menu     |
+| align     | `"start" \| "center" \| "end"`           | `"start"`  | Menu alignment relative to trigger |
+| className | `string`                                 | -          | Additional CSS classes             |
+| children  | `React.ReactNode`                        | -          | Menu content                       |
+
+#### SimpleDropdownItem
+
+| Prop      | Type              | Default | Description            |
+| --------- | ----------------- | ------- | ---------------------- |
+| onClick   | `() => void`      | -       | Click handler function |
+| className | `string`          | -       | Additional CSS classes |
+| children  | `React.ReactNode` | -       | Item content           |
+
+### Types
+
+```typescript
+export interface SimpleDropdownMenuContentProps {
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
+  className?: string;
+  children: React.ReactNode;
+}
+
+export interface SimpleDropdownItemProps {
+  onClick?: () => void;
+  className?: string;
+  children: React.ReactNode;
+}
+```
+
+## Behavior
+
+- Lightweight wrapper around Radix UI DropdownMenu primitives
+- Provides basic dropdown menu functionality with minimal API
+- Click-to-open behavior with automatic positioning
+- Proper keyboard navigation including arrow keys and escape
+- Focus management with automatic focus trapping
+- Mobile-friendly touch interactions
+- Consistent styling with design system
+- Screen reader compatible with proper ARIA attributes
+- Collision detection for optimal positioning
+- Smooth animations and transitions
+
+**Variants**: Standard menu with flexible positioning options
+**Sizes**: Fixed width (194px) with auto-height based on content
+**Key Guidelines**: Use as base for more complex dropdown components or for simple menu scenarios where you need full control over structure
+
+## Component Code
+
+```tsx
+import { cn } from "@muatmuat/lib/utils";
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+
+import {
+  SimpleDropdownItemProps,
+  SimpleDropdownMenuContentProps,
+} from "./SimpleDropdownMenu.types";
+
+export const SimpleDropdown = DropdownMenuPrimitive.Root;
+export const SimpleDropdownTrigger = DropdownMenuPrimitive.Trigger;
+
+export const SimpleDropdownContent = ({
+  side = "bottom",
+  align = "start",
+  className,
+  children,
+}: SimpleDropdownMenuContentProps) => {
+  return (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.Content
+        className={cn(
+          "z-50 mt-1 flex max-w-[194px] flex-col overflow-hidden rounded-md border border-neutral-300 bg-neutral-50 shadow-muat",
+          className
+        )}
+        side={side}
+        align={align}
+      >
+        {children}
+      </DropdownMenuPrimitive.Content>
+    </DropdownMenuPrimitive.Portal>
+  );
+};
+
+export const SimpleDropdownItem = ({
+  className,
+  onSelect,
+  children,
+  ...props
+}: SimpleDropdownItemProps) => (
+  <DropdownMenuPrimitive.Item
+    className={cn(
+      "capsize cursor-pointer px-2.5 py-3 text-xs font-medium leading-[1.2] outline-none hover:bg-neutral-100",
+      className
+    )}
+    onSelect={onSelect}
+    {...props}
+  >
+    {children}
+  </DropdownMenuPrimitive.Item>
+);
+```

@@ -1,0 +1,635 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom layout components */
+.bg-primary {
+  background-color: var(--primary-700);
+}
+
+.bg-primary-800 {
+  background-color: var(--primary-800);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --neutral-50: #ffffff;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #f1f1f1;
+  --neutral-300: #d9d9d9;
+  --neutral-400: #c4c4c4;
+  --neutral-500: #9d9d9d;
+  --neutral-600: #7b7b7b;
+  --neutral-700: #555555;
+  --neutral-800: #434343;
+  --neutral-900: #000000;
+
+  --success-50: #e3f5ed;
+  --success-100: #bae6d1;
+  --success-200: #8cd6b5;
+  --success-300: #54c797;
+  --success-400: #0fbb81;
+  --success-500: #00af6c;
+  --success-600: #00a061;
+  --success-700: #008d54;
+  --success-800: #007c47;
+  --success-900: #005d31;
+
+  --warning-50: #fffde6;
+  --warning-100: #fff9c1;
+  --warning-200: #fff597;
+  --warning-300: #fff06c;
+  --warning-400: #ffeb47;
+  --warning-500: #fee61a;
+  --warning-600: #ffd920;
+  --warning-700: #ffa700;
+  --warning-800: #fe900f;
+  --warning-900: #fe700d;
+
+  --error-50: #ffe9ed;
+  --error-100: #ffc9ce;
+  --error-200: #f09393;
+  --error-300: #e56869;
+  --error-400: #ee4343;
+  --error-500: #f22c25;
+  --error-600: #e31f25;
+  --error-700: #d20f20;
+  --error-800: #c50018;
+  --error-900: #b5000b;
+
+  --primary-50: #e2f2ff;
+  --primary-100: #b9ddff;
+  --primary-200: #7eafff;
+  --primary-300: #52b2ff;
+  --primary-400: #1aa0ff;
+  --primary-500: #008fff;
+  --primary-600: #0080ff;
+  --primary-700: #176cf7;
+  --primary-800: #1257c6;
+  --primary-900: #0c377c;
+
+  --secondary-50: #fff8e1;
+  --secondary-100: #ffecb4;
+  --secondary-200: #ffe084;
+  --secondary-300: #ffd552;
+  --secondary-400: #ffca2e;
+  --secondary-500: #ffc117;
+  --secondary-600: #ffb311;
+  --secondary-700: #fea010;
+  --secondary-800: #fe900f;
+  --secondary-900: #fe700d;
+
+  --buyer-seller-50: #e8ebf7;
+  --buyer-seller-100: #c4cdeb;
+  --buyer-seller-200: #9daddd;
+  --buyer-seller-300: #758ccf;
+  --buyer-seller-400: #5573c5;
+  --buyer-seller-500: #325abb;
+  --buyer-seller-600: #2b52b1;
+  --buyer-seller-700: #2048a5;
+  --buyer-seller-800: #163e99;
+  --buyer-seller-900: #176cf7;
+
+  --muat-parts-member-50: #f6e6e8;
+  --muat-parts-member-100: #eac0c3;
+  --muat-parts-member-200: #cb8683;
+  --muat-parts-member-300: #b35956;
+  --muat-parts-member-400: #b43832;
+  --muat-parts-member-500: #b02316;
+  --muat-parts-member-600: #a31a17;
+  --muat-parts-member-700: #931012;
+  --muat-parts-member-800: #86090c;
+  --muat-parts-member-900: #770000;
+
+  --muat-parts-non-50: #ffeaec;
+  --muat-parts-non-100: #ffcccd;
+  --muat-parts-non-200: #ef9892;
+  --muat-parts-non-300: #e47168;
+  --muat-parts-non-400: #ec5241;
+  --muat-parts-non-500: #ef4422;
+  --muat-parts-non-600: #e03923;
+  --muat-parts-non-700: #cf2e1d;
+  --muat-parts-non-800: #c22716;
+  --muat-parts-non-900: #b31b06;
+
+  --muat-trans-50: #f8f8f0;
+  --muat-trans-100: #f0f0e8;
+  --muat-trans-200: #e5e5dd;
+  --muat-trans-300: #d4d4cc;
+  --muat-trans-400: #afafa7;
+  --muat-trans-500: #8f8f87;
+  --muat-trans-600: #676760;
+  --muat-trans-700: #54544d;
+  --muat-trans-800: #36362f;
+  --muat-trans-900: #770000;
+
+  --muat-trans-primary-50: #fffbeb;
+  --muat-trans-primary-100: #fff5c6;
+  --muat-trans-primary-200: #ffe988;
+  --muat-trans-primary-300: #ffd84a;
+  --muat-trans-primary-400: #ffc217;
+  --muat-trans-primary-500: #f9a307;
+  --muat-trans-primary-600: #dd7b02;
+  --muat-trans-primary-700: #b75606;
+  --muat-trans-primary-800: #94410c;
+  --muat-trans-primary-900: #7a360d;
+
+  --muat-trans-secondary-50: #ede8e6;
+  --muat-trans-secondary-100: #dad1cc;
+  --muat-trans-secondary-200: #c8bbb3;
+  --muat-trans-secondary-300: #b5a49a;
+  --muat-trans-secondary-400: #a38d81;
+  --muat-trans-secondary-500: #907667;
+  --muat-trans-secondary-600: #7e5f4e;
+  --muat-trans-secondary-700: #6b4935;
+  --muat-trans-secondary-800: #59321b;
+  --muat-trans-secondary-900: #461b02;
+}
+
+.recharts-surface:focus {
+  outline: none;
+}
+
+.recharts-sector:focus {
+  outline: none;
+}
+
+@layer base {
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@font-face {
+  font-family: "Avenir Next LT Pro";
+  src:
+    url("/fonts/AvenirNextLTPro-Demi.woff2") format("woff2"),
+    url("/fonts/AvenirNextLTPro-Demi.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Avenir Next LT Pro";
+  src:
+    url("/fonts/AvenirNextLTPro-Regular.woff2") format("woff2"),
+    url("/fonts/AvenirNextLTPro-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Avenir Next LT Pro";
+  src:
+    url("/fonts/AvenirNextLTPro-Medium.woff2") format("woff2"),
+    url("/fonts/AvenirNextLTPro-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Avenir Next LT Pro";
+  src:
+    url("/fonts/AvenirNextLTPro-Bold.woff2") format("woff2"),
+    url("/fonts/AvenirNextLTPro-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+// @media (prefers-color-scheme: dark) {
+//   :root {
+//     --background: #0a0a0a;
+//     --foreground: #ededed;
+//   }
+// }
+.medium-xs {
+  font-size: 12px;
+  font-weight: 500;
+}
+.medium-sm {
+  font-size: 14px;
+  font-weight: 500;
+}
+.medium-base {
+  font-size: 16px;
+  font-weight: 500;
+}
+.semi-xs {
+  font-size: 12px;
+  font-weight: 600;
+}
+.semi-sm {
+  font-size: 14px;
+  font-weight: 600;
+}
+.semi-base {
+  font-size: 16px;
+  font-weight: 600;
+}
+.bold-xs {
+  font-size: 12px;
+  font-weight: 700;
+}
+.bold-sm {
+  font-size: 14px;
+  font-weight: 700;
+}
+.bold-base {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.icon-fill-neutral-50 {
+  path {
+    fill: var(--neutral-50);
+  }
+}
+.icon-stroke-neutral-50 {
+  path {
+    stroke: var(--neutral-50);
+  }
+}
+
+.icon-fill-neutral-400 {
+  path {
+    fill: var(--neutral-400);
+  }
+}
+
+.icon-stroke-neutral-500 {
+  path {
+    stroke: var(--neutral-500);
+  }
+}
+
+.icon-stroke-primary-700 {
+  path {
+    stroke: var(--primary-700);
+  }
+}
+.icon-fill-primary-700 {
+  path {
+    fill: var(--primary-700);
+  }
+}
+.icon-fill-secondary-400 {
+  path {
+    fill: var(--secondary-400);
+  }
+}
+.icon-fill-secondary-700 {
+  path {
+    fill: var(--secondary-700);
+  }
+}
+.icon-fill-muat-parts-non-800 {
+  path {
+    fill: var(--muat-parts-non-800);
+  }
+}
+
+.icon-white {
+  path {
+    stroke: var(--neutral-50);
+  }
+}
+.icon-fill-white {
+  path {
+    fill: var(--neutral-50);
+  }
+}
+
+.icon-stroke-neutral-700 {
+  circle,
+  path,
+  rect {
+    stroke: var(--neutral-700);
+  }
+}
+
+.icon-stroke-neutral-900 {
+  path {
+    stroke: var(--neutral-900);
+  }
+}
+
+.icon-stroke-muat-trans-primary-400 {
+  path {
+    stroke: var(--muat-trans-primary-400);
+  }
+}
+.icon-fill-muat-trans-secondary-900 {
+  path {
+    fill: var(--muat-trans-secondary-900);
+  }
+}
+.icon-stroke-muat-trans-secondary-900 {
+  path {
+    stroke: var(--muat-trans-secondary-900);
+  }
+}
+.icon-muat-trans-secondary-900 {
+  path {
+    fill: var(--muat-trans-secondary-900);
+    stroke: var(--muat-trans-secondary-900);
+  }
+}
+// FIX BUG Opsi Pengiriman LB-0022
+.icon-stroke-warning-900 {
+  path {
+    stroke: var(--warning-900);
+  }
+}
+.icon-gray {
+  path {
+    stroke: var(--neutral-600);
+  }
+}
+.icon-blue {
+  path {
+    stroke: var(--primary-700);
+  }
+}
+.icon-green {
+  path {
+    stroke: var(--success-700);
+  }
+}
+.icon-error-400 {
+  path {
+    stroke: var(--error-400);
+  }
+}
+.input-error {
+  div {
+    border-color: var(--error-400);
+  }
+  div:last-child {
+    color: var(--error-400);
+  }
+}
+.input-error:hover {
+  div {
+    border-color: var(--error-400);
+  }
+}
+/* 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2 - LB - 0475 */
+.icon-red {
+  path {
+    stroke: var(--muat-parts-non-800);
+  }
+}
+.cart-outline {
+  path {
+    fill: none;
+    stroke: var(--neutral-50);
+  }
+}
+.bank_checkbox {
+  span:nth-child(3) {
+    /* Your styles here */
+    transform: translateY(0px) !important;
+    font-size: unset !important;
+  }
+}
+.divide-horizontal {
+  width: 100%;
+  height: 1px;
+  background-color: var(--neutral-400);
+}
+.divide-vertical {
+  width: 1px;
+  height: 100%;
+  background-color: var(--neutral-400);
+}
+body {
+  color: var(--neutral-900);
+  background: var(--neutral-100);
+  font-family: "Avenir Next LT Pro", sans-serif;
+  margin: 0px;
+}
+.main {
+  box-sizing: border-box;
+  max-width: 1248px;
+  margin: auto;
+  margin-top: 80px;
+}
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+.containerMobile {
+  padding-top: 24px;
+  padding-inline: 16px;
+}
+.shadow-muat {
+  box-shadow: 0 4px 11px 0 #41414140;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--neutral-300);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-500);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-600);
+}
+
+::-webkit-scrollbar-track:horizontal {
+  background: var(--neutral-200);
+}
+::-webkit-scrollbar-thumb:horizontal {
+  background: var(--neutral-300);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:horizontal {
+  background: var(--neutral-400);
+}
+
+.scrollbar-custombadanusaha {
+  overflow-y: auto;
+}
+
+.scrollbar-custombadanusaha::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-custombadanusaha::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-custombadanusaha::-webkit-scrollbar-thumb {
+  background: var(--neutral-500);
+  border-radius: 2px;
+}
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+.calendar-outline {
+  path {
+    fill: none;
+    stroke: var(--neutral-50);
+  }
+}
+.calendar-fill {
+  path {
+    fill: var(--neutral-50);
+    stroke: #c22716;
+  }
+}
+.react-calendar__tile--now {
+  background-color: var(--muat-parts-member-400) !important;
+  color: var(--neutral-50);
+}
+
+.info-tooltip-content {
+  ul {
+    margin: 0;
+    margin-bottom: 4px;
+    padding: 0;
+    padding-left: 16px;
+    list-style-position: outside;
+    list-style-type: disc;
+  }
+
+  // li:before {
+  //   content: "•";
+  //   display: inline-block;
+  //   width: 10px;
+  // }
+
+  b {
+    font-weight: 700;
+  }
+
+  p {
+    display: block;
+  }
+}
+
+.info-bottomsheet-content {
+  ul {
+    margin-bottom: 16px;
+    padding: 0;
+    list-style-type: disc;
+    margin-left: 16px;
+  }
+
+  b {
+    font-weight: 700;
+  }
+
+  p {
+    display: block;
+    // 25. 18 - Web - LB - 0319
+    // text-wrap: balance;
+  }
+}
+
+.info-alert-content {
+  b {
+    font-weight: 600;
+  }
+
+  p {
+    margin-top: 4px;
+  }
+}
+
+.slider-list {
+  ol {
+    @apply list-decimal;
+
+    list-style-position: inside;
+  }
+}
+
+.table-tambah-armada-massal {
+  th {
+    @apply px-4;
+  }
+  td {
+    @apply px-4;
+  }
+}
+
+.table-tambah-driver-massal {
+  th {
+    @apply px-3;
+  }
+  td {
+    @apply px-3;
+  }
+}
+
+/* For the popover animation glitch fix */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* This hides the overlay that has the class */
+.is-obscured {
+  visibility: hidden !important;
+}
+
+/* This new rule hides the content that IMMEDIATELY follows the obscured overlay */
+.is-obscured + [data-stack-content="true"] {
+  visibility: hidden !important;
+}
+
+@layer components {
+  /* In your styles/globals.css file */
+
+  /* Target the table-scrollbar class specifically */
+  .table-scrollbar::-webkit-scrollbar {
+    @apply h-3 w-3 transition-all duration-300;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-track {
+    @apply rounded-full;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    border: 3px solid #f6f7ed;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-neutral-600;
+  }
+}

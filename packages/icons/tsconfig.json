@@ -1,0 +1,5 @@
+{
+  "extends": "@muatmuat/config/tsconfig.base", // Or whatever your base config is
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,171 @@
+---
+title: "Avatar"
+description: "Flexible avatar component that displays user images with automatic fallback to initials"
+---
+
+import { AvatarPreview } from "../../preview/Avatar.preview";
+
+## Usage
+
+<AvatarPreview />
+
+```jsx
+import { Avatar } from "@muatmuat/ui/Avatar";
+
+// Basic avatar with initials fallback
+<Avatar name="John Doe" size={36} />
+
+// Avatar with image and fallback to initials
+<Avatar
+  src="https://example.com/user-avatar.jpg"
+  name="Sarah Johnson"
+  size={48}
+  alt="Sarah Johnson's profile"
+/>
+
+// Different sizes
+<Avatar name="Small" size={24} />
+<Avatar name="Medium" size={32} />
+<Avatar name="Large" size={36} />
+<Avatar name="Extra Large" size={48} />
+```
+
+## API Reference
+
+### Props
+
+| Prop       | Type               | Default                  | Description                                    |
+| ---------- | ------------------ | ------------------------ | ---------------------------------------------- |
+| src        | `string`           | `undefined`              | URL of the avatar image                        |
+| name       | `string`           | `""`                     | User's full name for generating initials       |
+| nameLength | `number`           | `1`                      | Number of characters to use for initials (1-3) |
+| size       | `number`           | `36`                     | Size of the avatar in pixels                   |
+| className  | `string`           | `""`                     | Additional CSS classes                         |
+| appearance | `AvatarAppearance` | `{ labelClassName: "" }` | Appearance configuration for styling           |
+| alt        | `string`           | `"avatar"`               | Alt text for the avatar image                  |
+
+### Types
+
+```typescript
+interface AvatarAppearance {
+  labelClassName?: string;
+}
+
+interface AvatarProps {
+  src?: string;
+  name?: string;
+  nameLength?: number;
+  size?: number;
+  className?: string;
+  appearance?: AvatarAppearance;
+  alt?: string;
+}
+```
+
+## Behavior
+
+- Displays user images with automatic fallback to initials when images fail to load
+- Responsive text sizing adjusts based on avatar size ranges
+- Supports 1-3 character initials with intelligent name parsing
+- Handles image loading errors gracefully with seamless fallback
+- Maintains square aspect ratio and consistent styling across all sizes
+- Automatic color assignment based on name hash for consistent visual identity
+
+## Component Code
+
+```tsx
+import { useEffect, useState } from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+
+import { ImageComponent } from "../ImageComponent";
+
+interface AvatarAppearance {
+  labelClassName?: string;
+}
+
+interface AvatarProps {
+  src?: string;
+  name?: string;
+  nameLength?: number;
+  size?: number;
+  className?: string;
+  appearance?: AvatarAppearance;
+  alt?: string;
+}
+
+function initialsFromName(name: string, length: number = 1): string {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 1)
+    return parts[0]?.slice(0, length).toUpperCase() || "?";
+  return (parts[0]?.[0] || "") + (parts[1]?.[0] || "").toUpperCase();
+}
+
+export const Avatar: React.FC<AvatarProps> = ({
+  src,
+  name = "",
+  nameLength = 1,
+  size = 36,
+  className = "",
+  appearance = {
+    labelClassName: "",
+  },
+  alt = "avatar",
+}) => {
+  const [imgFailed, setImgFailed] = useState(false);
+
+  // reset when src changes
+  useEffect(() => setImgFailed(false), [src]);
+
+  const initials = initialsFromName(name, nameLength);
+
+  // Map sizes to text classes based on ranges
+  const getSizeClass = (size: number): string => {
+    if (appearance.labelClassName) return appearance.labelClassName;
+    if (size <= 24) return "text-xs";
+    if (size <= 32) return "text-sm";
+    if (size <= 48) return "text-base";
+    return "text-base";
+  };
+
+  const baseWrapper = cn(
+    "inline-flex flex-shrink-0 select-none items-center justify-center overflow-hidden rounded-full bg-primary-700",
+    className
+  );
+
+  const textClass = cn(
+    "font-semibold leading-none text-white",
+    getSizeClass(size)
+  );
+
+  if (src && !imgFailed) {
+    return (
+      <ImageComponent
+        src={src}
+        alt={alt}
+        width={size}
+        height={size}
+        className={cn(baseWrapper, "object-cover")}
+        onError={() => setImgFailed(true)}
+        unoptimized
+      />
+    );
+  }
+
+  return (
+    <div
+      className={cn(baseWrapper)}
+      title={name}
+      style={{
+        width: size,
+        height: size,
+        minWidth: size,
+        minHeight: size,
+      }}
+    >
+      <span className={textClass}>{initials}</span>
+    </div>
+  );
+};
+```

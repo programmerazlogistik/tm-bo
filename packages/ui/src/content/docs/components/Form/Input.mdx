@@ -1,0 +1,581 @@
+---
+title: "Input"
+description: "Versatile text input component with icons, validation, and reset functionality"
+---
+
+import { InputPreview } from "../../preview/Input.preview";
+
+## Usage
+
+<InputPreview />
+
+```jsx
+import { useState } from "react";
+
+import { Input } from "@muatmuat/ui/Form";
+
+export function InputExample() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  return (
+    <div className="space-y-4">
+      <Input
+        placeholder="Enter your email"
+        type="email"
+        icon={{ left: "/icons/email16.svg" }}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        errorMessage={
+          email && !email.includes("@") ? "Please enter a valid email" : ""
+        }
+      />
+
+      <Input
+        placeholder="Create a password"
+        type="password"
+        icon={{ left: "/icons/lock16.svg" }}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        withReset={true}
+        supportiveText="Must be at least 8 characters"
+      />
+
+      <Input
+        placeholder="Enter amount"
+        type="number"
+        text={{ left: "$" }}
+        icon={{ right: "/icons/dollar16.svg" }}
+      />
+    </div>
+  );
+}
+```
+
+## Customization Guide
+
+### Appearance Prop Usage
+
+The `appearance` prop is the primary way to customize the Input component's visual styling. Each part of the input can be customized independently:
+
+```typescript
+const appearance = {
+  containerClassName: "h-12 w-full", // Controls the main container (height, width, borders)
+  inputClassName: "text-lg", // Controls the actual input element
+  errorMessageClassName: "text-sm", // Controls error message styling
+  supportiveTextClassName: "text-xs", // Controls supportive text styling
+  iconClassName: "w-5 h-5", // Controls icon sizing
+};
+```
+
+### Height Customization (Important)
+
+To customize the input height, **always use `appearance.containerClassName`**, not the input element itself:
+
+```jsx
+// ✅ CORRECT: Use containerClassName for height
+<Input
+  appearance={{
+    containerClassName: "h-12 px-4"  // Sets container height
+  }}
+  // inputClassName controls only the text input styling
+  inputClassName="text-base"
+/>
+
+// ❌ WRONG: Don't try to set height on input element directly
+<Input
+  inputClassName="h-12"  // This won't work as expected
+  // The input element is contained within the wrapper div
+/>
+```
+
+### Complete Customization Examples
+
+```jsx
+// Large input with custom styling
+<Input
+  placeholder="Search products..."
+  icon={{ left: "/icons/search.svg" }}
+  appearance={{
+    containerClassName: "h-14 w-full border-2 border-primary-500 rounded-lg shadow-sm",
+    inputClassName: "text-base font-medium placeholder:text-gray-400",
+    iconClassName: "w-6 h-6 text-primary-500"
+  }}
+/>
+
+// Compact input for tight spaces
+<Input
+  placeholder="Enter code"
+  appearance={{
+    containerClassName: "h-7 px-2 border border-gray-300 rounded",
+    inputClassName: "text-xs font-medium",
+    supportiveTextClassName: "text-[10px]"
+  }}
+  supportiveText="6 characters"
+/>
+
+// Error state with custom styling
+<Input
+  placeholder="Email address"
+  type="email"
+  errorMessage="Please enter a valid email"
+  appearance={{
+    containerClassName: "h-10 border-2 border-error-400 bg-error-50 rounded-md",
+    inputClassName: "text-sm",
+    errorMessageClassName: "text-xs font-semibold text-error-600"
+  }}
+/>
+```
+
+## API Reference
+
+### Props
+
+| Prop             | Type              | Default       | Description                                          |
+| ---------------- | ----------------- | ------------- | ---------------------------------------------------- |
+| value            | `string`          | -             | The current value of the input                       |
+| name             | `string`          | -             | The name of the input element                        |
+| type             | `string`          | "text"        | Input type (text, password, email, number, tel, url) |
+| placeholder      | `string`          | "Placeholder" | Placeholder text                                     |
+| disabled         | `boolean`         | false         | Whether the input is disabled                        |
+| icon             | `InputIcon`       | `{}`          | Icons to display on left/right sides                 |
+| text             | `InputText`       | `{}`          | Static text to display on left/right sides           |
+| appearance       | `InputAppearance` | `{}`          | **Custom class names for component parts**           |
+| errorMessage     | `string`          | -             | Error message to display below the input             |
+| hideErrorMessage | `boolean`         | false         | Whether to hide the error message                    |
+| supportiveText   | `string`          | -             | Supportive text displayed below the input            |
+| withReset        | `boolean`         | false         | Whether to show reset button when input has value    |
+| onChange         | `function`        | -             | Change event handler                                 |
+| maxLength        | `number`          | -             | Maximum character length                             |
+| className        | `string`          | -             | Additional CSS classes for outer wrapper             |
+| t                | `function`        | tMockFn       | Translation function                                 |
+
+### Types
+
+```typescript
+export type InputAppearance = {
+  /** Controls the main container wrapper (height, width, borders, padding) */
+  containerClassName?: string;
+  /** Controls the actual input element styling (text, background) */
+  inputClassName?: string;
+  /** Controls error message styling */
+  errorMessageClassName?: string;
+  /** Controls supportive text styling */
+  supportiveTextClassName?: string;
+  /** Controls icon sizing and colors */
+  iconClassName?: string;
+};
+```
+
+### Common Customization Patterns & Pitfalls
+
+#### 🎯 **Best Practices**
+
+1. **Always use `containerClassName` for structural changes**
+
+   ```jsx
+   // ✅ Height, width, borders, padding, margins
+   appearance={{
+     containerClassName: "h-12 w-full border-2 border-blue-500 rounded-lg p-4"
+   }}
+   ```
+
+2. **Use `inputClassName` for text and background styling**
+
+   ```jsx
+   // ✅ Font size, color, text styling, background
+   appearance={{
+     inputClassName: "text-base font-semibold text-gray-900 bg-white"
+   }}
+   ```
+
+3. **Combine styles systematically**
+   ```jsx
+   <Input
+     appearance={{
+       // Structure first
+       containerClassName:
+         "h-12 px-4 border border-gray-300 rounded-md shadow-sm",
+       // Then content styling
+       inputClassName: "text-base font-medium placeholder:text-gray-500",
+       // Finally accent elements
+       iconClassName: "w-5 h-5 text-gray-400",
+     }}
+   />
+   ```
+
+#### ⚠️ **Common Mistakes to Avoid**
+
+1. **Don't set height on `inputClassName`**
+
+   ```jsx
+   // ❌ WRONG - This won't work
+   appearance={{
+     inputClassName: "h-12 w-full"  // Height ignored
+   }}
+
+   // ✅ CORRECT - Use containerClassName
+   appearance={{
+     containerClassName: "h-12 w-full"  // Height applied correctly
+   }}
+   ```
+
+2. **Don't use the root `className` prop for structural changes**
+
+   ```jsx
+   // ❌ LESS EFFECTIVE - Limited control
+   <Input
+     className="h-12 w-full"  // Only affects outer wrapper
+     appearance={{ /* ... */ }}
+   />
+
+   // ✅ BETTER - Full control with appearance
+   <Input
+     appearance={{
+       containerClassName: "h-12 w-full border-2 border-primary-500"
+     }}
+   />
+   ```
+
+3. **Don't override internal component structure**
+   ```jsx
+   // ❌ DON'T TRY THIS - Will break the component
+   // The input has internal structure (icons, text, button)
+   // that depends on the container layout
+   ```
+
+#### 🔧 **Quick Reference for Common Customizations**
+
+| Goal                  | Correct Approach                                        |
+| --------------------- | ------------------------------------------------------- |
+| **Change height**     | `containerClassName: "h-12"`                            |
+| **Change width**      | `containerClassName: "w-full"` or `className: "w-full"` |
+| **Change border**     | `containerClassName: "border-2 border-blue-500"`        |
+| **Change background** | `containerClassName: "bg-gray-50"`                      |
+| **Change text size**  | `inputClassName: "text-lg"`                             |
+| **Change text color** | `inputClassName: "text-gray-900"`                       |
+| **Change icon size**  | `iconClassName: "w-6 h-6"`                              |
+| **Change icon color** | `iconClassName: "text-blue-500"`                        |
+
+## Behavior
+
+- Supports all standard HTML input types with enhanced styling
+- Displays left/right icons and text elements for better UX
+- Shows error states with proper validation feedback
+- Includes reset functionality for clearing input values
+- Provides supportive text for additional guidance
+- Handles disabled states with appropriate styling
+- Responsive design with mobile-first approach
+
+**Variants**: text, password, email, number, tel, url
+**States**: default, focus, error, disabled, with-reset
+
+**Key Guidelines**:
+
+- Use icon prop for visual context (search icon, lock icon, etc.)
+- Apply text prop for units or prefixes ($, kg, etc.)
+- Use errorMessage for validation feedback
+- Set withReset to true for user convenience
+- Combine with FormLabel for complete form fields
+
+## Component Code
+
+```tsx
+import {
+  type ChangeEvent,
+  type InputHTMLAttributes,
+  type ReactNode,
+  forwardRef,
+} from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+// Assuming this utility exists
+import { X } from "lucide-react";
+
+import { type TranslationFunction, tMockFn } from "../../lib/mock-t";
+import { IconComponent } from "../IconComponent";
+
+// Assuming component exists
+
+/**
+ * Defines the structure for icons that can be placed inside the input.
+ * The value can be a URL string or a React component.
+ */
+export type InputIcon = {
+  left?: string | ReactNode;
+  onClickLeft?: () => void;
+  right?: string | ReactNode;
+  onClickRight?: () => void;
+};
+
+/**
+ * Defines the structure for static text that can be placed inside the input.
+ */
+export type InputText = {
+  left?: string;
+  right?: string;
+};
+
+/**
+ * Defines class names for customizing the appearance of the input component's parts.
+ */
+export type InputAppearance = {
+  containerClassName?: string;
+  inputClassName?: string;
+  errorMessageClassName?: string;
+  supportiveTextClassName?: string;
+  iconClassName?: string;
+};
+
+/**
+
+ * A standard translation function signature.
+ */
+
+export interface InputProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+  /**
+   * The current value of the input. Required for the `withReset` feature to work correctly.
+   */
+  value?: string;
+  /**
+   * The name of the input element, submitted with the form data.
+   */
+  name?: string;
+  /**
+   * A translation function. If not provided, a mock function will be used.
+   * @default tMockFn
+   */
+  t?: TranslationFunction;
+  /**
+   * An optional icon or custom React node to display on the left or right side.
+   */
+  icon?: InputIcon;
+  /**
+   * An optional static text to display on the left or right side.
+   */
+  text?: InputText;
+  /**
+   * Object to customize the class names of the component's parts.
+   */
+  appearance?: InputAppearance;
+  /**
+   * The error message to display below the input. The component will be styled with an error state if this is present.
+   */
+  errorMessage?: string;
+  hideErrorMessage?: boolean;
+  /**
+   * Additional descriptive text displayed below the input. Can be shown alongside an error message.
+   */
+  supportiveText?: string;
+  /**
+   * If true, a reset button (X) will be shown when the input has a value, allowing the user to clear it.
+   * @default false
+   */
+  withReset?: boolean;
+  /**
+   * The `onChange` handler. It receives the standard `ChangeEvent` or a synthetic event from the reset button.
+   * The synthetic event is designed to be compatible with form libraries.
+   */
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+/**
+ * A versatile and customizable text input component.
+ * It supports icons, text adornments, error states, and a built-in reset button.
+ * Built with forwardRef to allow direct access to the underlying input element.
+ */
+const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
+  const {
+    t = tMockFn,
+    name,
+    type = "text",
+    placeholder = "Placeholder",
+    disabled = false,
+    icon = {},
+    text = {},
+    className,
+    maxLength,
+    appearance = {},
+    errorMessage,
+    hideErrorMessage = false,
+    supportiveText,
+    onChange,
+    withReset = false,
+    value,
+    ...restProps
+  } = props;
+
+  /**
+   * Handles the click event for the reset button.
+   * Creates a synthetic ChangeEvent to clear the input value,
+   * ensuring compatibility with form libraries like Formik or React Hook Form.
+   */
+  const handleReset = () => {
+    if (!onChange) return;
+
+    // Create a synthetic event object that mimics a real ChangeEvent
+    const syntheticEvent: ChangeEvent<HTMLInputElement> = {
+      target: {
+        ...props,
+        value: "",
+        name,
+      },
+      currentTarget: {
+        ...props,
+        value: "",
+        name,
+      },
+      // Add other event properties as needed, though most handlers only need target.value
+      bubbles: true,
+      cancelable: false,
+      defaultPrevented: false,
+      eventPhase: 0,
+      isTrusted: false,
+      nativeEvent: new Event("input", { bubbles: true }),
+      isDefaultPrevented: () => false,
+      isPropagationStopped: () => false,
+      persist: () => {},
+      preventDefault: () => {},
+      stopPropagation: () => {},
+      timeStamp: Date.now(),
+      type: "change",
+    } as unknown as ChangeEvent<HTMLInputElement>; // Assert type for handler compatibility
+
+    onChange(syntheticEvent);
+  };
+
+  const hasValue = !!value;
+  const showReset = withReset && hasValue && !disabled;
+  const showErrorState = !!errorMessage;
+
+  return (
+    <div className={cn("flex w-full flex-col gap-y-2", className)}>
+      <div
+        className={cn(
+          "flex h-8 w-full items-center rounded-md border bg-neutral-50 px-3 transition-colors",
+          // Default & Hover & Focus states
+          "border-neutral-600 focus-within:border-primary-700 hover:border-primary-700",
+          // Error state
+          showErrorState && "border-error-400",
+          // Disabled state
+          disabled
+            ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600"
+            : "cursor-text",
+          appearance.containerClassName
+        )}
+      >
+        {/* Left Icon */}
+        {icon.left && (
+          <div className="mr-2 flex items-center">
+            {typeof icon.left === "string" ? (
+              <IconComponent
+                src={icon.left}
+                height={16}
+                width={16}
+                onClick={icon.onClickLeft}
+                className={cn(
+                  "text-neutral-700",
+                  showErrorState && "text-error-400",
+                  appearance.iconClassName
+                )}
+              />
+            ) : (
+              icon.left
+            )}
+          </div>
+        )}
+        {/* Left Text */}
+        {text.left && (
+          <span className="mr-3 whitespace-nowrap text-sm font-semibold text-neutral-900 md:text-xs md:font-medium">
+            {text.left}
+          </span>
+        )}
+
+        <input
+          ref={ref}
+          type={type}
+          name={name}
+          value={value}
+          maxLength={maxLength}
+          placeholder={placeholder}
+          disabled={disabled}
+          onChange={onChange}
+          className={cn(
+            "w-full min-w-0 border-none bg-transparent text-sm font-semibold text-neutral-900 outline-none placeholder:text-neutral-600 hover:cursor-pointer focus:ring-0 md:text-xs md:font-medium",
+            disabled ? "cursor-not-allowed" : "cursor-text",
+            appearance.inputClassName
+          )}
+          {...restProps}
+        />
+
+        {/* Right Adornment: Reset Button or Icon */}
+        <div className="ml-2 flex items-center">
+          {showReset ? (
+            <X
+              onClick={handleReset}
+              className="size-4 cursor-pointer text-neutral-700 hover:text-neutral-900"
+              aria-label="Clear input"
+            />
+          ) : icon.right ? (
+            typeof icon.right === "string" ? (
+              <IconComponent
+                src={icon.right}
+                height={16}
+                width={16}
+                onClick={icon.onClickRight}
+                className={cn(
+                  "text-neutral-700",
+                  showErrorState && "text-error-400",
+                  appearance.iconClassName
+                )}
+              />
+            ) : (
+              icon.right
+            )
+          ) : null}
+        </div>
+
+        {/* Right Text */}
+        {text.right && (
+          <span className="ml-3 whitespace-nowrap text-sm font-semibold text-neutral-900 md:text-xs md:font-medium">
+            {text.right}
+          </span>
+        )}
+      </div>
+
+      {/* Supportive and Error Text Area */}
+      {(errorMessage || supportiveText) && (
+        <div className="flex w-full items-start justify-between">
+          {errorMessage && !hideErrorMessage && (
+            <span
+              className={cn(
+                "text-xs font-medium text-error-400",
+                appearance.errorMessageClassName
+              )}
+            >
+              {t(errorMessage)}
+            </span>
+          )}
+          {supportiveText && (
+            <span
+              className={cn(
+                "text-right text-xs font-medium text-neutral-900",
+                // Push to the right if there is no error message
+                !errorMessage && "ml-auto",
+                appearance.supportiveTextClassName
+              )}
+            >
+              {supportiveText}
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+});
+
+Input.displayName = "Input";
+
+export { Input };
+```

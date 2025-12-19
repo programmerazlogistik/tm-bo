@@ -1,0 +1,136 @@
+---
+title: "InfoBottomsheet"
+description: "A specialized bottom sheet component for displaying informational content with clean, accessible interface"
+---
+
+import { InfoBottomsheetPreview } from "../../preview/InfoBottomsheet.preview";
+
+## Usage
+
+<InfoBottomsheetPreview />
+
+```jsx
+import { InfoBottomsheet } from "@muatmuat/ui/BottomSheet";
+
+function Example() {
+  return (
+    <div className="space-y-4">
+      {/* Text content */}
+      <InfoBottomsheet title="Help Information">
+        This is helpful information that explains how to use this feature.
+      </InfoBottomsheet>
+
+      {/* HTML content */}
+      <InfoBottomsheet
+        title="Rich Content"
+        render="<p>This supports <strong>HTML</strong> content!</p>"
+      />
+
+      {/* In form context */}
+      <div className="flex items-center gap-2">
+        <label className="text-sm font-medium">Account Type</label>
+        <InfoBottomsheet title="Account Types">
+          Choose between Personal and Business accounts. Personal accounts are
+          for individual use, while Business accounts provide additional
+          features for organizations.
+        </InfoBottomsheet>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop      | Type              | Default | Description                                                                          |
+| --------- | ----------------- | ------- | ------------------------------------------------------------------------------------ |
+| className | `string`          | -       | Additional CSS classes for styling the trigger icon                                  |
+| title     | `string`          | -       | Title displayed in the bottom sheet header                                           |
+| children  | `React.ReactNode` | -       | Plain text content to display (used when render prop is not provided)                |
+| render    | `string`          | -       | HTML string to render using dangerouslySetInnerHTML (takes precedence over children) |
+
+### Types
+
+```typescript
+export interface InfoBottomsheetProps {
+  className?: string;
+  title: string;
+  children?: React.ReactNode;
+  render?: string;
+}
+```
+
+## Behavior
+
+- Displays informational content in a clean bottom sheet modal
+- Uses minimal info icon trigger that doesn't disrupt design
+- Supports both plain text and HTML content rendering
+- Automatically manages accessibility with proper ARIA support
+- Mobile optimized bottom sheet behavior with smooth animations
+- Consistent styling with other components in the design system
+- Flexible trigger icon styling through className prop
+- Proper keyboard navigation and screen reader support
+
+**Variants**: Standard info bottom sheet with text or HTML content modes
+**Sizes**: Responsive bottom sheet with auto height based on content
+**Key Guidelines**: Perfect for help documentation, contextual information, terms and conditions, feature explanations, FAQ content, and rich formatted content
+
+## Component Code
+
+```tsx
+import React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+
+import { IconComponent } from "../IconComponent";
+import {
+  BottomSheet,
+  BottomSheetClose,
+  BottomSheetContent,
+  BottomSheetHeader,
+  BottomSheetTitle,
+  BottomSheetTrigger,
+} from "./BottomSheet";
+
+export interface InfoBottomsheetProps {
+  className?: string;
+  title: string;
+  children?: React.ReactNode;
+  render?: string;
+}
+
+export const InfoBottomsheet: React.FC<InfoBottomsheetProps> = ({
+  className,
+  title,
+  children,
+  render,
+}) => {
+  return (
+    <BottomSheet>
+      <BottomSheetTrigger
+        className={cn("block size-4 text-neutral-700", className)}
+      >
+        <IconComponent src="/icons/info16.svg" width={16} height={16} />
+      </BottomSheetTrigger>
+      <BottomSheetContent>
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>{title}</BottomSheetTitle>
+        </BottomSheetHeader>
+        {render ? (
+          <div
+            className="info-bottomsheet-content px-4 pb-6 text-sm font-medium leading-[1.1]"
+            dangerouslySetInnerHTML={{ __html: render }}
+          />
+        ) : (
+          <div className="info-bottomsheet-content px-4 py-6 text-sm font-medium leading-[1.1]">
+            {children}
+          </div>
+        )}
+      </BottomSheetContent>
+    </BottomSheet>
+  );
+};
+```

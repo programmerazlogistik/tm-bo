@@ -1,0 +1,24 @@
+{
+  "extends": "@muatmuat/config/tsconfig",
+  "compilerOptions": {
+    "strict": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["next-env.d.ts", ".next/types/**/*.ts", "src/**/*"],
+  "exclude": [
+    "node_modules",
+    "packages/**/dist/**",
+    "packages/**/src/**",
+    "packages/**/node_modules/**"
+  ],
+  "references": [
+    { "path": "./packages/ui" },
+    { "path": "./packages/lib" },
+    { "path": "./packages/hooks" }
+  ]
+}

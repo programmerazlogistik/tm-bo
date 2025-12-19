@@ -1,0 +1,41 @@
+{
+  "name": "@muatmuat/tailwind-config",
+  "version": "0.0.1",
+  "description": "Shared Tailwind CSS configuration preset for MuatMuat packages",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./preset": "./preset.js",
+    "./postcss.config.js": "./postcss.config.js",
+    "./variables.css": "./variables.css"
+  },
+  "files": [
+    "index.js",
+    "preset.js",
+    "preset.d.ts",
+    "postcss.config.js",
+    "variables.css"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tailwindcss",
+    "preset",
+    "design-system"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
+    "postcss": "8.4.31"
+  },
+  "peerDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "8.4.31",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7"
+  }
+}

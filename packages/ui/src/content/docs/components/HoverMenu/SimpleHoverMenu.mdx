@@ -1,0 +1,309 @@
+---
+title: "SimpleHoverMenu"
+description: "A hover-triggered dropdown menu component built on Radix UI primitives for contextual actions"
+---
+
+import { SimpleHoverMenuPreview } from "../../preview/SimpleHoverMenu.preview";
+
+## Usage
+
+<SimpleHoverMenuPreview />
+
+```jsx
+import {
+  SimpleHover,
+  SimpleHoverContent,
+  SimpleHoverItem,
+  SimpleHoverTrigger,
+} from "@muatmuat/ui/HoverMenu";
+
+function Example() {
+  return (
+    <SimpleHover>
+      <SimpleHoverTrigger asChild>
+        <button className="flex items-center gap-2 rounded-md bg-primary-700 px-4 py-2 text-white">
+          <span>Hover me</span>
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+      </SimpleHoverTrigger>
+      <SimpleHoverContent>
+        <SimpleHoverItem onClick={() => console.log("Profile clicked")}>
+          Profile
+        </SimpleHoverItem>
+        <SimpleHoverItem onClick={() => console.log("Settings clicked")}>
+          Settings
+        </SimpleHoverItem>
+        <SimpleHoverItem onClick={() => console.log("Logout clicked")}>
+          Logout
+        </SimpleHoverItem>
+      </SimpleHoverContent>
+    </SimpleHover>
+  );
+}
+
+// User menu example
+function UserMenu() {
+  return (
+    <SimpleHover>
+      <SimpleHoverTrigger asChild>
+        <div className="flex cursor-pointer items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-700 text-sm font-medium text-white">
+            JD
+          </div>
+          <span className="text-sm font-medium">John Doe</span>
+        </div>
+      </SimpleHoverTrigger>
+      <SimpleHoverContent>
+        <SimpleHoverItem onClick={() => console.log("View profile")}>
+          View Profile
+        </SimpleHoverItem>
+        <SimpleHoverItem onClick={() => console.log("Account settings")}>
+          Account Settings
+        </SimpleHoverItem>
+        <SimpleHoverItem onClick={() => console.log("Sign out")}>
+          Sign Out
+        </SimpleHoverItem>
+      </SimpleHoverContent>
+    </SimpleHover>
+  );
+}
+
+// Custom positioning
+function CustomPositioning() {
+  return (
+    <div className="flex gap-8">
+      <SimpleHover>
+        <SimpleHoverTrigger asChild>
+          <button className="rounded-md bg-blue-600 px-4 py-2 text-white">
+            Top Menu
+          </button>
+        </SimpleHoverTrigger>
+        <SimpleHoverContent side="top">
+          <SimpleHoverItem>Top Item 1</SimpleHoverItem>
+          <SimpleHoverItem>Top Item 2</SimpleHoverItem>
+        </SimpleHoverContent>
+      </SimpleHover>
+
+      <SimpleHover>
+        <SimpleHoverTrigger asChild>
+          <button className="rounded-md bg-green-600 px-4 py-2 text-white">
+            Right Menu
+          </button>
+        </SimpleHoverTrigger>
+        <SimpleHoverContent side="right">
+          <SimpleHoverItem>Right Item 1</SimpleHoverItem>
+          <SimpleHoverItem>Right Item 2</SimpleHoverItem>
+        </SimpleHoverContent>
+      </SimpleHover>
+
+      <SimpleHover>
+        <SimpleHoverTrigger asChild>
+          <button className="rounded-md bg-purple-600 px-4 py-2 text-white">
+            Center Menu
+          </button>
+        </SimpleHoverTrigger>
+        <SimpleHoverContent align="center">
+          <SimpleHoverItem>Center Item 1</SimpleHoverItem>
+          <SimpleHoverItem>Center Item 2</SimpleHoverItem>
+        </SimpleHoverContent>
+      </SimpleHover>
+    </div>
+  );
+}
+
+// Custom delays
+function CustomDelays() {
+  return (
+    <SimpleHover openDelay={500} closeDelay={300}>
+      <SimpleHoverTrigger asChild>
+        <button className="rounded-md bg-indigo-600 px-4 py-2 text-white">
+          Slow Hover
+        </button>
+      </SimpleHoverTrigger>
+      <SimpleHoverContent>
+        <SimpleHoverItem>Delayed appearance</SimpleHoverItem>
+        <SimpleHoverItem>Item 2</SimpleHoverItem>
+      </SimpleHoverContent>
+    </SimpleHover>
+  );
+}
+```
+
+## API Reference
+
+### Components
+
+#### SimpleHover (Root)
+
+| Prop         | Type                      | Default | Description                          |
+| ------------ | ------------------------- | ------- | ------------------------------------ |
+| openDelay    | `number`                  | `200`   | Delay before opening in milliseconds |
+| closeDelay   | `number`                  | `100`   | Delay before closing in milliseconds |
+| open         | `boolean`                 | -       | Controlled open state                |
+| onOpenChange | `(open: boolean) => void` | -       | Callback when open state changes     |
+| defaultOpen  | `boolean`                 | -       | Initial open state when uncontrolled |
+
+#### SimpleHoverTrigger
+
+| Prop    | Type      | Default | Description                        |
+| ------- | --------- | ------- | ---------------------------------- |
+| asChild | `boolean` | `false` | Whether to render as child element |
+
+#### SimpleHoverContent
+
+| Prop      | Type                                     | Default    | Description                        |
+| --------- | ---------------------------------------- | ---------- | ---------------------------------- |
+| side      | `"top" \| "right" \| "bottom" \| "left"` | `"bottom"` | Which side to display the menu     |
+| align     | `"start" \| "center" \| "end"`           | `"start"`  | Menu alignment relative to trigger |
+| className | `string`                                 | -          | Additional CSS classes             |
+| children  | `React.ReactNode`                        | -          | Menu content                       |
+
+#### SimpleHoverItem
+
+| Prop      | Type              | Default | Description            |
+| --------- | ----------------- | ------- | ---------------------- |
+| onClick   | `() => void`      | -       | Click handler function |
+| className | `string`          | -       | Additional CSS classes |
+| children  | `React.ReactNode` | -       | Item content           |
+
+### Types
+
+```typescript
+export interface SimpleHoverProps {
+  openDelay?: number;
+  closeDelay?: number;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  defaultOpen?: boolean;
+}
+
+export interface SimpleHoverTriggerProps {
+  asChild?: boolean;
+}
+
+export interface SimpleHoverContentProps {
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
+  className?: string;
+  children: React.ReactNode;
+}
+
+export interface SimpleHoverItemProps {
+  onClick?: () => void;
+  className?: string;
+  children: React.ReactNode;
+}
+```
+
+## Behavior
+
+- Built on Radix UI HoverCard primitives for robust accessibility
+- Hover-triggered menu with customizable open/close delays
+- Automatic positioning with collision detection
+- Proper keyboard navigation and focus management
+- Mobile-friendly with touch interactions
+- Smooth animations and transitions
+- Clickable menu items with onClick handlers
+- Responsive design that adapts to content
+- Screen reader compatible with proper ARIA attributes
+- Automatic cleanup of event listeners
+
+**Variants**: Standard hover menu with flexible positioning and timing options
+**Sizes**: Fixed width (194px) with auto-height based on content
+**Key Guidelines**: Use for user menus, navigation items, contextual actions, and scenarios where hover-based interaction provides better UX than click-based menus
+
+## Component Code
+
+```tsx
+import type { ComponentProps } from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
+
+type HoverCardRootProps = ComponentProps<typeof HoverCardPrimitive.Root>;
+type HoverCardTriggerProps = ComponentProps<typeof HoverCardPrimitive.Trigger>;
+type HoverCardContentProps = ComponentProps<typeof HoverCardPrimitive.Content>;
+
+export interface SimpleHoverProps extends Omit<HoverCardRootProps, "children"> {
+  children: React.ReactNode;
+}
+
+export interface SimpleHoverTriggerProps extends HoverCardTriggerProps {}
+
+export interface SimpleHoverContentProps
+  extends Omit<HoverCardContentProps, "children"> {
+  children: React.ReactNode;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
+  className?: string;
+}
+
+export interface SimpleHoverItemProps extends ComponentProps<"div"> {
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  className?: string;
+  children: React.ReactNode;
+}
+
+export const SimpleHover: React.FC<SimpleHoverProps> = ({
+  children,
+  ...props
+}) => (
+  <HoverCardPrimitive.Root openDelay={200} closeDelay={100} {...props}>
+    {children}
+  </HoverCardPrimitive.Root>
+);
+
+export const SimpleHoverTrigger = HoverCardPrimitive.Trigger;
+
+export const SimpleHoverContent: React.FC<SimpleHoverContentProps> = ({
+  side = "bottom",
+  align = "start",
+  className,
+  children,
+}) => {
+  return (
+    <HoverCardPrimitive.Portal>
+      <HoverCardPrimitive.Content
+        className={cn(
+          "z-50 mt-1 flex w-[194px] flex-col overflow-hidden rounded-md border border-neutral-300 bg-neutral-50 shadow-muat",
+          className
+        )}
+        side={side}
+        align={align}
+      >
+        {children}
+      </HoverCardPrimitive.Content>
+    </HoverCardPrimitive.Portal>
+  );
+};
+
+export const SimpleHoverItem: React.FC<SimpleHoverItemProps> = ({
+  className,
+  onClick,
+  children,
+  ...props
+}) => (
+  <div
+    className={cn(
+      "cursor-pointer px-2.5 py-3 text-xs font-medium leading-[1.2] outline-none hover:bg-neutral-100",
+      className
+    )}
+    onClick={onClick}
+    {...props}
+  >
+    {children}
+  </div>
+);
+```

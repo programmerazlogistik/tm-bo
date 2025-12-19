@@ -1,0 +1,323 @@
+---
+title: "TableBO"
+description: "A comprehensive table component with sorting capabilities and responsive design for data display"
+---
+
+import { TableBOPreview } from "../../preview/TableBO.preview";
+
+## Usage
+
+<TableBOPreview />
+
+```jsx
+import { TableBO } from "@muatmuat/ui/Table";
+
+function Example() {
+  const data = [
+    { id: 1, name: "John Doe", email: "john@example.com", status: "Active" },
+    {
+      id: 2,
+      name: "Jane Smith",
+      email: "jane@example.com",
+      status: "Inactive",
+    },
+    { id: 3, name: "Bob Johnson", email: "bob@example.com", status: "Pending" },
+  ];
+
+  return (
+    <TableBO.Root>
+      <TableBO.Header>
+        <TableBO.Row>
+          <TableBO.Head>ID</TableBO.Head>
+          <TableBO.Head>Name</TableBO.Head>
+          <TableBO.Head>Email</TableBO.Head>
+          <TableBO.Head>Status</TableBO.Head>
+        </TableBO.Row>
+      </TableBO.Header>
+      <TableBO.Body>
+        {data.map((row) => (
+          <TableBO.Row key={row.id}>
+            <TableBO.Cell>{row.id}</TableBO.Cell>
+            <TableBO.Cell>{row.name}</TableBO.Cell>
+            <TableBO.Cell>{row.email}</TableBO.Cell>
+            <TableBO.Cell>{row.status}</TableBO.Cell>
+          </TableBO.Row>
+        ))}
+      </TableBO.Body>
+    </TableBO.Root>
+  );
+}
+
+// With sorting
+function SortableExample() {
+  const [data] = useState([
+    { id: 1, name: "Alice", age: 25, department: "Engineering" },
+    { id: 2, name: "Bob", age: 30, department: "Design" },
+    { id: 3, name: "Charlie", age: 28, department: "Marketing" },
+  ]);
+
+  return (
+    <TableBO.Root>
+      <TableBO.Header>
+        <TableBO.Row>
+          <TableBO.Head
+            column={{ getIsSorted: () => "asc", toggleSorting: () => {} }}
+          >
+            Name
+          </TableBO.Head>
+          <TableBO.Head
+            column={{ getIsSorted: () => false, toggleSorting: () => {} }}
+          >
+            Age
+          </TableBO.Head>
+          <TableBO.Head
+            column={{ getIsSorted: () => "desc", toggleSorting: () => {} }}
+          >
+            Department
+          </TableBO.Head>
+        </TableBO.Row>
+      </TableBO.Header>
+      <TableBO.Body>
+        {data.map((row) => (
+          <TableBO.Row key={row.id}>
+            <TableBO.Cell>{row.name}</TableBO.Cell>
+            <TableBO.Cell>{row.age}</TableBO.Cell>
+            <TableBO.Cell>{row.department}</TableBO.Cell>
+          </TableBO.Row>
+        ))}
+      </TableBO.Body>
+    </TableBO.Root>
+  );
+}
+```
+
+## API Reference
+
+### Components
+
+#### TableBO.Root
+
+| Prop      | Type              | Default | Description                                    |
+| --------- | ----------------- | ------- | ---------------------------------------------- |
+| className | `string`          | -       | Additional CSS classes for the table container |
+| children  | `React.ReactNode` | -       | Table content                                  |
+
+#### TableBO.Header
+
+| Prop      | Type     | Default | Description                                   |
+| --------- | -------- | ------- | --------------------------------------------- |
+| className | `string` | -       | Additional CSS classes for the header section |
+
+#### TableBO.Body
+
+| Prop      | Type     | Default | Description                                 |
+| --------- | -------- | ------- | ------------------------------------------- |
+| className | `string` | -       | Additional CSS classes for the body section |
+
+#### TableBO.Row
+
+| Prop       | Type     | Default | Description                        |
+| ---------- | -------- | ------- | ---------------------------------- |
+| className  | `string` | -       | Additional CSS classes for the row |
+| data-state | `string` | -       | State data (e.g., "selected")      |
+
+#### TableBO.Head
+
+| Prop      | Type              | Default | Description                                |
+| --------- | ----------------- | ------- | ------------------------------------------ |
+| className | `string`          | -       | Additional CSS classes for the header cell |
+| column    | `object`          | -       | Column object with sorting properties      |
+| children  | `React.ReactNode` | -       | Header content                             |
+
+#### TableBO.Cell
+
+| Prop      | Type     | Default | Description                              |
+| --------- | -------- | ------- | ---------------------------------------- |
+| className | `string` | -       | Additional CSS classes for the data cell |
+
+### Types
+
+```typescript
+export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {}
+
+export interface TableHeaderProps
+  extends React.HTMLAttributes<HTMLTableSectionElement> {}
+
+export interface TableBodyProps
+  extends React.HTMLAttributes<HTMLTableSectionElement> {}
+
+export interface TableRowProps
+  extends React.HTMLAttributes<HTMLTableRowElement> {}
+
+export interface TableHeadProps
+  extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  column?: any;
+  children?: React.ReactNode;
+}
+
+export interface TableCellProps
+  extends React.TdHTMLAttributes<HTMLTableCellElement> {}
+```
+
+## Behavior
+
+- Responsive table with horizontal scrolling on small screens
+- Built-in sorting support with visual indicators (ascending/descending arrows)
+- Hover states on rows for better interactivity
+- Consistent styling with design system colors and spacing
+- Proper semantic HTML structure for accessibility
+- Border styling for clear visual separation
+- Hover effects on rows for better user experience
+- Support for both basic and sortable column headers
+- Mobile-friendly with horizontal scroll container
+- Clean typography with consistent font sizes and weights
+
+**Variants**: Standard table with optional sorting capabilities
+**Sizes**: Responsive width with auto-sizing based on content
+**Key Guidelines**: Use for displaying tabular data, data tables, lists with multiple columns, and scenarios requiring structured data presentation
+
+## Component Code
+
+```tsx
+import * as React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import { IconComponent } from "@muatmuat/ui/IconComponent";
+
+export interface TableProps extends React.HTMLAttributes<HTMLTableElement> {}
+
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, ...props }, ref) => (
+    <div className="relative w-full overflow-x-auto">
+      <table
+        ref={ref}
+        className={cn("w-full caption-bottom text-sm", className)}
+        {...props}
+      />
+    </div>
+  )
+);
+Table.displayName = "Table";
+
+export interface TableHeaderProps
+  extends React.HTMLAttributes<HTMLTableSectionElement> {}
+
+const TableHeader = React.forwardRef<HTMLTableSectionElement, TableHeaderProps>(
+  ({ className, ...props }, ref) => (
+    <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  )
+);
+TableHeader.displayName = "TableHeader";
+
+export interface TableBodyProps
+  extends React.HTMLAttributes<HTMLTableSectionElement> {}
+
+const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>(
+  ({ className, ...props }, ref) => (
+    <tbody
+      ref={ref}
+      className={cn("[&_tr:last-child]:border-0", className)}
+      {...props}
+    />
+  )
+);
+TableBody.displayName = "TableBody";
+
+export interface TableRowProps
+  extends React.HTMLAttributes<HTMLTableRowElement> {}
+
+const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+  ({ className, ...props }, ref) => (
+    <tr
+      ref={ref}
+      className={cn(
+        "data-[state=selected]:bg-muted border-b border-[#C6CBD4] transition-colors hover:bg-neutral-50",
+        className
+      )}
+      {...props}
+    />
+  )
+);
+TableRow.displayName = "TableRow";
+
+export interface TableHeadProps
+  extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  column?: any;
+  children?: React.ReactNode;
+}
+
+const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
+  ({ className, column, children, ...props }, ref) => {
+    const enableSorting = column?.enableSorting !== false;
+
+    if (enableSorting && column) {
+      const sortDirection = column.getIsSorted();
+      const iconSrc =
+        sortDirection === "asc"
+          ? "/icons/asc-sort.svg"
+          : sortDirection === "desc"
+            ? "/icons/desc-sort.svg"
+            : "/icons/default-sort.svg";
+      return (
+        <th
+          ref={ref}
+          className={cn(
+            "h-auto py-2 text-left align-middle text-xs font-semibold text-[#868686] [&:has([role=checkbox])]:pr-0",
+            className
+          )}
+          {...props}
+        >
+          {/* ✅ w-full class has been removed from this button */}
+          <button
+            onClick={() => column.toggleSorting()}
+            className="flex min-h-8 items-center gap-2 p-2 text-xs font-semibold text-[#868686] hover:bg-transparent"
+          >
+            {children}
+            <IconComponent src={iconSrc} alt="sort icon" className="h-4 w-4" />
+          </button>
+        </th>
+      );
+    }
+    // Non-sortable header remains the same
+    return (
+      <th
+        ref={ref}
+        className={cn(
+          "h-auto py-2 text-left align-middle text-xs font-semibold text-[#868686] [&:has([role=checkbox])]:pr-0",
+          className
+        )}
+        {...props}
+      >
+        <div className="flex min-h-8 items-center px-2">{children}</div>
+      </th>
+    );
+  }
+);
+TableHead.displayName = "TableHead";
+
+export interface TableCellProps
+  extends React.TdHTMLAttributes<HTMLTableCellElement> {}
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, ...props }, ref) => (
+    <td
+      ref={ref}
+      className={cn(
+        "p-2 text-left align-middle text-xs text-[#1B1B1B] [&:has([role=checkbox])]:pr-0",
+        className
+      )}
+      {...props}
+    />
+  )
+);
+TableCell.displayName = "TableCell";
+
+export const TableBO = {
+  Root: Table,
+  Header: TableHeader,
+  Body: TableBody,
+  Row: TableRow,
+  Head: TableHead,
+  Cell: TableCell,
+};
+```

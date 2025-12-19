@@ -1,0 +1,80 @@
+{
+  "name": "@muatmuat/lib",
+  "version": "0.0.1",
+  "description": "Shared utility library for MuatMuat packages",
+  "type": "module",
+  "scripts": {
+    "build:types": "tsc --project tsconfig.build.json --skipLibCheck",
+    "clean": "rimraf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./auth-adapter": {
+      "types": "./dist/auth-adapter/index.d.ts",
+      "import": "./src/auth-adapter/index.ts",
+      "default": "./src/auth-adapter/index.ts"
+    },
+    "./axios-adapter": {
+      "types": "./dist/axios-adapter/index.d.ts",
+      "import": "./src/axios-adapter/index.ts",
+      "default": "./src/axios-adapter/index.ts"
+    },
+    "./fake-page": {
+      "types": "./dist/fake-page/index.d.ts",
+      "import": "./src/fake-page/index.ts",
+      "default": "./src/fake-page/index.ts"
+    },
+    "./responsive-navigation": {
+      "types": "./dist/responsive-navigation/index.d.ts",
+      "import": "./src/responsive-navigation/index.ts",
+      "default": "./src/responsive-navigation/index.ts"
+    },
+    "./stack-manager": {
+      "types": "./dist/stack-manager/index.d.ts",
+      "import": "./src/stack-manager.ts",
+      "default": "./src/stack-manager.ts"
+    },
+    "./translation-adapter": {
+      "types": "./dist/translation-adapter/index.d.ts",
+      "import": "./src/translation-adapter/index.ts",
+      "default": "./src/translation-adapter/index.ts"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./src/utils/index.ts",
+      "default": "./src/utils/index.ts"
+    },
+    "./utils/*": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./src/utils/*.ts",
+      "default": "./src/utils/*.ts"
+    }
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zustand": "^5.0.8",
+    "xior": "^0.7.8"
+  },
+  "peerDependencies": {
+    "@muatmuat/hooks": "*",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "next": "*",
+    "react": "*",
+    "tailwind-merge": "^3.3.0",
+    "xior": "^0.7.8",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.2.4",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2"
+  }
+}

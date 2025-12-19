@@ -1,0 +1,220 @@
+---
+title: "RadioBottomsheet"
+description: "A bottom sheet component with radio button selection for choosing from predefined options"
+---
+
+import { RadioBottomsheetPreview } from "../../preview/RadioBottomsheet.preview";
+
+## Usage
+
+<RadioBottomsheetPreview />
+
+```jsx
+import { useState } from "react";
+
+import RadioBottomsheet from "@muatmuat/ui/BottomSheet/RadioBottomsheet";
+
+function Example() {
+  const [selectedValue, setSelectedValue] = useState("option1");
+
+  const options = [
+    { label: "Active Status", value: "active" },
+    { label: "Inactive Status", value: "inactive" },
+    { label: "Pending Status", value: "pending" },
+    { label: "Completed Status", value: "completed" },
+  ];
+
+  return (
+    <RadioBottomsheet
+      title="Select Status"
+      options={options}
+      value={selectedValue}
+      onChange={setSelectedValue}
+      saveLabel="Apply Selection"
+      placeHolder="Choose status..."
+    />
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop        | Type                      | Default    | Description                                           |
+| ----------- | ------------------------- | ---------- | ----------------------------------------------------- |
+| className   | `string`                  | -          | Additional CSS classes for styling the trigger button |
+| title       | `string`                  | -          | Title displayed in the bottom sheet header            |
+| options     | `RadioOption[]`           | `[]`       | Array of radio button options to display              |
+| value       | `string`                  | -          | Currently selected option value                       |
+| onChange    | `(value: string) => void` | `() => {}` | Callback fired when selection changes                 |
+| saveLabel   | `string`                  | -          | Text for the save/apply button                        |
+| placeHolder | `string`                  | -          | Placeholder text shown when no option is selected     |
+| disabled    | `boolean`                 | `false`    | Whether the component is disabled                     |
+
+### Types
+
+```typescript
+export interface RadioOption {
+  label: string;
+  value: string;
+}
+
+export interface RadioBottomsheetProps {
+  className?: string;
+  title?: string;
+  options?: RadioOption[];
+  value?: string;
+  onChange?: (value: string) => void;
+  saveLabel?: string;
+  placeHolder?: string;
+  disabled?: boolean;
+}
+```
+
+## Behavior
+
+- Displays a dropdown-style trigger that opens a bottom sheet with radio button options
+- Manages selection state with temporary value that only applies when save button is clicked
+- Shows selected option in trigger button with proper placeholder fallback
+- Supports disabled state with visual styling changes
+- Automatically handles bottom sheet open/close state management
+- Provides save/confirm button to apply selection changes
+- Each option displays with radio button and label in a clean list format
+- Responsive design optimized for mobile bottom sheet interactions
+
+**Variants**: Standard radio selection bottom sheet with customizable trigger styling
+**Sizes**: Fixed trigger height (32px) with scrollable bottom sheet content
+**Key Guidelines**: Use for single choice selection from 3-8 options, status selection, filtering choices, and settings configuration
+
+## Component Code
+
+```tsx
+import { useEffect, useState } from "react";
+
+import { usePrevious } from "@muatmuat/hooks/use-previous";
+import { cn } from "@muatmuat/lib/utils";
+
+import { Button } from "../Button";
+import { IconComponent } from "../IconComponent";
+import { RadioButton } from "../Radio";
+import {
+  BottomSheet,
+  BottomSheetClose,
+  BottomSheetContent,
+  BottomSheetFooter,
+  BottomSheetHeader,
+  BottomSheetTitle,
+} from "./BottomSheet";
+
+export interface RadioOption {
+  label: string;
+  value: string;
+}
+
+export interface RadioBottomsheetProps {
+  className?: string;
+  title?: string;
+  options?: RadioOption[];
+  value?: string;
+  onChange?: (value: string) => void;
+  saveLabel?: string;
+  placeHolder?: string;
+  disabled?: boolean;
+}
+
+export const RadioBottomsheet: React.FC<RadioBottomsheetProps> = ({
+  className,
+  title,
+  options = [],
+  value,
+  onChange = () => {},
+  saveLabel,
+  placeHolder,
+  disabled,
+}) => {
+  const [tempValue, setTempValue] = useState("");
+  const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
+  const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
+
+  useEffect(() => {
+    if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
+      setTempValue(value || "");
+    }
+  }, [isBottomsheetOpen, previousIsBottomsheetOpen, value]);
+
+  const handleSelectOption = () => {
+    onChange(tempValue);
+    setIsBottomsheetOpen(false);
+  };
+
+  const selectedItem = options.find((item) => item.value === value);
+
+  return (
+    <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
+      <button
+        className={cn(
+          "flex h-8 min-w-[65px] items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-2",
+          disabled
+            ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600"
+            : "cursor-pointer",
+          className
+        )}
+        onClick={() => {
+          setIsBottomsheetOpen(true);
+        }}
+        disabled={disabled}
+      >
+        <span
+          className={cn(
+            "text-sm font-semibold leading-[15.4px]",
+            disabled ? "text-neutral-600" : "text-neutral-900"
+          )}
+        >
+          {selectedItem?.label ?? placeHolder ?? ""}
+        </span>
+        <IconComponent
+          src="/icons/chevron-down.svg"
+          className="text-neutral-700"
+        />
+      </button>
+      <BottomSheetContent>
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>{title}</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="flex flex-col gap-y-4 px-4">
+          {options.map((option, key) => {
+            const isLastItem = options.length - 1 === key;
+            return (
+              <div
+                className={`${isLastItem ? "" : "border-b border-b-neutral-400 pb-4"} flex justify-between`}
+                key={key}
+              >
+                <span className="text-sm font-semibold leading-[15.4px] text-neutral-900">
+                  {option.label}
+                </span>
+                <RadioButton
+                  name={title}
+                  value={option.value}
+                  checked={tempValue === option.value}
+                  onClick={(data) => setTempValue(data.value)}
+                />
+              </div>
+            );
+          })}
+        </div>
+        <BottomSheetFooter>
+          <Button
+            className="h-10 w-full"
+            variant="muatparts-primary"
+            onClick={handleSelectOption}
+          >
+            {saveLabel}
+          </Button>
+        </BottomSheetFooter>
+      </BottomSheetContent>
+    </BottomSheet>
+  );
+};
+```

@@ -1,0 +1,155 @@
+.container_radio {
+  position: relative;
+  font-size: 12px;
+  color: var(--neutral-900);
+  font-weight: demi;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  input:disabled {
+    cursor: no-drop;
+  }
+
+  input:checked:disabled {
+    cursor: no-drop;
+  }
+
+  .radio_primary {
+    top: 0;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--neutral-600);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .radio_primary:after {
+    top: calc(50% - 4px);
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary-700);
+  }
+}
+
+.container_radio:hover input ~ .radio_primary {
+  border: 1px solid var(--primary-700);
+}
+
+.container_radio input:checked ~ .radio_primary {
+  border: 1px solid var(--primary-700);
+}
+
+// When disabled not checked
+.container_radio input:disabled ~ .radio_primary {
+  border: 1px solid var(--neutral-600);
+}
+
+// When disabled & Checked but the span after
+.container_radio input:checked:disabled ~ .radio_primary::after {
+  top: 4px;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neutral-600) !important;
+}
+
+// When disabled & Checked the span
+.container_radio input:checked:disabled ~ .radio_primary {
+  border: 1px solid var(--neutral-600);
+  background-color: var(--neutral-400);
+  cursor: no-drop;
+}
+
+.container_radio input:checked ~ .radio_primary:after {
+  display: block;
+}
+
+.radio_primary:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+// Pertama definisikan parent wrapper yang membungkus kedua radio button
+.radio_group {
+  display: flex;
+  gap: 8px;
+
+  // Style default untuk radio button aktif (biru)
+  .container_radio {
+    position: relative;
+    font-size: 12px;
+    color: var(--neutral-900);
+    font-weight: demi;
+
+    input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    input:disabled {
+      cursor: no-drop;
+    }
+
+    input:checked:disabled {
+      cursor: no-drop;
+    }
+
+    .radio_primary {
+      top: 0;
+      left: 0;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      border: 1px solid var(--neutral-600);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .radio_primary:after {
+      top: 4px;
+      left: 4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--neutral-400);
+    }
+
+    // Style untuk radio yang disabled
+    &:has(input:disabled) {
+      opacity: 0.5;
+    }
+
+    // Default hover (biru)
+    // &:hover input ~ .radio_primary {
+    //   border: 1px solid var(--primary-700);
+    // }
+
+    // Default checked (biru)
+    input:checked ~ .radio_primary {
+      border: 1px solid var(--neutral-400);
+    }
+  }
+
+  // Jika ada radio disabled dalam group, ubah semua radio tidak disabled menjadi abu-abu
+  &:has(.container_radio:has(input:disabled)) {
+    .container_radio:not(:has(input:disabled)) {
+      .radio_primary:after {
+        background: var(--neutral-400);
+      }
+
+      &:hover input ~ .radio_primary,
+      input:checked ~ .radio_primary {
+        border: 1px solid var(--neutral-600);
+      }
+    }
+  }
+}

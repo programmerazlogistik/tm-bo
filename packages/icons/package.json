@@ -1,0 +1,33 @@
+{
+  "name": "@muatmuat/icons",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint src/",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "build": "tsc --project tsconfig.build.json",
+    "build:svgs": "svgr --out-dir src --typescript --no-dimensions --no-index --no-prettier  --replace-attr-values \"#555={'currentColor'}\" --replace-attr-values \"#555555={'currentColor'}\" -- public",
+    "build:svg": "svgr --out-dir src --typescript --no-dimensions --no-index --no-prettier  --replace-attr-values \"#555={'currentColor'}\" --replace-attr-values \"#555555={'currentColor'}\" --"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.tsx"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
+  "devDependencies": {
+    "@muatmuat/config": "*",
+    "@muatmuat/tailwind-config": "*",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.2.4",
+    "@svgr/cli": "^8.1.0"
+  }
+}

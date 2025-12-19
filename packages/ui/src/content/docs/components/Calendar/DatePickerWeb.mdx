@@ -1,0 +1,226 @@
+---
+title: "DatePickerWeb"
+description: "A web date picker component with popover interface and calendar selection."
+---
+
+import { DatePickerWebPreview } from "../../preview/DatePickerWeb.preview";
+
+## Usage
+
+<DatePickerWebPreview />
+
+```jsx
+import { useState } from "react";
+
+import { DatePickerWeb } from "@muatmuat/ui/Calendar";
+
+function MyDatePickerWeb() {
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  return (
+    <DatePickerWeb
+      value={selectedDate}
+      onChange={setSelectedDate}
+      onApply={setSelectedDate}
+      placeholder="Choose Date"
+      dateFormat="dd MMM yyyy"
+      minDate={new Date()}
+      maxDate={new Date(2024, 11, 31)}
+    />
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop             | Type                                                                       | Default         | Description                                  |
+| ---------------- | -------------------------------------------------------------------------- | --------------- | -------------------------------------------- |
+| value            | `Date \| null`                                                             | -               | Currently selected date                      |
+| onChange         | `(date: Date \| undefined) => void`                                        | -               | Callback when date selection changes         |
+| onApply          | `(date: Date \| undefined) => void`                                        | -               | Callback when date is applied (auto-applied) |
+| onCancel         | `(date: Date \| undefined) => void`                                        | -               | Callback when cancel button is clicked       |
+| minDate          | `Date`                                                                     | -               | Earliest selectable date                     |
+| maxDate          | `Date`                                                                     | -               | Latest selectable date                       |
+| disabled         | `boolean`                                                                  | `false`         | Whether date picker is disabled              |
+| dateFormat       | `string`                                                                   | `"dd MMM yyyy"` | Date format for display (using date-fns)     |
+| placeholder      | `string`                                                                   | `"Placeholder"` | Placeholder text for empty state             |
+| className        | `string`                                                                   | -               | Additional CSS classes for container         |
+| errorMessage     | `string`                                                                   | -               | Error message to display below picker        |
+| hideErrorMessage | `boolean`                                                                  | `false`         | Hide error message display                   |
+| t                | `(key: string, values?: Record<string, any>, fallback?: string) => string` | Mock function   | Translation function                         |
+
+### Types
+
+```typescript
+interface DatePickerWebProps {
+  value?: Date | null;
+  onChange?: (date: Date | undefined) => void;
+  onApply?: (date: Date | undefined) => void;
+  onCancel?: (date: Date | undefined) => void;
+  minDate?: Date;
+  maxDate?: Date;
+  disabled?: boolean;
+  dateFormat?: string;
+  placeholder?: string;
+  className?: string;
+  errorMessage?: string;
+  hideErrorMessage?: boolean;
+  t?: (key: string, values?: Record<string, any>, fallback?: string) => string;
+}
+```
+
+## Behavior
+
+- Displays date in a formatted input field with calendar icon
+- Opens calendar popover on click for visual date selection
+- Automatically applies selected date and closes popover (no manual apply needed)
+- Supports keyboard navigation and accessibility features
+- Provides Indonesian locale support for month and day names
+- Shows today's date by default when no date is selected
+- Supports date range constraints with min/max dates
+- Shows error state with visual feedback and error message
+- Maintains consistent styling with design system
+
+**Variants**: enabled, disabled, error states
+**Sizes**: fixed height (32px) with responsive width
+**Interaction**: click to open popover, calendar selection, keyboard navigation
+
+## Component Code
+
+```tsx
+import React, { useEffect, useState } from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+
+import { IconComponent } from "../IconComponent";
+import { Popover, PopoverContent, PopoverTrigger } from "../Popover";
+import { Calendar } from "./Calendar";
+import { DatePickerWebProps, DateSelection } from "./types";
+
+// Simplified type for translation function
+type TranslationFunction = (
+  key: string,
+  values?: Record<string, any>,
+  fallback?: string
+) => string;
+
+const tMockFn: TranslationFunction = (key, _, fallback) => fallback || key;
+
+const DatePickerWebImplementation = (
+  {
+    value: initialValue,
+    onChange,
+    onApply,
+    // onCancel is no longer needed with auto-apply
+    minDate,
+    maxDate,
+    disabled = false,
+    dateFormat = "dd MMM yyyy", // Default format without time
+    placeholder = "Placeholder",
+    className,
+    errorMessage,
+    hideErrorMessage = false,
+    t = tMockFn,
+  }: DatePickerWebProps,
+  _ref: React.ForwardedRef<HTMLDivElement>
+) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null | undefined>(
+    initialValue
+  );
+
+  // Update internal state when controlled value changes
+  useEffect(() => {
+    setSelectedDate(initialValue);
+  }, [initialValue]);
+
+  // Auto-apply date selection handler
+  const handleDateSelect = (date: DateSelection | undefined) => {
+    // Immediately apply the selected date
+    const selectedDate = Array.isArray(date)
+      ? date[0]
+      : date instanceof Date
+        ? date
+        : undefined;
+    setSelectedDate(selectedDate);
+    if (onChange) onChange(selectedDate);
+    if (onApply) onApply(selectedDate);
+
+    // Close the popover after selection
+    setIsOpen(false);
+  };
+
+  const showErrorState = !!errorMessage;
+
+  // Format the display value or show placeholder
+  const displayValue = selectedDate
+    ? format(selectedDate, dateFormat, { locale: id })
+    : placeholder;
+
+  return (
+    <div className={cn("flex w-full flex-col gap-y-2", className)}>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <div
+            className={cn(
+              "flex h-8 w-full cursor-pointer items-center rounded-md border bg-neutral-50 px-3 transition-colors",
+              // Default & Hover & Focus states
+              "border-neutral-600 focus-within:border-primary-700 hover:border-primary-700",
+              // Error state
+              showErrorState && "border-error-400",
+              // Disabled state
+              disabled &&
+                "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600"
+            )}
+          >
+            <span
+              className={cn(
+                "w-full min-w-0 border-none bg-transparent text-sm font-semibold text-neutral-900 outline-none placeholder:text-neutral-600",
+                !selectedDate && "text-neutral-500"
+              )}
+            >
+              {displayValue}
+            </span>
+            <IconComponent
+              src="/icons/calendar24.svg"
+              className={cn(
+                "size-4 text-neutral-700",
+                showErrorState && "text-error-400"
+              )}
+            />
+          </div>
+        </PopoverTrigger>
+        <PopoverContent className="p-3" align="start" side="bottom">
+          <Calendar
+            mode="single"
+            className="w-full bg-transparent p-0"
+            selected={selectedDate as DateSelection}
+            onChange={handleDateSelect}
+            initialFocus
+            minDate={minDate}
+            maxDate={maxDate}
+            disabled={disabled}
+          />
+        </PopoverContent>
+      </Popover>
+
+      {/* Error Message */}
+      {errorMessage && !hideErrorMessage && (
+        <span className="text-xs font-medium text-error-400">
+          {t(errorMessage)}
+        </span>
+      )}
+    </div>
+  );
+};
+
+// Renamed component
+export const DatePickerWeb = React.memo(
+  React.forwardRef(DatePickerWebImplementation)
+);
+DatePickerWeb.displayName = "DatePickerWeb";
+```

@@ -1,0 +1,180 @@
+---
+title: "DisplayOptionsBar"
+description: "A horizontal bar for selecting display options with status filters, showing counts and optional notification indicators."
+---
+
+import { DisplayOptionsBarPreview } from "../../preview/DisplayOptionsBar.preview";
+
+## Usage
+
+<DisplayOptionsBarPreview />
+
+```jsx
+import { useState } from "react";
+
+import { DisplayOptionsBar } from "@muatmuat/ui/DisplayOptionsBar";
+
+function OrderFilterExample() {
+  const [currentStatus, setCurrentStatus] = useState(null);
+
+  const statusOptions = [
+    { value: "pending", label: "Menunggu", count: 5, hasNotification: true },
+    { value: "active", label: "Aktif", count: 12 },
+    { value: "completed", label: "Selesai", count: 8 },
+    {
+      value: "cancelled",
+      label: "Dibatalkan",
+      count: 2,
+      hasNotification: true,
+    },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <DisplayOptionsBar
+        totalCount={27}
+        statusOptions={statusOptions}
+        currentStatus={currentStatus}
+        onStatusChange={setCurrentStatus}
+        showAllOption={true}
+      />
+
+      <div className="text-sm text-gray-600">
+        Current filter: {currentStatus || "All"}
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop           | Type             | Default | Description                                         |
+| -------------- | ---------------- | ------- | --------------------------------------------------- |
+| totalCount     | `number`         | 0       | Total count for all items (shown in 'Semua' option) |
+| statusOptions  | `StatusOption[]` | []      | Array of status options to display                  |
+| currentStatus  | `string\|null`   | null    | Currently selected status value                     |
+| onStatusChange | `function`       | -       | Callback function when status is changed            |
+| className      | `string`         | -       | Additional CSS classes for the container            |
+| showAllOption  | `boolean`        | true    | Whether to show the 'Semua' option                  |
+
+### StatusOption
+
+| Property        | Type           | Description                                |
+| --------------- | -------------- | ------------------------------------------ |
+| value           | `string\|null` | The status value (null for "Semua" option) |
+| label           | `string`       | Display label for the status               |
+| count           | `number`       | Optional count to display in parentheses   |
+| hasNotification | `boolean`      | Optional notification indicator            |
+
+### Types
+
+```typescript
+interface StatusOption {
+  value: string | null;
+  label: string;
+  count?: number;
+  hasNotification?: boolean;
+}
+
+interface DisplayOptionsBarProps {
+  totalCount?: number;
+  statusOptions?: StatusOption[];
+  currentStatus?: string | null;
+  onStatusChange?: (status: string | null) => void;
+  className?: string;
+  showAllOption?: boolean;
+}
+```
+
+## Behavior
+
+- Displays status filter options as clickable pills with optional counts and notification indicators
+- Automatically adds "Semua" option with total count when showAllOption is true
+- Highlights the currently selected status with primary color styling
+- Shows notification dots for status options that have pending notifications
+- Supports empty status options array with graceful fallback handling
+- Responsive design with proper text sizing and spacing
+- Accessible button elements with proper labeling and keyboard navigation
+- Smooth hover states and transitions for better user experience
+
+**Variants**: with counts, without counts, with notifications, without "Semua" option, empty state
+**Sizes**: Compact pill design with responsive text sizing
+
+**Key Guidelines**:
+
+- Use for filtering lists, tables, or data grids by status or category
+- Provide meaningful labels that clearly describe each filter option
+- Include count information when available to help users understand data distribution
+- Leverage notification indicators for status options that require user attention
+- Combine with proper state management for interactive filtering functionality
+- Consider the data volume when deciding whether to show the "Semua" option
+
+## Component Code
+
+```tsx
+import { cn } from "@muatmuat/lib/utils";
+
+import { NotificationDot } from "../NotificationDot";
+import { DisplayOptionsBarProps, StatusOption } from "./types";
+
+export const DisplayOptionsBar = ({
+  totalCount = 0,
+  statusOptions = [],
+  currentStatus = null,
+  onStatusChange,
+  className,
+  showAllOption = true,
+}: DisplayOptionsBarProps) => {
+  const hasStatus = Array.isArray(statusOptions) && statusOptions.length > 0;
+
+  const options: StatusOption[] = hasStatus
+    ? showAllOption
+      ? [{ value: null, label: `Semua (${totalCount})` }, ...statusOptions]
+      : statusOptions
+    : showAllOption
+      ? [{ value: null, label: `Semua (${totalCount})` }]
+      : [];
+
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <span className="text-xs font-bold">Tampilkan:</span>
+      <div className="flex items-center gap-2 text-xxs">
+        {options.map((status) => (
+          <button
+            key={status.value ?? "all"}
+            onClick={() => {
+              onStatusChange?.(status.value);
+            }}
+            className={cn(
+              "flex h-7 items-center gap-1 rounded-full px-4 font-semibold transition-colors",
+              currentStatus === status.value
+                ? "border border-primary-700 bg-primary-50 text-primary-700"
+                : "border border-neutral-200 bg-neutral-200 hover:bg-neutral-100"
+            )}
+          >
+            {status.label}
+            {status.count !== undefined && (
+              <span className="relative flex items-center">
+                {" "}
+                ({status.count})
+                {status.hasNotification && (
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-2.5 top-0"
+                    animated={false}
+                    size="sm"
+                    color="red"
+                  />
+                )}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+```

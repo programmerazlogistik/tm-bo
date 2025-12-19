@@ -1,0 +1,139 @@
+---
+title: "ConditionalDiv"
+description: "A utility component that conditionally renders a div wrapper only when it has valid children, automatically hiding itself when empty."
+---
+
+import { ConditionalDivPreview } from "../../preview/ConditionalDiv.preview";
+
+## Usage
+
+<ConditionalDivPreview />
+
+```jsx
+import { ConditionalDiv } from "@muatmuat/ui/Card";
+
+function ConditionalFormSections() {
+  const showAdvancedOptions = true;
+  const showNotification = false;
+
+  return (
+    <div className="space-y-4">
+      {/* This will render because there are valid children */}
+      <ConditionalDiv className="rounded-lg border p-4">
+        <p>This content is visible</p>
+      </ConditionalDiv>
+
+      {/* This will not render because children is null */}
+      <ConditionalDiv className="rounded-lg border p-4">{null}</ConditionalDiv>
+
+      {/* Conditional form section - only renders when showAdvancedOptions is true */}
+      <ConditionalDiv className="form-section rounded-lg bg-gray-50 p-4">
+        {showAdvancedOptions && (
+          <div>
+            <h3>Advanced Options</h3>
+            <input
+              placeholder="Advanced setting 1"
+              className="block w-full rounded border p-2"
+            />
+            <input
+              placeholder="Advanced setting 2"
+              className="mt-2 block w-full rounded border p-2"
+            />
+          </div>
+        )}
+      </ConditionalDiv>
+
+      {/* Conditional notification - only renders when showNotification is true */}
+      <ConditionalDiv className="notification rounded bg-blue-100 p-3">
+        {showNotification && (
+          <div className="flex items-center gap-2">
+            <span>ℹ️</span>
+            <span>This is a conditional notification</span>
+          </div>
+        )}
+      </ConditionalDiv>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop      | Type        | Default | Description                                         |
+| --------- | ----------- | ------- | --------------------------------------------------- |
+| className | `string`    | -       | CSS classes to apply to the div when rendered       |
+| children  | `ReactNode` | -       | Child elements - div only renders if children exist |
+| ...props  | `any`       | -       | Additional HTML div attributes                      |
+
+### Types
+
+```typescript
+interface ConditionalDivProps {
+  className?: string;
+  children?: React.ReactNode;
+  [key: string]: any;
+}
+```
+
+## Behavior
+
+- Automatically renders or hides the div wrapper based on the presence of valid children
+- Filters out null, undefined, and empty array children to determine rendering
+- Supports React hooks and state management for dynamic content conditions
+- Maintains all standard div HTML attributes when rendered
+- Provides clean, semantic way to conditionally wrap content without additional logic
+- Handles edge cases with empty arrays and falsy values appropriately
+- Responsive to state changes and updates rendering automatically
+- Zero-impact on layout when no valid children are present
+
+**Variants**: conditional wrapper, form sections, conditional panels, dynamic content containers
+**Sizes**: Inherits standard div sizing behavior based on content and CSS classes
+
+**Key Guidelines**:
+
+- Use for layout components that should only appear when they contain actual content
+- Ideal for conditional form sections, notifications, or dynamic panels
+- Combine with React state for interactive content display
+- Leverage for clean conditional rendering without manual null checks
+- Apply appropriate CSS classes for styling when the div is rendered
+
+## Component Code
+
+```tsx
+import { Children, useEffect, useState } from "react";
+
+import { ConditionalDivProps } from "./types";
+
+export const ConditionalDiv = ({
+  className,
+  children,
+  ...props
+}: ConditionalDivProps): React.ReactElement | null => {
+  const [hasChildren, setHasChildren] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      const childElements = Children.toArray(children);
+      const hasRenderedChildren = childElements.some(
+        (child) => child !== null && child !== undefined
+      );
+      setHasChildren(hasRenderedChildren);
+    }
+  }, [children, mounted]);
+
+  if (!hasChildren) return null;
+
+  return (
+    <div className={className} {...props}>
+      {children}
+    </div>
+  );
+};
+```

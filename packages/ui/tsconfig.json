@@ -1,0 +1,28 @@
+{
+  "extends": "@muatmuat/config/tsconfig.base",
+  "compilerOptions": {
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "outDir": "./dist",
+    "noEmit": false,
+    "jsx": "preserve",
+    "rootDir": "./",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/.source": [".source"]
+    },
+    "verbatimModuleSyntax": false,
+    "skipLibCheck": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": ["**/*.mdx", ".source/**/*", "src/**/*", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", "dist", ".next"]
+}

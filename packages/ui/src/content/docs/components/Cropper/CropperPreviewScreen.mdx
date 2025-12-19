@@ -1,0 +1,150 @@
+---
+title: "CropperPreviewScreen"
+description: "A screen-level preview component for displaying cropped images with footer actions and navigation integration."
+---
+
+import { CropperPreviewScreenPreview } from "../../preview/CropperPreviewScreen.preview";
+
+## Usage
+
+<CropperPreviewScreenPreview />
+
+```jsx
+import { CropperPreviewScreen } from "@muatmuat/ui/Cropper";
+
+export default function Example() {
+  // Note: This component requires specific store and navigation context
+  // This example is for documentation purposes only
+
+  return (
+    <div className="p-6">
+      <div className="rounded border border-yellow-400 bg-yellow-100 px-4 py-3 text-yellow-700">
+        <p className="font-semibold">Component Requires Context</p>
+        <p className="text-sm">CropperPreviewScreen requires:</p>
+        <ul className="mt-2 list-inside list-disc text-sm">
+          <li>useResponsiveNavigation hook</li>
+          <li>useImageUploaderStore hook</li>
+          <li>useImageUploaderActions hook</li>
+          <li>ResponsiveFooter component</li>
+        </ul>
+        <p className="mt-2 text-sm">
+          This component is designed for specific navigation flows and cannot be
+          used in isolation.
+        </p>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+This component does not accept any props and relies entirely on store and navigation context.
+
+### Context Requirements
+
+The component requires the following context to be available:
+
+- **useResponsiveNavigation**: For navigation management
+- **useImageUploaderStore**: For accessing preview image data
+- **useImageUploaderActions**: For updating upload state
+- **ResponsiveFooter**: For footer action buttons
+
+## Behavior
+
+- Screen-level preview component with integrated footer actions
+- Store-based state management for preview image data
+- Automatic navigation handling for missing preview data
+- Integrated footer with action buttons
+- Navigation integration for workflow progression
+- Responsive layout with proper image display
+
+**Variants**: Full-screen layout with footer integration
+**Sizes**: Responsive layout with aspect-square preview area
+**Key Guidelines**:
+
+- Use only within navigation-aware applications with proper store setup
+- Ensure preview image data is available in store before mounting
+- Configure navigation paths appropriately for your application flow
+- Handle footer actions based on upload workflow requirements
+
+## Component Code
+
+```tsx
+import { useShallowCompareEffect } from "@muatmuat/hooks/use-shallow-effect";
+import { useResponsiveNavigation } from "@muatmuat/lib/responsive-navigation";
+import { ImageComponent } from "@muatmuat/ui/ImageComponent";
+
+import { Button } from "../Button";
+import { ResponsiveFooter } from "../Footer";
+import {
+  useImageUploaderActions,
+  useImageUploaderStore,
+} from "./imageUploaderStore";
+import { CropperPreviewScreenProps } from "./types";
+
+/**
+ * A screen-level preview component for displaying cropped images with footer actions and navigation integration.
+ * Designed for specific navigation flows with store integration and responsive footer support.
+ */
+export const CropperPreviewScreen = (_: CropperPreviewScreenProps) => {
+  const navigation = useResponsiveNavigation();
+  const { previewImage } = useImageUploaderStore();
+  const { setIsReadyUploadPhoto } = useImageUploaderActions();
+
+  useShallowCompareEffect(() => {
+    if (!previewImage) {
+      navigation.popTo("/InformasiPesanan");
+    }
+  }, [previewImage]);
+
+  const handleSaveImage = () => {
+    setIsReadyUploadPhoto(true);
+    navigation.popTo("/InformasiPesanan");
+  };
+
+  return (
+    <>
+      <div className="mb-16 w-full bg-neutral-100">
+        <div className="flex aspect-square w-full justify-center bg-[#cccccc] p-4">
+          <div className="overflow-hidden rounded-full">
+            <ImageComponent
+              alt="preview"
+              className="size-full bg-neutral-50"
+              src={previewImage || undefined}
+              width={100}
+              height={100}
+            />
+          </div>
+        </div>
+        <div className="mt-6 flex flex-col items-center justify-center gap-y-3">
+          <Button
+            className="w-[134px]"
+            variant="muatparts-primary-secondary"
+            onClick={() => {}}
+          >
+            Ubah Foto
+          </Button>
+          <span className="text-sm font-medium leading-[14px] text-[#676767]">
+            Max. size foto 10MB
+          </span>
+        </div>
+      </div>
+      <ResponsiveFooter>
+        <Button
+          variant="muatparts-primary"
+          className="w-full"
+          onClick={handleSaveImage}
+          type="button"
+        >
+          Lanjut
+        </Button>
+      </ResponsiveFooter>
+    </>
+  );
+};
+
+CropperPreviewScreen.displayName = "CropperPreviewScreen";
+```

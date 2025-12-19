@@ -1,0 +1,309 @@
+---
+title: "ConfirmationModal"
+description: "A pre-built confirmation modal dialog that provides standardized confirmation patterns with customizable title, description, and action buttons."
+---
+
+import { ConfirmationModalPreview } from "../../preview/ConfirmationModal.preview";
+
+## Usage
+
+<ConfirmationModalPreview />
+
+```jsx
+import { useState } from "react";
+
+import { ConfirmationModal } from "@muatmuat/ui/Modal";
+
+function ConfirmationModalExample() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleDelete = () => {
+    // Handle delete action
+    console.log("Item deleted");
+    setIsOpen(false);
+  };
+
+  return (
+    <div>
+      <button onClick={() => setIsOpen(true)}>Delete Item</button>
+      <ConfirmationModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        title={{ text: "Delete Item?" }}
+        description={{ text: "This action cannot be undone." }}
+        cancel={{ text: "Cancel" }}
+        confirm={{ text: "Delete", onClick: handleDelete }}
+      />
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop        | Type                            | Default                                          | Description                         |
+| ----------- | ------------------------------- | ------------------------------------------------ | ----------------------------------- |
+| size        | `"small" \| "big"`              | "small"                                          | Controls the modal size             |
+| variant     | `"muattrans" \| "muatparts"`    | "muattrans"                                      | The visual style variant            |
+| isOpen      | `boolean`                       | -                                                | Whether the modal is currently open |
+| setIsOpen   | `(open: boolean) => void`       | -                                                | Function to control the open state  |
+| title       | `ConfirmationModalConfig`       | `{ text: "", className: "" }`                    | Title configuration                 |
+| description | `ConfirmationModalConfig`       | `{ text: "", className: "" }`                    | Description configuration           |
+| cancel      | `ConfirmationModalButtonConfig` | `{ classname: "", text: "", onClick: () => {} }` | Cancel button configuration         |
+| confirm     | `ConfirmationModalButtonConfig` | `{ classname: "", text: "", onClick: () => {} }` | Confirm button configuration        |
+| withCancel  | `boolean`                       | true                                             | Whether to show the cancel button   |
+| className   | `string`                        | ""                                               | Additional CSS classes              |
+
+## Types
+
+```typescript
+export interface ConfirmationModalConfig {
+  text: string;
+  className?: string;
+}
+
+export interface ConfirmationModalButtonConfig {
+  classname?: string;
+  text: string;
+  onClick?: () => void;
+}
+
+export interface ConfirmationModalProps {
+  size?: "small" | "big";
+  variant?: ModalVariants;
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  title?: ConfirmationModalConfig;
+  withCancel?: boolean;
+  description?: ConfirmationModalConfig;
+  cancel?: ConfirmationModalButtonConfig;
+  confirm?: ConfirmationModalButtonConfig;
+  className?: string;
+}
+```
+
+## Behavior
+
+- Provides standardized confirmation dialog with branded header
+- Uses modal types for consistent brand styling (muattrans, muatparts)
+- Supports both small and big sizes for different content needs
+- Includes customizable title, description, and action buttons
+- Handles cancel and confirm actions with proper state management
+- Uses Button component with appropriate variants for each modal type
+- Centers content with proper spacing and typography
+- Supports optional cancel button for forced confirmations
+
+**Variants**: muattrans (transportation theme), muatparts (marketplace theme)
+**Sizes**: small (compact confirmations), big (detailed confirmations)
+**Use Cases**: Delete confirmations, critical actions, destructive operations, system updates
+
+## Component Code
+
+```tsx
+import React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+
+import { Button } from "../Button";
+// Added ModalClose for the inline close button
+import {
+  Modal,
+  ModalContent,
+  // Ensure ModalVariants includes 'bo' but not 'muatparts'
+  ModalHeader,
+  // Re-added ModalHeader for default variants
+  ModalTitle,
+  ModalVariants,
+} from "./Modal";
+
+export interface ConfirmationModalConfig {
+  text: string;
+  className?: string;
+}
+
+export interface ConfirmationModalButtonConfig {
+  classname?: string;
+  text: string;
+  onClick?: () => void;
+}
+
+export interface ConfirmationModalProps {
+  size?: "small" | "big"; // Kept size prop with original default
+  variant?: ModalVariants; // Includes 'bo' now, kept original default
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  title?: ConfirmationModalConfig;
+  withCancel?: boolean;
+  description?: ConfirmationModalConfig;
+  cancel?: ConfirmationModalButtonConfig;
+  confirm?: ConfirmationModalButtonConfig;
+  className?: string;
+}
+
+export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+  size = "small", // Restored default
+  variant = "muattrans", // Restored default
+  isOpen,
+  setIsOpen,
+  title = { text: "", className: "" }, // Use empty defaults unless 'bo'
+  withCancel = true,
+  description = { text: "", className: "" },
+  cancel = { text: "Cancel", onClick: () => setIsOpen(false) }, // Generic default
+  confirm = { text: "Confirm", onClick: () => setIsOpen(false) }, // Generic default
+  className = "",
+}) => {
+  // Use specific defaults only if variant is 'bo'
+  const isBoVariant = variant === "bo";
+  const finalTitle = isBoVariant ? { ...title, text: "Pemberitahuan" } : title;
+  const finalCancel = isBoVariant
+    ? { ...cancel, text: "Batal", onClick: () => setIsOpen(false) }
+    : cancel;
+  const finalConfirm = isBoVariant
+    ? { ...confirm, text: "Simpan", onClick: () => setIsOpen(false) }
+    : confirm;
+
+  const { text: titleText = "", className: titleClassName = "" } = finalTitle;
+  const { text: descriptionText = "", className: descriptionClassName = "" } =
+    description;
+  const {
+    classname: cancelClassname = "",
+    text: cancelText = "",
+    onClick: onCancel = () => setIsOpen(false),
+  } = finalCancel;
+  const {
+    classname: confirmClassname = "",
+    text: confirmText = "",
+    onClick: onConfirm = () => setIsOpen(false),
+  } = finalConfirm;
+
+  // Default modal sizes
+  const modalSizeClasses: Record<string, string> = {
+    small: "w-modal-small",
+    big: "w-modal-big",
+  };
+
+  // Determine modal class: use fixed width for 'bo', otherwise use size prop
+  const modalStyles = isBoVariant
+    ? "w-[411px] rounded-xl p-0" // Specific 'bo' styling
+    : modalSizeClasses[size] || modalSizeClasses.small; // Default sizing
+
+  // Button variants map including 'bo' but excluding 'muatparts'
+  const secondaryStyles: Partial<Record<ModalVariants, string>> = {
+    "muatparts-plus": "muatparts-primary-secondary",
+    muattrans: "muattrans-primary-secondary",
+    bo: "muatparts-error-secondary", // Red border button
+  };
+
+  const primaryButtonStyles: Partial<Record<ModalVariants, string>> = {
+    "muatparts-plus": "muatparts-primary",
+    muattrans: "muattrans-primary",
+    bo: "muatparts-primary", // Blue button
+  };
+
+  const currentSecondaryStyles =
+    secondaryStyles[variant] || secondaryStyles.muattrans; // Fallback to original default
+  const currentPrimaryStyles =
+    primaryButtonStyles[variant] || primaryButtonStyles.muattrans; // Fallback to original default
+
+  return (
+    <Modal
+      // Disable default corner close button only for 'bo' variant
+      withCloseButton={!isBoVariant}
+      closeOnOutsideClick={false}
+      open={isOpen}
+      onOpenChange={setIsOpen}
+    >
+      <ModalContent
+        className={cn(modalStyles, className)} // Apply determined class
+        type={variant} // Pass the current variant for styling context
+      >
+        {/* Conditionally render ModalHeader for non-'bo' variants */}
+        {!isBoVariant && <ModalHeader size={size} variant={variant} />}
+
+        {/* Adjusted padding/gap only for 'bo' variant */}
+        <div
+          className={cn(
+            "flex flex-col items-center",
+            isBoVariant ? "gap-y-6 px-6 py-9" : "gap-y-6 px-6 py-9" // Default padding kept, adjust if needed
+          )}
+        >
+          {titleText &&
+            // Conditionally use ModalTitle with inline close for 'bo'
+            (isBoVariant ? (
+              <ModalTitle
+                withClose={true}
+                className={cn(
+                  "w-full text-center text-sm font-bold leading-[17px] text-neutral-900",
+                  titleClassName
+                )}
+              >
+                {titleText}
+              </ModalTitle>
+            ) : (
+              // Original h1 for other variants
+              <h1
+                className={cn(
+                  "text-base font-bold leading-[19.2px] text-neutral-900",
+                  titleClassName
+                )}
+              >
+                {titleText}
+              </h1>
+            ))}
+          {descriptionText && (
+            <p
+              className={cn(
+                "text-center text-sm font-medium leading-[15.4px] text-neutral-900", // Keep original style
+                isBoVariant && "leading-[17px]", // Override leading for 'bo'
+                descriptionClassName
+              )}
+            >
+              {descriptionText}
+            </p>
+          )}
+          {/* Adjusted button gap and container style based on variant */}
+          <div
+            className={cn(
+              "flex items-center gap-x-2",
+              isBoVariant && "justify-center" // Center buttons only for 'bo'
+            )}
+          >
+            {withCancel && (
+              <Button
+                variant={currentSecondaryStyles as any}
+                // Apply specific 'bo' styles or default h-8
+                className={cn(
+                  isBoVariant
+                    ? "h-8 w-[112px] rounded-[20px] text-sm font-semibold"
+                    : "h-8",
+                  cancelClassname
+                )}
+                onClick={onCancel}
+                type="button"
+              >
+                {cancelText}
+              </Button>
+            )}
+            <Button
+              variant={currentPrimaryStyles as any}
+              // Apply specific 'bo' styles or default h-8
+              className={cn(
+                isBoVariant
+                  ? "h-8 w-[112px] rounded-[20px] text-sm font-semibold"
+                  : "h-8",
+                confirmClassname
+              )}
+              onClick={onConfirm}
+              type="button"
+            >
+              {confirmText}
+            </Button>
+          </div>
+        </div>
+      </ModalContent>
+    </Modal>
+  );
+};
+```

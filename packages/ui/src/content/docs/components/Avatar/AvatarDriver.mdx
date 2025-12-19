@@ -1,0 +1,175 @@
+---
+title: "AvatarDriver"
+description: "Specialized avatar component for displaying driver information with photo, name, and license plate"
+---
+
+import { AvatarDriverPreview } from "../../preview/AvatarDriver.preview";
+
+## Usage
+
+<AvatarDriverPreview />
+
+```jsx
+import { AvatarDriver } from "@muatmuat/ui/Avatar";
+
+// Basic driver avatar
+<AvatarDriver
+  name="Ahmad Surya"
+  image="https://example.com/driver-photo.jpg"
+  licensePlate="B 1234 ABC"
+  withIcon={true}
+/>
+
+// Driver avatar without transporter icon
+<AvatarDriver
+  name="Budi Santoso"
+  image="https://example.com/driver2.jpg"
+  licensePlate="D 5678 DEF"
+  withIcon={false}
+/>
+
+// Custom styling
+<AvatarDriver
+  name="Featured Driver"
+  image="https://example.com/driver3.jpg"
+  licensePlate="B 9999 FEA"
+  className="bg-neutral-50 p-3 rounded-lg"
+  appearance={{
+    nameClassName: "text-primary-700 font-bold",
+    licensePlateClassName: "text-primary-600"
+  }}
+  withIcon={true}
+/>
+```
+
+## API Reference
+
+### Props
+
+| Prop         | Type                     | Default  | Description                                                |
+| ------------ | ------------------------ | -------- | ---------------------------------------------------------- |
+| name         | `string`                 | Required | Driver's full name                                         |
+| image        | `string`                 | Required | URL of the driver's profile image                          |
+| licensePlate | `string`                 | Required | Vehicle license plate number                               |
+| className    | `string`                 | `""`     | Additional CSS classes for the container                   |
+| appearance   | `AvatarDriverAppearance` | `{}`     | Customization object for styling different parts           |
+| withIcon     | `boolean`                | `true`   | Whether to show the transporter icon next to license plate |
+
+### Types
+
+```typescript
+interface AvatarDriverAppearance {
+  containerClassName?: string;
+  photoClassName?: string;
+  nameClassName?: string;
+  licensePlateClassName?: string;
+}
+
+interface AvatarDriverProps {
+  name: string;
+  image: string;
+  licensePlate: string;
+  className?: string;
+  appearance?: AvatarDriverAppearance;
+  withIcon?: boolean;
+}
+```
+
+## Behavior
+
+- Displays driver information in a structured horizontal layout
+- Fixed photo size (40px) with responsive text sizing for name and license plate
+- Optional transporter icon provides visual context for vehicle information
+- Supports responsive design with different text sizes on mobile vs desktop
+- Customizable appearance allows fine-grained styling control
+- Optimized for transportation and delivery applications
+
+## Component Code
+
+```tsx
+import { cn } from "@muatmuat/lib/utils";
+
+import { IconComponent } from "../IconComponent";
+import { ImageComponent } from "../ImageComponent";
+
+interface AvatarDriverAppearance {
+  containerClassName?: string;
+  photoClassName?: string;
+  nameClassName?: string;
+  licensePlateClassName?: string;
+}
+
+interface AvatarDriverProps {
+  name: string;
+  image: string;
+  licensePlate: string;
+  className?: string;
+  appearance?: AvatarDriverAppearance;
+  withIcon?: boolean;
+}
+
+export const AvatarDriver: React.FC<AvatarDriverProps> = ({
+  name,
+  image,
+  licensePlate,
+  className,
+  appearance = {
+    containerClassName: "",
+    photoClassName: "",
+    nameClassName: "",
+    licensePlateClassName: "",
+  },
+  withIcon = true,
+}) => {
+  return (
+    <div
+      className={cn("flex h-10 items-center gap-2 text-neutral-900", className)}
+    >
+      <ImageComponent
+        src={image}
+        alt={name}
+        width={40}
+        height={40}
+        className={cn("rounded-full object-cover", appearance.photoClassName)}
+        unoptimized
+      />
+
+      <div
+        className={cn(
+          "flex h-full flex-1 flex-col justify-between",
+          appearance.containerClassName
+        )}
+      >
+        <p
+          className={cn(
+            "text-base font-semibold md:text-sm md:font-bold",
+            appearance.nameClassName
+          )}
+        >
+          {name}
+        </p>
+
+        <div className="flex items-center gap-[2.5px]">
+          {withIcon && (
+            <IconComponent
+              src="/icons/transporter16.svg"
+              className="mb-[2px] text-muat-trans-secondary-900"
+              width={12}
+              height={12}
+            />
+          )}
+
+          <span
+            className={cn(
+              "text-xs font-medium md:text-xxs",
+              appearance.licensePlateClassName
+            )}
+          >
+            {licensePlate}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+```

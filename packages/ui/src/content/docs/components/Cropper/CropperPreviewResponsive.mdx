@@ -1,0 +1,232 @@
+---
+title: "CropperPreviewResponsive"
+description: "A responsive preview component for cropped images with mobile-optimized interface and upload options."
+---
+
+import { CropperPreviewResponsivePreview } from "../../preview/CropperPreviewResponsive.preview";
+
+## Usage
+
+<CropperPreviewResponsivePreview />
+
+```jsx
+import { useState } from "react";
+
+import { CropperPreviewResponsive } from "@muatmuat/ui/Cropper";
+
+export default function Example() {
+  const [isShowPreview, setIsShowPreview] = useState(false);
+  const [previewImage] = useState("https://picsum.photos/150");
+
+  const uploadOptions = [
+    {
+      title: "Camera",
+      src: "/icons/camera.svg",
+      onClick: () => console.log("Camera clicked"),
+    },
+    {
+      title: "Gallery",
+      src: "/icons/gallery.svg",
+      onClick: () => console.log("Gallery clicked"),
+    },
+  ];
+
+  const handleConfirm = () => {
+    console.log("Image confirmed");
+    setIsShowPreview(false);
+  };
+
+  const handleCancel = () => {
+    console.log("Image cancelled");
+    setIsShowPreview(false);
+  };
+
+  return (
+    <div className="p-6">
+      <button
+        onClick={() => setIsShowPreview(true)}
+        className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+      >
+        Show Preview
+      </button>
+
+      <CropperPreviewResponsive
+        isOpen={isShowPreview}
+        src={previewImage}
+        title="Upload Foto"
+        description="Max. size foto 10MB"
+        setIsShowPreview={setIsShowPreview}
+        onConfirm={handleConfirm}
+        onCancelCrop={handleCancel}
+        uploadOptions={uploadOptions}
+      />
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop             | Type                      | Default                 | Description                                                      |
+| ---------------- | ------------------------- | ----------------------- | ---------------------------------------------------------------- |
+| src              | `string`                  | `required`              | The image source URL or data URL for preview                     |
+| title            | `string`                  | `"Upload Foto"`         | Title for the preview screen                                     |
+| description      | `string`                  | `"Max. size foto 10MB"` | Description text for the preview screen                          |
+| setIsShowPreview | `(show: boolean) => void` | `required`              | Function to control preview visibility                           |
+| onConfirm        | `() => void`              | `() => {}`              | Callback function triggered when user confirms the cropped image |
+| uploadOptions    | `Array<UploadOption>`     | `[]`                    | Array of upload options with onClick handlers                    |
+| onCancelCrop     | `() => void`              | `undefined`             | Callback function triggered when user cancels cropping           |
+| HeaderMobile     | `React.ComponentType`     | `undefined`             | Custom header component for mobile layout                        |
+
+### Types
+
+```typescript
+interface UploadOption {
+  title: string;
+  src: string;
+  onClick: () => void;
+}
+
+interface HeaderMobileProps {
+  onBack: () => void;
+  title: string;
+}
+```
+
+## Behavior
+
+- Full-screen mobile preview interface with header navigation
+- Bottom sheet for upload source selection (Camera/Gallery)
+- Circular preview display with proper image aspect ratio
+- Edit functionality with upload options modal
+- Mobile-optimized touch interactions and layouts
+- Optional custom header component integration
+
+**Variants**: Full-screen mobile layout with bottom sheet interaction
+**Sizes**: Full viewport coverage with standardized preview dimensions
+**Key Guidelines**:
+
+- Use as preview step in mobile image upload workflows
+- Provide meaningful upload options for your use case
+- Ensure preview image source is valid and accessible
+- Handle both confirmation and cancellation workflows
+- Consider integrating with app navigation system
+
+## Component Code
+
+```tsx
+import { useState } from "react";
+
+import { ImageComponent } from "@muatmuat/ui/ImageComponent";
+
+import {
+  BottomSheet,
+  BottomSheetClose,
+  BottomSheetContent,
+  BottomSheetHeader,
+  BottomSheetTitle,
+} from "../BottomSheet/BottomSheet";
+// HeaderMobile should be provided by the consuming application
+// import HeaderMobile from "../../container/HeaderMobile/HeaderMobile";
+
+import { Button } from "../Button";
+import { IconComponent } from "../IconComponent";
+import { CropperPreviewResponsiveProps } from "./types";
+
+/**
+ * A responsive preview component for cropped images with mobile-optimized interface and upload options.
+ * Features a full-screen mobile layout with header, preview area, and bottom sheet for upload source selection.
+ */
+export const CropperPreviewResponsive = ({
+  src,
+  title = "Upload Foto",
+  setIsShowPreview,
+  onConfirm = () => {},
+  uploadOptions,
+  onCancelCrop,
+  // 24. THP 2 - MOD001 - MP - 015 - QC Plan - Web - MuatParts - Seller - Paket 039 A - Profil Seller - LB - 0066
+  description = "Max. size foto 10MB",
+  HeaderMobile, // Component passed from consuming application
+}: CropperPreviewResponsiveProps) => {
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+
+  const handleEditImage = () => setIsBottomSheetOpen(true);
+
+  return (
+    <div className="fixed left-0 top-0 z-50 h-screen w-full bg-white">
+      {HeaderMobile && (
+        <HeaderMobile
+          onBack={() => {
+            onCancelCrop?.();
+            setIsShowPreview?.(false);
+          }}
+          title={title}
+        />
+      )}
+      <div className="mt-[62px] flex h-full min-h-screen flex-col items-center">
+        <div className="flex aspect-square w-full justify-center bg-[#cccccc] p-4">
+          <div className="overflow-hidden rounded-full bg-neutral-50">
+            <ImageComponent
+              alt="preview"
+              className="size-full"
+              src={src}
+              width={100}
+              height={100}
+            />
+          </div>
+        </div>
+        <Button
+          className="mt-6 h-10 px-6"
+          variant="muatparts-primary-secondary"
+          onClick={handleEditImage}
+        >
+          Ubah Foto
+        </Button>
+        <div className="mt-3 text-sm font-medium leading-[16.8px] text-[#676767]">
+          {/* 24. THP 2 - MOD001 - MP - 015 - QC Plan - Web - MuatParts - Seller - Paket 039 A - Profil Seller - LB - 0066 */}
+          {description}
+        </div>
+      </div>
+      <div className="fixed bottom-0 left-0 w-full bg-neutral-50 px-4 py-3 shadow-muat">
+        <Button
+          className="h-8 w-full max-w-full"
+          variant="muatparts-primary"
+          onClick={onConfirm}
+        >
+          Simpan Foto
+        </Button>
+      </div>
+      <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
+        <BottomSheetContent>
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>Pilih Sumber Foto</BottomSheetTitle>
+          </BottomSheetHeader>
+          <div className="flex justify-around py-4">
+            {uploadOptions?.map((option, key) => (
+              <div className="flex flex-col items-center gap-y-4" key={key}>
+                <div
+                  className="size-16 cursor-pointer rounded-[50px] bg-primary-700 p-5"
+                  onClick={() => {
+                    option.onClick();
+                    setIsBottomSheetOpen(false);
+                  }}
+                >
+                  <IconComponent src={option.src} size="medium" />
+                </div>
+                <span className="text-base font-semibold leading-[19.2px]">
+                  {option.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        </BottomSheetContent>
+      </BottomSheet>
+    </div>
+  );
+};
+
+CropperPreviewResponsive.displayName = "CropperPreviewResponsive";
+```

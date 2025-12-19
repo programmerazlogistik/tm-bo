@@ -1,0 +1,16 @@
+{
+  "extends": "@muatmuat/config/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "./dist",
+    "noEmit": false,
+    "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

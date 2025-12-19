@@ -1,0 +1,404 @@
+---
+title: "MapContainer"
+description: "Interactive Google Maps container with marker placement and location selection capabilities"
+---
+
+import { MapContainerPreview } from "../../preview/MapContainer.preview";
+
+## Usage
+
+<MapContainerPreview />
+
+```jsx
+"use client";
+
+import { useState } from "react";
+
+import { MapContainer } from "@muatmuat/ui/Maps";
+
+export function MapContainerExample() {
+  const [coordinates, setCoordinates] = useState({
+    latitude: -7.2575,
+    longitude: 112.7521,
+  });
+  const [viewOnly, setViewOnly] = useState(false);
+  const [textLabel, setTextLabel] = useState("Selected Location");
+
+  const handlePositionChange = (newPosition) => {
+    setCoordinates(newPosition);
+    setTextLabel(
+      `Location: ${newPosition.latitude.toFixed(4)}, ${newPosition.longitude.toFixed(4)}`
+    );
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Interactive Map */}
+      <div className="rounded-lg border border-gray-200 p-4">
+        <h3 className="mb-2 font-medium">Interactive Location Picker</h3>
+        <MapContainer
+          coordinates={coordinates}
+          className="h-[400px] w-full"
+          viewOnly={viewOnly}
+          textLabel={textLabel}
+          draggableMarker={!viewOnly}
+          onPositionChange={handlePositionChange}
+        />
+      </div>
+
+      {/* Current Coordinates */}
+      <div className="rounded-lg border bg-gray-50 p-4">
+        <h4 className="mb-2 font-medium">Current Coordinates</h4>
+        <div className="font-mono text-sm">
+          <div>Latitude: {coordinates.latitude}</div>
+          <div>Longitude: {coordinates.longitude}</div>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="rounded-lg border bg-white p-4">
+        <h4 className="mb-2 font-medium">Controls</h4>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setViewOnly(!viewOnly)}
+            className={`rounded px-4 py-2 ${
+              viewOnly ? "bg-gray-500 text-white" : "bg-blue-500 text-white"
+            }`}
+          >
+            {viewOnly ? "View Only" : "Interactive"}
+          </button>
+
+          <button
+            onClick={() => {
+              const newCoords = {
+                latitude: -6.2088,
+                longitude: 106.8456,
+              };
+              setCoordinates(newCoords);
+              setTextLabel("Jakarta, Indonesia");
+            }}
+            className="rounded bg-green-500 px-4 py-2 text-white"
+          >
+            Set to Jakarta
+          </button>
+
+          <button
+            onClick={() => {
+              const newCoords = {
+                latitude: -7.2575,
+                longitude: 112.7521,
+              };
+              setCoordinates(newCoords);
+              setTextLabel("Surabaya, Indonesia");
+            }}
+            className="rounded bg-purple-500 px-4 py-2 text-white"
+          >
+            Set to Surabaya
+          </button>
+        </div>
+      </div>
+
+      {/* Usage Instructions */}
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+        <h4 className="mb-2 font-medium text-blue-900">Instructions</h4>
+        <ul className="list-inside text-sm text-blue-800">
+          {viewOnly ? (
+            <>
+              <li>• Map is in view-only mode</li>
+              <li>• Click "Interactive" to enable location selection</li>
+              <li>• Click on markers to see location labels</li>
+            </>
+          ) : (
+            <>
+              <li>• Click anywhere on the map to place a marker</li>
+              <li>• Drag the marker to adjust position</li>
+              <li>• Click the marker to see location details</li>
+              <li>• Coordinates update automatically</li>
+            </>
+          )}
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop             | Type                                        | Default                         | Description                                                         |
+| ---------------- | ------------------------------------------- | ------------------------------- | ------------------------------------------------------------------- |
+| coordinates      | `{latitude: `number`, longitude: `number`}` | required                        | Initial map coordinates with latitude and longitude                 |
+| className        | `string`                                    | ""                              | Additional CSS classes for the map container                        |
+| viewOnly         | `boolean`                                   | false                           | Whether the map is in view-only mode (disables interaction)         |
+| textLabel        | `string`                                    | ""                              | Text label to display in the info window when marker is clicked     |
+| draggableMarker  | `boolean`                                   | true                            | Whether the marker can be dragged (only when not viewOnly)          |
+| markerIcon       | `string`                                    | "/icons/marker-lokasi-muat.svg" | Custom marker icon URL                                              |
+| onPositionChange | `function`                                  | () => {}                        | Callback function triggered when position changes via click or drag |
+
+### Types
+
+```typescript
+interface MapContainerProps {
+  coordinates: { latitude: number; longitude: number };
+  className?: string;
+  viewOnly?: boolean;
+  textLabel?: string;
+  draggableMarker?: boolean;
+  onPositionChange?: (position: {
+    latitude: number;
+    longitude: number;
+  }) => void;
+  markerIcon?: string;
+}
+```
+
+## Behavior
+
+- Interactive Google Maps container with marker placement capabilities
+- Supports both interactive mode (click to place marker, drag to reposition) and view-only mode
+- Displays custom marker with configurable icon and info window with text label
+- Automatically pans map to new coordinates when coordinates prop changes
+- Provides onPositionChange callback for tracking location updates
+- Shows loading placeholder while Google Maps API loads
+- Requires NEXT_PUBLIC_MAP_API environment variable with valid Google Maps API key
+- Customizable container styling via Tailwind CSS classes
+
+**Key Guidelines**:
+
+- Ensure NEXT_PUBLIC_MAP_API environment variable is configured with valid Google Maps API key
+- Use viewOnly mode for displaying static locations without interaction
+- Implement onPositionChange callback to capture location updates in your application
+- Customize marker appearance by providing custom icon URLs
+- Use className prop to control container dimensions and styling
+- Coordinates should be provided as `{latitude, longitude}` object format
+
+## Component Code
+
+```tsx
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+
+import { getAssetPath } from "../../lib/asset-path";
+
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
+interface MapContainerProps {
+  coordinates: { latitude: number; longitude: number };
+  className?: string;
+  viewOnly?: boolean;
+  textLabel?: string;
+  draggableMarker?: boolean;
+  onPositionChange?: (position: {
+    latitude: number;
+    longitude: number;
+  }) => void;
+  markerIcon?: string;
+  size?: {
+    width: number;
+    height: number;
+    widthUnit?: string;
+    heightUnit?: string;
+  };
+  anchor?: {
+    x: number;
+    y: number;
+  };
+}
+
+/**
+ * An interactive Google Maps container with marker placement and location selection capabilities.
+ * Perfect for address selection, location picking, and coordinate management interfaces.
+ */
+export const MapContainer = ({
+  coordinates,
+  className,
+  viewOnly,
+  textLabel,
+  draggableMarker = true,
+  onPositionChange = (_position: { latitude: number; longitude: number }) => {},
+  markerIcon = "/icons/marker-lokasi-muat.svg",
+  size,
+  anchor,
+}: MapContainerProps) => {
+  const [map, setMap] = useState<any>(null);
+  const [infoWindow, setInfoWindow] = useState<any>(null);
+  // Ref to track if marker was just clicked
+  const justClickedMarkerRef = useRef(false);
+  const kuningMarkerRef = useRef<any>(null);
+
+  // When lat/lng changes, optionally pan the map
+  useEffect(() => {
+    if (map) {
+      map.panTo(
+        new window.google.maps.LatLng(
+          coordinates.latitude,
+          coordinates.longitude
+        )
+      );
+    }
+  }, [coordinates, map]);
+
+  const onLoad = useCallback(
+    (mapInstance: any) => {
+      mapInstance.setCenter(
+        new window.google.maps.LatLng(
+          coordinates.latitude,
+          coordinates.longitude
+        )
+      );
+      mapInstance.setZoom(15);
+      setMap(mapInstance);
+    },
+    [coordinates]
+  );
+
+  // Handle map click to set marker position, unless marker was just clicked
+  const handleMapClick = useCallback(
+    (e: any) => {
+      if (viewOnly) return;
+      if (justClickedMarkerRef.current) {
+        justClickedMarkerRef.current = false;
+        return;
+      }
+      if (e && e.latLng) {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        onPositionChange({ latitude: lat, longitude: lng });
+      }
+      // Close InfoWindow if open (even if not setting position)
+      if (infoWindow) {
+        infoWindow.close();
+        setInfoWindow(null);
+      }
+    },
+    [viewOnly, infoWindow, onPositionChange]
+  );
+
+  // Handle marker drag end
+  const handleMarkerDragEnd = useCallback(
+    (e: any) => {
+      if (e && e.latLng) {
+        onPositionChange({
+          latitude: e.latLng.lat(),
+          longitude: e.latLng.lng(),
+        });
+        // Close InfoWindow if open
+        if (infoWindow) {
+          infoWindow.close();
+          setInfoWindow(null);
+        }
+      }
+    },
+    [infoWindow, onPositionChange]
+  );
+
+  // Handle marker click
+  const handleMarkerClick = useCallback(
+    (_e: any, markerInstance: any) => {
+      if (
+        kuningMarkerRef.current &&
+        markerInstance === kuningMarkerRef.current
+      ) {
+        // Don't open InfoWindow for this marker
+        return;
+      }
+      justClickedMarkerRef.current = true;
+      if (infoWindow) {
+        infoWindow.close();
+      }
+      const newInfoWindow = new window.google.maps.InfoWindow({
+        content: textLabel
+          ? `<div style="font-weight:500;font-size: text-sm;margin:0;padding:0;line-height:1.2;">${textLabel}</div>`
+          : "",
+        position: {
+          lat: coordinates.latitude,
+          lng: coordinates.longitude,
+        },
+        disableAutoPan: false,
+      });
+      newInfoWindow.open(map);
+      setInfoWindow(newInfoWindow);
+    },
+    [coordinates, infoWindow, map, textLabel]
+  );
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_MAP_API || "",
+  });
+
+  // Loading placeholder
+  if (!isLoaded) {
+    return (
+      <div
+        className={cn(
+          "h-[200px] w-[200px] animate-pulse overflow-hidden rounded-md bg-gray-400",
+          className
+        )}
+      ></div>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        "h-[200px] w-[200px] overflow-hidden rounded-md",
+        className
+      )}
+    >
+      <GoogleMap
+        center={{
+          lat: coordinates.latitude,
+          lng: coordinates.longitude,
+        }}
+        mapContainerStyle={{ width: "100%", height: "100%" }}
+        onLoad={onLoad}
+        onUnmount={() => setMap(null)}
+        onClick={handleMapClick}
+        options={{
+          // 24. THP 2 - MOD001 - MP - 012 - QC Plan - Web - Muatparts - Paket 005 A - Daftar Sebagai Seller Muatparts - LB - 0310
+          draggable: !viewOnly,
+          scrollwheel: !viewOnly,
+          streetViewControl: false,
+          mapTypeControl: false,
+          cameraControl: false,
+          fullscreenControl: false,
+        }}
+        zoom={15}
+      >
+        <Marker
+          ref={kuningMarkerRef}
+          position={{
+            lat: coordinates.latitude,
+            lng: coordinates.longitude,
+          }}
+          draggable={!viewOnly && draggableMarker}
+          onDragEnd={handleMarkerDragEnd}
+          icon={{
+            url: getAssetPath(markerIcon),
+            scaledSize: new window.google.maps.Size(
+              size?.width || 45,
+              size?.height || 58,
+              size?.widthUnit,
+              size?.heightUnit
+            ),
+            anchor: new window.google.maps.Point(
+              anchor?.x || 22.5,
+              anchor?.y || 29
+            ),
+          }}
+          onClick={(e) => handleMarkerClick(e, kuningMarkerRef.current)}
+        />
+      </GoogleMap>
+    </div>
+  );
+};
+```

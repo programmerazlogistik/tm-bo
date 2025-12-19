@@ -1,0 +1,102 @@
+{
+  "name": "@muatmuat/hooks",
+  "version": "0.0.1",
+  "description": "Shared React hooks for MuatMuat packages",
+  "type": "module",
+  "scripts": {
+    "build:types": "tsc --project tsconfig.build.json",
+    "clean": "rimraf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./use-client-width": {
+      "types": "./dist/use-client-width/index.d.ts",
+      "import": "./src/use-client-width/index.ts",
+      "default": "./src/use-client-width/index.ts"
+    },
+    "./use-client-height": {
+      "types": "./dist/use-client-height/index.d.ts",
+      "import": "./src/use-client-height/index.ts",
+      "default": "./src/use-client-height/index.ts"
+    },
+    "./use-debounce": {
+      "types": "./dist/use-debounce/index.d.ts",
+      "import": "./src/use-debounce/index.ts",
+      "default": "./src/use-debounce/index.ts"
+    },
+    "./use-previous": {
+      "types": "./dist/use-previous/index.d.ts",
+      "import": "./src/use-previous/index.ts",
+      "default": "./src/use-previous/index.ts"
+    },
+    "./use-device": {
+      "types": "./dist/use-device/index.d.ts",
+      "import": "./src/use-device/index.ts",
+      "default": "./src/use-device/index.ts"
+    },
+    "./use-drag": {
+      "types": "./dist/use-drag/index.d.ts",
+      "import": "./src/use-drag/index.ts",
+      "default": "./src/use-drag/index.ts"
+    },
+    "./use-intersection-observer": {
+      "types": "./dist/use-intersection-observer/index.d.ts",
+      "import": "./src/use-intersection-observer/index.ts",
+      "default": "./src/use-intersection-observer/index.ts"
+    },
+    "./use-shallow-effect": {
+      "types": "./dist/use-shallow-effect/index.d.ts",
+      "import": "./src/use-shallow-effect/index.ts",
+      "default": "./src/use-shallow-effect/index.ts"
+    },
+    "./use-shallow-memo": {
+      "types": "./dist/use-shallow-memo/index.d.ts",
+      "import": "./src/use-shallow-memo/index.ts",
+      "default": "./src/use-shallow-memo/index.ts"
+    },
+    "./use-countdown": {
+      "types": "./dist/use-countdown/index.d.ts",
+      "import": "./src/use-countdown/index.ts",
+      "default": "./src/use-countdown/index.ts"
+    },
+    "./use-debounce-callback": {
+      "types": "./dist/use-debounce-callback/index.d.ts",
+      "import": "./src/use-debounce-callback/index.ts",
+      "default": "./src/use-debounce-callback/index.ts"
+    },
+    "./swr-adapter": {
+      "types": "./dist/swr-adapter/index.d.ts",
+      "import": "./src/swr-adapter/index.ts",
+      "default": "./src/swr-adapter/index.ts"
+    }
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "hooks",
+    "muatmuat",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@muatmuat/lib": "*"
+  },
+  "peerDependencies": {
+    "date-fns": "^4.1.0",
+    "lodash.debounce": "^4.0.8",
+    "react": "*",
+    "swr": "^2.3.6",
+    "xior": "^0.7.8"
+  },
+  "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.2.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2"
+  }
+}

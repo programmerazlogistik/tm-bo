@@ -1,0 +1,147 @@
+---
+title: "Breadcrumb"
+description: "Navigation component that shows current page location within hierarchical structure"
+---
+
+import { BreadcrumbPreview } from "../../preview/Breadcrumb.preview";
+
+## Usage
+
+<BreadcrumbPreview />
+
+```jsx
+import { Breadcrumb } from "@muatmuat/ui/Breadcrumb";
+
+// Basic breadcrumb navigation
+const breadcrumbData = [
+  { name: "Home", href: "/" },
+  { name: "Products", href: "/products" },
+  { name: "Electronics", href: "/products/electronics" },
+  { name: "Current Page" }
+];
+
+<Breadcrumb data={breadcrumbData} />
+
+// With truncation for long paths
+<Breadcrumb
+  data={longBreadcrumbData}
+  maxWidth={120}
+  className="bg-neutral-50 p-2 rounded"
+/>
+
+// Disabled interactions
+<Breadcrumb
+  data={breadcrumbData}
+  disableClick={true}
+  disableActive={true}
+/>
+```
+
+## API Reference
+
+### Props
+
+| Prop          | Type               | Default     | Description                                            |
+| ------------- | ------------------ | ----------- | ------------------------------------------------------ |
+| data          | `BreadcrumbItem[]` | `[]`        | Array of breadcrumb items to display                   |
+| className     | `string`           | `""`        | Additional CSS classes for the breadcrumb container    |
+| disableActive | `boolean`          | `false`     | Disable active state styling for current page          |
+| disableClick  | `boolean`          | `false`     | Disable click interactions for all items               |
+| maxWidth      | `number`           | `undefined` | Maximum width in pixels for items (enables truncation) |
+
+### Types
+
+```typescript
+interface BreadcrumbItem {
+  name: string;
+  href?: string;
+}
+
+interface BreadcrumbProps {
+  data?: BreadcrumbItem[];
+  className?: string;
+  disableActive?: boolean;
+  disableClick?: boolean;
+  maxWidth?: number;
+}
+```
+
+## Behavior
+
+- Displays hierarchical navigation path with automatic chevron separators
+- Smart linking with Next.js Link component for internal navigation
+- Responsive design with text truncation for long breadcrumb items
+- Active state highlighting for the current page (last item)
+- Accessibility-friendly semantic structure with proper ARIA labels
+- Supports disabling of click interactions and active state styling
+- Automatic overflow handling with text ellipsis when maxWidth is specified
+
+## Component Code
+
+```tsx
+import Link from "next/link";
+import React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+
+import { IconComponent } from "../IconComponent";
+
+export interface BreadcrumbItem {
+  name: string;
+  href?: string;
+}
+
+export interface BreadcrumbProps {
+  data?: BreadcrumbItem[];
+  className?: string;
+  disableActive?: boolean;
+  disableClick?: boolean;
+  maxWidth?: number;
+}
+
+export const Breadcrumb: React.FC<BreadcrumbProps> = ({
+  data = [],
+  className,
+  disableActive = false,
+  disableClick = false,
+  maxWidth,
+}) => {
+  const getItemClasses = (idx: number) =>
+    cn(
+      "text-xs font-medium capitalize text-neutral-600",
+      "hover:text-primary-700",
+      idx === data.length - 1
+        ? "!max-w-none"
+        : "overflow-hidden text-ellipsis whitespace-nowrap",
+      !disableActive && idx === data.length - 1 && "text-primary-700",
+      !disableClick && idx !== data.length - 1 && "cursor-pointer"
+    );
+
+  return (
+    <div className={cn("flex items-center gap-[5px]", className)}>
+      {data?.map((val, idx) => (
+        <div className="flex items-center gap-[5px]" key={idx}>
+          {val.href ? (
+            <Link href={val.href} className={getItemClasses(idx)}>
+              {val.name}
+            </Link>
+          ) : (
+            <div
+              style={{ maxWidth: maxWidth ? `${maxWidth}px` : "" }}
+              className={getItemClasses(idx)}
+            >
+              {val.name}
+            </div>
+          )}
+          {idx !== data.length - 1 && (
+            <IconComponent
+              src="/icons/chevron-right.svg"
+              className="[&>path]:stroke-[2px]"
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+```

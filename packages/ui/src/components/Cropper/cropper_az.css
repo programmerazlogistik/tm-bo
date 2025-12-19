@@ -1,0 +1,15 @@
+.cropper-view-box {
+  background-color: white !important;
+}
+.cropper-crop-box {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+}
+.modal-cropper-circle .cropper-view-box {
+  border-radius: 50%;
+}
+
+.cropper-bg,
+.cropper-canvas {
+  background: #fff !important;
+  background-color: white !important;
+}

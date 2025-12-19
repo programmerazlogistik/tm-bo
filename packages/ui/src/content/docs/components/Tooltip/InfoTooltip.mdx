@@ -1,0 +1,183 @@
+---
+title: "InfoTooltip"
+description: "Accessible tooltip component for displaying additional information on hover or focus"
+---
+
+import { InfoTooltipPreview } from "../../preview/InfoTooltip.preview";
+
+## Usage
+
+<InfoTooltipPreview />
+
+```jsx
+import { InfoTooltip } from "@muatmuat/ui/Tooltip";
+
+// Basic tooltip with default icon
+<InfoTooltip>
+  This is helpful information that appears on hover.
+</InfoTooltip>
+
+// Custom trigger element
+<InfoTooltip trigger={<button>Help</button>}>
+  Custom tooltip content with detailed explanation.
+</InfoTooltip>
+
+// Custom icon and positioning
+<InfoTooltip
+  icon="/icons/warning.svg"
+  side="right"
+  align="start"
+  sideOffset={12}
+>
+  Warning information positioned to the right.
+</InfoTooltip>
+
+// Complex content
+<InfoTooltip>
+  <div className="space-y-2">
+    <h4 className="font-semibold">Quick Guide</h4>
+    <ul className="list-disc list-inside text-sm">
+      <li>First step description</li>
+      <li>Second step description</li>
+      <li>Third step description</li>
+    </ul>
+  </div>
+</InfoTooltip>
+
+// Using render prop instead of children
+<InfoTooltip
+  render={
+    <div className="p-3">
+      <h4 className="font-semibold mb-2">Using Render Prop</h4>
+      <p className="text-sm">Content provided via render prop.</p>
+    </div>
+  }
+/>
+```
+
+## API Reference
+
+### Props
+
+| Prop       | Type                                     | Default                                 | Description                                 |
+| ---------- | ---------------------------------------- | --------------------------------------- | ------------------------------------------- |
+| trigger    | `React.ReactNode`                        | `null`                                  | Custom trigger element (button, span, etc.) |
+| icon       | `string`                                 | `"/icons/info16.svg"`                   | Icon path for default trigger               |
+| side       | `"top" \| "right" \| "bottom" \| "left"` | `"top"`                                 | Preferred side of tooltip placement         |
+| align      | `"center" \| "start" \| "end"`           | `"center"`                              | Alignment of tooltip relative to trigger    |
+| sideOffset | `number`                                 | `8`                                     | Distance in pixels from trigger             |
+| className  | `string`                                 | `""`                                    | Additional CSS classes for tooltip content  |
+| appearance | `InfoTooltipAppearance`                  | `{ iconClassName: "text-neutral-600" }` | Icon appearance configuration               |
+| children   | `React.ReactNode`                        | `undefined`                             | Tooltip content (alternative to render)     |
+| render     | `React.ReactNode`                        | `undefined`                             | Tooltip content (alternative to children)   |
+
+### Types
+
+```typescript
+interface InfoTooltipAppearance {
+  iconClassName?: string;
+}
+
+interface InfoTooltipProps {
+  trigger?: React.ReactNode;
+  icon?: string;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "center" | "start" | "end";
+  sideOffset?: number;
+  className?: string;
+  appearance?: InfoTooltipAppearance;
+  children?: React.ReactNode;
+  render?: React.ReactNode;
+}
+```
+
+## Behavior
+
+- Built on Radix UI Tooltip primitive for accessibility and proper behavior
+- Automatic positioning with fallback to ensure tooltip stays in viewport
+- Hover and focus triggers for mouse and keyboard accessibility
+- Customizable trigger with either default icon or custom React element
+- Support for complex tooltip content including headings, lists, and formatted text
+- Responsive sizing with max-width constraints (280px mobile, 336px desktop)
+- Automatic dismissal on escape key and outside click
+- Proper ARIA attributes and screen reader support
+- 100ms delay duration to prevent accidental triggering during rapid mouse movement
+
+## Component Code
+
+```tsx
+import React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+
+import { IconComponent } from "../IconComponent";
+
+interface InfoTooltipAppearance {
+  iconClassName?: string;
+}
+
+interface InfoTooltipProps {
+  trigger?: React.ReactNode;
+  icon?: string;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "center" | "start" | "end";
+  sideOffset?: number;
+  className?: string;
+  appearance?: InfoTooltipAppearance;
+  children?: React.ReactNode;
+  render?: React.ReactNode;
+}
+
+export const InfoTooltip: React.FC<InfoTooltipProps> = ({
+  // You can pass a custom trigger element like a <button> or <span>
+  trigger = null,
+  // Or you can just pass an icon path to use the default trigger
+  icon = "/icons/info16.svg",
+  side = "top",
+  align = "center",
+  sideOffset = 8,
+  className,
+  appearance = {
+    iconClassName: "text-neutral-600",
+  },
+  children,
+  render,
+}) => {
+  return (
+    <TooltipPrimitive.Provider delayDuration={100}>
+      <TooltipPrimitive.Root>
+        {/* <TooltipPrimitive.Root open={true}> */}
+        <TooltipPrimitive.Trigger asChild>
+          {trigger ? (
+            trigger
+          ) : (
+            <button
+              className={cn(
+                "inline-flex items-center justify-center",
+                appearance.iconClassName
+              )}
+            >
+              <IconComponent src={icon} alt="Info" width={16} height={16} />
+            </button>
+          )}
+        </TooltipPrimitive.Trigger>
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Content
+            side={side}
+            align={align}
+            sideOffset={sideOffset}
+            className={cn(
+              "z-20 max-w-[280px] rounded-lg border bg-white p-3 text-xs font-medium shadow-md md:max-w-[336px]",
+              className
+            )}
+          >
+            {children || render}
+            <TooltipPrimitive.Arrow className="fill-white" />
+          </TooltipPrimitive.Content>
+        </TooltipPrimitive.Portal>
+      </TooltipPrimitive.Root>
+    </TooltipPrimitive.Provider>
+  );
+};
+```

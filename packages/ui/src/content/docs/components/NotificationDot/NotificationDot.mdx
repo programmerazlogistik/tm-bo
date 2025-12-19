@@ -1,0 +1,286 @@
+---
+title: "NotificationDot"
+description: "A notification dot component for displaying small indicators with various sizes, colors, and animation options"
+---
+
+import { NotificationDotPreview } from "../../preview/NotificationDot.preview";
+
+## Usage
+
+<NotificationDotPreview />
+
+```jsx
+"use client";
+
+import { useState } from "react";
+
+import { NotificationDot } from "@muatmuat/ui/NotificationDot";
+
+export function NotificationDotExample() {
+  const [animated, setAnimated] = useState(true);
+  const [color, setColor] = useState("red");
+  const [size, setSize] = useState("sm");
+
+  return (
+    <div className="space-y-6">
+      {/* Real-world examples */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-100">
+              <span className="text-primary-700">📧</span>
+            </div>
+            <NotificationDot
+              position="absolute"
+              positionClasses="top-0 right-0"
+              color="red"
+              animated={animated}
+              size={size}
+            />
+          </div>
+          <span>Email with new message</span>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning-100">
+              <span className="text-warning-700">🔔</span>
+            </div>
+            <NotificationDot
+              position="absolute"
+              positionClasses="top-0 right-0"
+              color="warning"
+              animated={animated}
+              size={size}
+            />
+          </div>
+          <span>Notification with warning</span>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success-100">
+              <span className="text-success-700">✓</span>
+            </div>
+            <NotificationDot
+              position="absolute"
+              positionClasses="top-0 right-0"
+              color="success"
+              animated={animated}
+              size={size}
+            />
+          </div>
+          <span>Task completed</span>
+        </div>
+      </div>
+
+      {/* Size variants */}
+      <div className="flex flex-wrap items-center gap-6">
+        <div className="text-center">
+          <NotificationDot size="xs" color={color} animated={animated} />
+          <p className="mt-2 text-xs text-neutral-600">XS</p>
+        </div>
+        <div className="text-center">
+          <NotificationDot size="sm" color={color} animated={animated} />
+          <p className="mt-2 text-xs text-neutral-600">SM</p>
+        </div>
+        <div className="text-center">
+          <NotificationDot size="md" color={color} animated={animated} />
+          <p className="mt-2 text-xs text-neutral-600">MD</p>
+        </div>
+        <div className="text-center">
+          <NotificationDot size="lg" color={color} animated={animated} />
+          <p className="mt-2 text-xs text-neutral-600">LG</p>
+        </div>
+        <div className="text-center">
+          <NotificationDot size="xl" color={color} animated={animated} />
+          <p className="mt-2 text-xs text-neutral-600">XL</p>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="rounded-lg border bg-white p-4">
+        <h4 className="mb-2 font-medium">Controls</h4>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setAnimated(!animated)}
+            className={`rounded px-3 py-1 text-sm ${
+              animated ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            Animation: {animated ? "ON" : "OFF"}
+          </button>
+          <select
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            className="rounded border px-2 py-1 text-sm"
+          >
+            <option value="red">Red</option>
+            <option value="green">Green</option>
+            <option value="blue">Blue</option>
+            <option value="yellow">Yellow</option>
+            <option value="primary">Primary</option>
+            <option value="success">Success</option>
+            <option value="warning">Warning</option>
+            <option value="error">Error</option>
+          </select>
+          <select
+            value={size}
+            onChange={(e) => setSize(e.target.value)}
+            className="rounded border px-2 py-1 text-sm"
+          >
+            <option value="xs">XS</option>
+            <option value="sm">SM</option>
+            <option value="md">MD</option>
+            <option value="lg">LG</option>
+            <option value="xl">XL</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop            | Type                                                                                                                         | Default    | Description                           |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------- |
+| animated        | `boolean`                                                                                                                    | true       | Whether to show the pulsing animation |
+| size            | `"xs" \| "sm" \| "md" \| "lg" \| "xl"`                                                                                       | "sm"       | Size of the dot                       |
+| color           | `"red" \| "green" \| "blue" \| "yellow" \| "orange" \| "purple" \| "gray" \| "primary" \| "success" \| "warning" \| "error"` | "red"      | Color of the dot                      |
+| className       | `string`                                                                                                                     | -          | Additional CSS classes                |
+| position        | `"absolute" \| "relative" \| "fixed"`                                                                                        | "relative" | Position type                         |
+| positionClasses | `string`                                                                                                                     | ""         | Position classes like "top-0 right-0" |
+
+### Types
+
+```typescript
+export interface NotificationDotProps {
+  animated?: boolean;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  color?:
+    | "red"
+    | "green"
+    | "blue"
+    | "yellow"
+    | "orange"
+    | "purple"
+    | "gray"
+    | "primary"
+    | "success"
+    | "warning"
+    | "error";
+  className?: string;
+  position?: "absolute" | "relative" | "fixed";
+  positionClasses?: string;
+}
+```
+
+## Behavior
+
+- Displays a circular dot indicator with optional pulsing animation
+- Supports 5 size variants from extra-small to extra-large
+- Available in 11 color variants including semantic colors (success, warning, error)
+- Flexible positioning system with absolute, relative, and fixed positioning options
+- Animation uses CSS animate-ping for smooth pulsing effect
+- Built with class-variance-authority for consistent styling
+
+**Sizes**: xs (4px), sm (6px), md (8px), lg (10px), xl (12px)
+**Colors**: red, green, blue, yellow, orange, purple, gray, primary, success, warning, error
+**Key Guidelines**:
+
+- Use absolute positioning with positionClasses for overlay indicators on other elements
+- Combine with icons, buttons, or navigation items to show status
+- Leverage semantic colors (success, warning, error) for meaningful visual communication
+- Consider animation state - use animated for active/live indicators, static for historical status
+
+## Component Code
+
+```tsx
+import React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import { cva } from "class-variance-authority";
+
+export interface NotificationDotProps {
+  /** Whether to show the pulsing animation */
+  animated?: boolean;
+  /** Size of the dot */
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  /** Color of the dot */
+  color?:
+    | "red"
+    | "green"
+    | "blue"
+    | "yellow"
+    | "orange"
+    | "purple"
+    | "gray"
+    | "primary"
+    | "success"
+    | "warning"
+    | "error";
+  /** Additional CSS classes */
+  className?: string;
+  /** Position type */
+  position?: "absolute" | "relative" | "fixed";
+  /** Position classes like "top-0 right-0" */
+  positionClasses?: string;
+}
+
+const notificationDotVariants = cva("rounded-full", {
+  variants: {
+    size: {
+      xs: "h-1 w-1",
+      sm: "h-1.5 w-1.5",
+      md: "h-2 w-2",
+      lg: "h-2.5 w-2.5",
+      xl: "h-3 w-3",
+    },
+    color: {
+      red: "bg-red-500",
+      green: "bg-green-500",
+      blue: "bg-blue-500",
+      yellow: "bg-yellow-500",
+      orange: "bg-orange-500",
+      purple: "bg-purple-500",
+      gray: "bg-gray-500",
+      primary: "bg-primary-500",
+      success: "bg-success-500",
+      warning: "bg-warning-900",
+      error: "bg-error-500",
+    },
+  },
+  defaultVariants: {
+    size: "sm",
+    color: "red",
+  },
+});
+
+export const NotificationDot: React.FC<NotificationDotProps> = ({
+  animated = true,
+  size = "sm",
+  color = "red",
+  className,
+  position = "relative",
+  positionClasses = "",
+}) => {
+  const dotClasses = notificationDotVariants({ size, color });
+
+  return (
+    <span className={cn(position, positionClasses, className)}>
+      <div className="relative flex">
+        {animated && (
+          <span
+            className={cn("absolute inline-flex animate-ping", dotClasses)}
+          />
+        )}
+        <span className={cn("relative inline-flex", dotClasses)} />
+      </div>
+    </span>
+  );
+};
+```

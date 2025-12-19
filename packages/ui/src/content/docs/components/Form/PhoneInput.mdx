@@ -1,0 +1,844 @@
+---
+title: "Phone Input"
+description: "International phone number input with country selection and validation"
+---
+
+import {
+  CustomPhoneInputPreview,
+  PhoneInputPreview,
+} from "../../preview/PhoneInput.preview";
+
+## Usage
+
+<PhoneInputPreview />
+
+```jsx
+import { useState } from "react";
+
+import { PhoneInputBO } from "@muatmuat/ui/Form";
+
+export function PhoneInputExample() {
+  const [phone, setPhone] = useState("");
+
+  return (
+    <div className="space-y-4">
+      <PhoneInputBO
+        placeholder="Enter phone number"
+        value={phone}
+        onChange={setPhone}
+        defaultCountry="ID"
+      />
+    </div>
+  );
+}
+```
+
+### Custom Phone Input
+
+<CustomPhoneInputPreview />
+
+For advanced use cases, you can build custom phone inputs using the compound components:
+
+```jsx
+import { useState } from "react";
+
+import { PhoneInput } from "@muatmuat/ui/Form";
+import * as RPNInput from "react-phone-number-input";
+
+export function CustomPhoneInputExample() {
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("US");
+
+  // Custom components for styling
+  const CustomCountrySelect = (props) => (
+    <PhoneInput.CountrySelect
+      {...props}
+      className="border-r border-neutral-600 px-2"
+    />
+  );
+
+  const CustomInput = (props) => (
+    <PhoneInput.Input
+      {...props}
+      placeholder="Custom phone input"
+      className="flex-1 px-3 py-2 outline-none placeholder:text-neutral-400"
+    />
+  );
+
+  return (
+    <div className="space-y-4">
+      <PhoneInput.Root
+        value={phone}
+        onChange={setPhone}
+        defaultCountry={country}
+        onCountryChange={setCountry}
+        className="flex items-center overflow-hidden rounded-md border border-neutral-600 bg-white transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-0"
+        countrySelectComponent={CustomCountrySelect}
+        inputComponent={CustomInput}
+      />
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### PhoneInputBO Props
+
+Complete phone input component with label, error handling, and built-in validation.
+
+| Prop           | Type                                            | Default                | Description                        |
+| -------------- | ----------------------------------------------- | ---------------------- | ---------------------------------- |
+| value          | `RPNInput.Value`                                | -                      | Phone number value in E.164 format |
+| onChange       | `(value: RPNInput.Value) => void`               | -                      | Callback when phone number changes |
+| defaultCountry | `RPNInput.Country`                              | `"US"`                 | Default country code               |
+| disabled       | `boolean`                                       | `false`                | Whether the input is disabled      |
+| errorMessage   | `string`                                        | -                      | Error message to display           |
+| label          | `string`                                        | -                      | Label for the input                |
+| placeholder    | `string`                                        | `"Enter phone number"` | Placeholder text                   |
+| onBlur         | `(event: FocusEvent<HTMLInputElement>) => void` | -                      | Callback when input loses focus    |
+| onFocus        | `(event: FocusEvent<HTMLInputElement>) => void` | -                      | Callback when input gains focus    |
+| appearance     | `\{ rootClassName?: string \}`                  | -                      | Custom appearance styles           |
+| className      | `string`                                        | -                      | Additional CSS classes             |
+
+### Types
+
+```typescript
+type PhoneInputBOProps =
+  Pick<PhoneInputProps,
+    "className"
+    | "onChange"
+    | "value"
+    | "defaultCountry"
+    | "disabled"
+    | "errorMessage"
+    | "label"
+    | "placeholder"
+    | "onBlur"
+    | "onFocus"
+    | "appearance"
+  >;
+
+interface CountryEntry {
+  label: string;
+  value: RPNInput.Country \| undefined;
+}
+```
+
+### Compound Components
+
+#### PhoneInput.Root
+
+Base component that provides phone number context and validation.
+
+| Prop                   | Type                                  | Default | Description                     |
+| ---------------------- | ------------------------------------- | ------- | ------------------------------- |
+| value                  | `RPNInput.Value`                      | -       | Phone number value              |
+| onChange               | `(value: RPNInput.Value) => void`     | -       | Callback when value changes     |
+| defaultCountry         | `RPNInput.Country`                    | -       | Default country code            |
+| onCountryChange        | `(country: RPNInput.Country) => void` | -       | Callback when country changes   |
+| disabled               | `boolean`                             | `false` | Whether the input is disabled   |
+| className              | `string`                              | -       | Additional CSS classes          |
+| inputComponent         | `React.ComponentType<any>`            | -       | Custom input component          |
+| countrySelectComponent | `React.ComponentType<any>`            | -       | Custom country select component |
+| flagComponent          | `React.ComponentType<any>`            | -       | Custom flag component           |
+| smartCaret             | `boolean`                             | -       | Enable smart caret positioning  |
+
+#### PhoneInput.CountrySelect
+
+Country selector dropdown with search and flags.
+
+| Prop      | Type                                  | Default | Description                    |
+| --------- | ------------------------------------- | ------- | ------------------------------ |
+| value     | `RPNInput.Country`                    | -       | Currently selected country     |
+| onChange  | `(country: RPNInput.Country) => void` | -       | Callback when country changes  |
+| disabled  | `boolean`                             | `false` | Whether the select is disabled |
+| className | `string`                              | -       | Additional CSS classes         |
+| hasError  | `boolean`                             | `false` | Whether to show error state    |
+
+#### PhoneInput.Input
+
+Phone number input field with national number formatting.
+
+| Prop      | Type                                             | Default | Description                     |
+| --------- | ------------------------------------------------ | ------- | ------------------------------- |
+| value     | `string`                                         | -       | Input display value             |
+| onChange  | `(event: ChangeEvent<HTMLInputElement>) => void` | -       | Callback when input changes     |
+| onFocus   | `(event: FocusEvent<HTMLInputElement>) => void`  | -       | Callback when input gets focus  |
+| onBlur    | `(event: FocusEvent<HTMLInputElement>) => void`  | -       | Callback when input loses focus |
+| className | `string`                                         | -       | Additional CSS classes          |
+
+#### PhoneInput.Flag
+
+Country flag display component.
+
+| Prop        | Type               | Default | Description                 |
+| ----------- | ------------------ | ------- | --------------------------- |
+| country     | `RPNInput.Country` | -       | Country code for flag       |
+| countryName | `string`           | -       | Accessible name for country |
+
+## Behavior
+
+- International phone number input with country selection and smart formatting
+- Validates phone number format based on selected country with E.164 output
+- Handles keyboard navigation, search, and full accessibility support
+- Supports custom components for styling and functionality customization
+
+**Variants**: country-selector (default), compound-components
+**States**: default, focus, disabled, error, country-dropdown-open
+
+**Key Guidelines**:
+
+- Use appropriate default country for your target audience
+- Ensure proper validation on form submission using E.164 format
+- Handle international number formats correctly with react-phone-number-input integration
+
+## Component Code
+
+```tsx
+import React, {
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
+  type FocusEvent,
+  type KeyboardEvent,
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import { Input } from "@muatmuat/ui/Form";
+import { Popover, PopoverContent, PopoverTrigger } from "@muatmuat/ui/Popover";
+import { ChevronDown } from "lucide-react";
+import * as RPNInput from "react-phone-number-input";
+import flags from "react-phone-number-input/flags";
+
+/**
+ * Enhanced TypeScript interfaces for better type safety
+ */
+export interface PhoneInputProps
+  extends Omit<
+    ComponentPropsWithoutRef<"input">,
+    "onChange" | "value" | "children"
+  > {
+  /** Phone number value in E.164 format */
+  value?: string;
+  /** Callback when phone number changes */
+  onChange?: (value: RPNInput.Value) => void;
+  /** Default country code */
+  defaultCountry?: RPNInput.Country;
+  /** Callback when country changes */
+  onCountryChange?: (country: RPNInput.Country | undefined) => void;
+  /** Whether the input is disabled */
+  disabled?: boolean;
+  /** Whether the input is in error state */
+  errorMessage?: string;
+  /** Helper text to display */
+  helperText?: string;
+  /** Label for the input */
+  label?: string;
+  /** Placeholder text */
+  placeholder?: string;
+  /** Custom input component */
+  inputComponent?: React.ComponentType<any>;
+  /** Custom country select component */
+  countrySelectComponent?: React.ComponentType<any>;
+  /** Custom flag component */
+  flagComponent?: React.ComponentType<any>;
+
+  appearance?: {
+    rootClassName?: string;
+  };
+}
+
+export interface CountrySelectProps {
+  /** Whether the select is disabled */
+  disabled?: boolean;
+  /** Currently selected country */
+  value: RPNInput.Country;
+  /** List of country options */
+  options: CountryEntry[];
+  /** Callback when country selection changes */
+  onChange: (country: RPNInput.Country) => void;
+  /** Additional CSS classes */
+  className?: string;
+  /** Custom option component */
+  OptionComponent?: React.ComponentType<CountrySelectOptionProps>;
+  /** Currently focused option for accessibility */
+  focusedIndex?: number;
+  /** Callback when focused option changes */
+  setFocusedIndex?: (index: number) => void;
+  /** Whether the input is in error state */
+  hasError?: boolean;
+}
+
+export interface CountrySelectOptionProps {
+  /** Country code */
+  country: RPNInput.Country;
+  /** Country display name */
+  countryName: string;
+  /** Currently selected country */
+  selectedCountry: RPNInput.Country;
+  /** Callback when this option is selected */
+  onChange: (country: RPNInput.Country) => void;
+  /** Callback after selection is complete */
+  onSelectComplete: () => void;
+  /** Whether this option is focused */
+  isFocused?: boolean;
+  /** Index of this option for accessibility */
+  index?: number;
+}
+
+export interface CountryEntry {
+  /** Country display name */
+  label: string;
+  /** Country code */
+  value: RPNInput.Country | undefined;
+}
+
+export interface PhoneInputComponentProps {
+  /** Phone number value */
+  value?: RPNInput.Value;
+  /** Callback when value changes */
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  /** Callback when input loses focus */
+  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
+  /** Callback when input gains focus */
+  onFocus?: (event: FocusEvent<HTMLInputElement>) => void;
+  /** Additional CSS classes */
+  className?: string;
+  [key: string]: any;
+}
+
+/**
+ * Custom hook for managing phone number formatting and validation
+ */
+const usePhoneNumberFormatting = () => {
+  const getNationalNumber = useCallback(
+    (phoneValue: RPNInput.Value): string => {
+      if (!phoneValue) {
+        return "";
+      }
+
+      // Convert to string, handling all possible value types
+      const phoneStr = String(phoneValue);
+
+      // If it's already a national number (no country code prefix), return as is
+      if (!phoneStr.startsWith("+")) {
+        return phoneStr;
+      }
+
+      // Check if this is just a country code (like "+62", "+1", "+44") with no national number
+      const countryCodeOnlyMatch = phoneStr.match(/^\+\d+$/);
+      if (countryCodeOnlyMatch) {
+        return "";
+      }
+
+      // Extract national number from international format using a more robust regex
+      const match = phoneStr.match(/^\+\d+[\s-]*(.+)$/);
+
+      // If there's no match after the country code, it means it's just a country code (like "+62")
+      // In that case, return empty string to hide the country code in the input field
+      return match ? match[1] || "" : "";
+    },
+    []
+  );
+
+  return { getNationalNumber };
+};
+
+/**
+ * Enhanced Input Component with better accessibility and error handling
+ */
+const InputField = memo(
+  forwardRef<HTMLInputElement, PhoneInputComponentProps>(
+    ({ className, value, onChange, onBlur, onFocus, ...props }, ref) => {
+      const { getNationalNumber } = usePhoneNumberFormatting();
+      const [focused, setFocused] = useState(false);
+
+      const displayValue = useMemo(
+        () => getNationalNumber(value || ""),
+        [getNationalNumber, value]
+      );
+
+      const handleChange = useCallback(
+        (event: ChangeEvent<HTMLInputElement>) => {
+          onChange?.(event);
+        },
+        [onChange]
+      );
+
+      const handleFocus = useCallback(
+        (event: FocusEvent<HTMLInputElement>) => {
+          setFocused(true);
+          onFocus?.(event);
+        },
+        [onFocus]
+      );
+
+      const handleBlur = useCallback(
+        (event: FocusEvent<HTMLInputElement>) => {
+          setFocused(false);
+          onBlur?.(event);
+        },
+        [onBlur]
+      );
+
+      return (
+        <input
+          ref={ref}
+          type="tel"
+          autoComplete="tel"
+          className={cn(
+            "h-8 w-full rounded-e-md rounded-s-none px-3 text-xs font-medium",
+            "border-none outline-none focus:ring-0",
+            "placeholder:text-neutral-400",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            focused && "bg-white",
+            className
+          )}
+          value={displayValue}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          aria-label="Phone number"
+          {...props}
+        />
+      );
+    }
+  )
+);
+
+InputField.displayName = "PhoneInputField";
+
+/**
+ * Enhanced Country Select Dropdown with improved accessibility and keyboard navigation
+ */
+const CountrySelect = memo<CountrySelectProps>(
+  ({
+    disabled,
+    value: selectedCountry,
+    options: countryList,
+    onChange,
+    className,
+    OptionComponent = CountrySelectOption,
+    focusedIndex = -1,
+    setFocusedIndex,
+    hasError = false,
+  }) => {
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
+    const [searchValue, setSearchValue] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+
+    // Reset search when dropdown opens
+    useEffect(() => {
+      if (isOpen && searchInputRef.current) {
+        searchInputRef.current.focus();
+        setSearchValue("");
+        setFocusedIndex?.(-1);
+      }
+    }, [isOpen, setFocusedIndex]);
+
+    // Filter countries based on search
+    const filteredCountries = useMemo(() => {
+      if (!searchValue || searchValue.trim() === "") return countryList;
+
+      const trimmedSearch = searchValue.trim().toLowerCase();
+
+      return countryList.filter(({ value, label }) => {
+        if (!value) return false;
+        const callingCode = RPNInput.getCountryCallingCode(value);
+        return (
+          label.toLowerCase().includes(trimmedSearch) ||
+          callingCode.includes(searchValue.trim()) ||
+          value.toLowerCase().includes(trimmedSearch)
+        );
+      });
+    }, [searchValue, countryList]);
+
+    // Handle search input changes
+    const handleSearchChange = useCallback(
+      (event: ChangeEvent<HTMLInputElement>) => {
+        const newValue = event.target.value;
+        setSearchValue(newValue);
+        setFocusedIndex?.(-1);
+
+        // Reset scroll position
+        if (scrollAreaRef.current) {
+          scrollAreaRef.current.scrollTop = 0;
+        }
+      },
+      [setFocusedIndex]
+    );
+
+    // Handle keyboard navigation
+    const handleKeyDown = useCallback(
+      (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Escape") {
+          setIsOpen(false);
+          return;
+        }
+
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          const direction = event.key === "ArrowDown" ? 1 : -1;
+          const newIndex = Math.max(
+            0,
+            Math.min(filteredCountries.length - 1, focusedIndex + direction)
+          );
+          setFocusedIndex?.(newIndex);
+
+          // Scroll the focused option into view
+          const optionElement = scrollAreaRef.current?.querySelector(
+            `[data-option-index="${newIndex}"]`
+          );
+          optionElement?.scrollIntoView({ block: "nearest" });
+        }
+
+        if (
+          event.key === "Enter" &&
+          focusedIndex >= 0 &&
+          filteredCountries[focusedIndex]
+        ) {
+          event.preventDefault();
+          const selectedOption = filteredCountries[focusedIndex];
+          if (selectedOption.value) {
+            onChange(selectedOption.value);
+            setIsOpen(false);
+          }
+        }
+      },
+      [focusedIndex, filteredCountries, onChange, setFocusedIndex]
+    );
+
+    // Handle country selection
+    const handleCountryChange = useCallback(
+      (country: RPNInput.Country) => {
+        onChange(country);
+        setIsOpen(false);
+      },
+      [onChange]
+    );
+
+    // Generate safe ID for accessibility
+    const dropdownId = useId();
+
+    return (
+      <Popover
+        open={isOpen}
+        modal
+        onOpenChange={(open) => {
+          setIsOpen(open);
+          if (open) {
+            setSearchValue("");
+          }
+        }}
+      >
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "flex h-8 items-center gap-1 border-r px-1",
+              hasError ? "border-error-500" : "border-neutral-600",
+              "hover:bg-neutral-50 focus:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0",
+              "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent",
+              className
+            )}
+            disabled={disabled}
+            aria-haspopup="listbox"
+            aria-expanded={isOpen}
+            aria-labelledby={dropdownId}
+          >
+            <Flag country={selectedCountry} countryName={selectedCountry} />
+            <span className="text-xs font-medium text-neutral-600">
+              {`+${RPNInput.getCountryCallingCode(selectedCountry)}`}
+            </span>
+            <ChevronDown
+              className={cn(
+                "size-4 opacity-50 transition-transform",
+                isOpen && "rotate-180",
+                disabled && "hidden"
+              )}
+              aria-hidden="true"
+            />
+          </button>
+        </PopoverTrigger>
+
+        <PopoverContent className="w-[300px] p-0" align="start" sideOffset={4}>
+          <div className="border-b border-neutral-300 p-2">
+            <Input
+              ref={searchInputRef}
+              value={searchValue}
+              onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
+              placeholder="Search country..."
+              className="h-8"
+              icon={{ left: "/icons/search16.svg" }}
+              aria-label="Search countries"
+            />
+          </div>
+
+          <div
+            ref={scrollAreaRef}
+            className="max-h-64 overflow-y-auto"
+            role="listbox"
+            aria-label="Countries"
+          >
+            {filteredCountries.length === 0 ? (
+              <div
+                className="py-6 text-center text-sm text-neutral-500"
+                role="status"
+                aria-live="polite"
+              >
+                No country found.
+              </div>
+            ) : (
+              <div className="p-1">
+                {filteredCountries.map((country, index) =>
+                  country.value ? (
+                    <OptionComponent
+                      key={country.value}
+                      country={country.value}
+                      countryName={country.label}
+                      selectedCountry={selectedCountry}
+                      onChange={handleCountryChange}
+                      onSelectComplete={() => setIsOpen(false)}
+                      isFocused={index === focusedIndex}
+                      index={index}
+                    />
+                  ) : null
+                )}
+              </div>
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+);
+
+CountrySelect.displayName = "CountrySelectDropdown";
+
+/**
+ * Enhanced Country Select Option with better accessibility
+ */
+const CountrySelectOption = memo<CountrySelectOptionProps>(
+  ({
+    country,
+    countryName,
+    selectedCountry,
+    onChange,
+    onSelectComplete,
+    isFocused = false,
+    index = 0,
+  }) => {
+    const handleSelect = useCallback(() => {
+      onChange(country);
+      onSelectComplete();
+    }, [onChange, onSelectComplete, country]);
+
+    const isSelected = country === selectedCountry;
+
+    return (
+      <button
+        type="button"
+        onClick={handleSelect}
+        className={cn(
+          "flex w-full cursor-pointer items-center gap-2 rounded-md p-2 text-left text-sm",
+          "transition-colors duration-75",
+          "hover:bg-neutral-100 focus:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500",
+          isSelected && "bg-blue-50 hover:bg-blue-100",
+          isFocused && "bg-neutral-100 ring-2 ring-inset ring-blue-500"
+        )}
+        role="option"
+        aria-selected={isSelected}
+        aria-label={`${countryName} (+${RPNInput.getCountryCallingCode(country)})`}
+        data-option-index={index}
+      >
+        <Flag country={country} countryName={countryName} />
+        <span className="flex-1 truncate font-medium">{countryName}</span>
+        <span className="font-mono text-xs text-neutral-500">
+          {`+${RPNInput.getCountryCallingCode(country)}`}
+        </span>
+        {isSelected && (
+          <span className="text-blue-600" aria-hidden="true">
+            ✓
+          </span>
+        )}
+      </button>
+    );
+  }
+);
+
+CountrySelectOption.displayName = "CountrySelectOption";
+
+/**
+ * Flag Component with error handling
+ */
+const Flag = memo<{ country: RPNInput.Country; countryName?: string }>(
+  ({ country, countryName }) => {
+    const FlagComp = flags[country];
+
+    return (
+      <span
+        className="inline-block h-4 w-6 overflow-hidden rounded-sm bg-neutral-200"
+        role="img"
+        aria-label={countryName || country}
+      >
+        {FlagComp ? (
+          <FlagComp title={countryName || country} />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-xs text-neutral-400">
+            🏳️
+          </div>
+        )}
+      </span>
+    );
+  }
+);
+
+Flag.displayName = "Flag";
+
+/**
+ * Export individual components for customization
+ */
+export const PhoneInput = {
+  Root: RPNInput.default,
+  Flag,
+  CountrySelect,
+  CountrySelectOption,
+  Input: InputField,
+};
+
+/**
+ * Main Phone Input Component with enhanced features
+ */
+export const PhoneInputBO = forwardRef<any, PhoneInputProps>(
+  (
+    {
+      className,
+      onChange,
+      value,
+      defaultCountry = "US",
+      disabled = false,
+      errorMessage,
+      label,
+      placeholder = "Enter phone number",
+      inputComponent,
+      countrySelectComponent,
+      flagComponent,
+      onBlur,
+      onFocus,
+      appearance,
+      ...props
+    },
+    ref
+  ) => {
+    const [focused, setFocused] = useState(false);
+
+    // Handle value changes
+    const handleChange = useCallback(
+      (newValue: RPNInput.Value | undefined) => {
+        onChange?.(newValue as RPNInput.Value);
+      },
+      [onChange]
+    );
+
+    // Handle country changes
+    const handleCountryChange = useCallback(
+      (_country: RPNInput.Country | undefined) => {
+        // Country change logic if needed
+      },
+      []
+    );
+
+    // Custom country select component with error state support
+    const CustomCountrySelect = useCallback(
+      (props: any) => (
+        <PhoneInput.CountrySelect {...props} hasError={Boolean(errorMessage)} />
+      ),
+      [errorMessage]
+    );
+
+    // Handle focus events
+    const handleFocus = useCallback(
+      (event: FocusEvent<HTMLInputElement>) => {
+        setFocused(true);
+        onFocus?.(event);
+      },
+      [onFocus]
+    );
+
+    const handleBlur = useCallback(
+      (event: FocusEvent<HTMLInputElement>) => {
+        setFocused(false);
+        onBlur?.(event);
+      },
+      [onBlur]
+    );
+
+    // Generate unique IDs for accessibility
+    const inputId = useId();
+    const errorMessageId = useId();
+
+    const rootClassName = cn(
+      "ring-none flex items-center overflow-hidden rounded-md border transition-colors duration-75",
+      "border-neutral-600 bg-white",
+      focused && "border-blue-500 ring-2 ring-blue-500 ring-offset-0",
+      errorMessage && "border-red-500",
+      disabled && "cursor-not-allowed bg-neutral-50 opacity-60",
+      appearance?.rootClassName
+    );
+
+    return (
+      <div className={cn("w-full space-y-1", className)}>
+        {label && (
+          <label
+            htmlFor={inputId}
+            className="text-sm font-medium text-neutral-700"
+          >
+            {label}
+          </label>
+        )}
+
+        <PhoneInput.Root
+          ref={ref}
+          className={rootClassName}
+          flagComponent={(flagComponent || PhoneInput.Flag) as any}
+          countrySelectComponent={countrySelectComponent || CustomCountrySelect}
+          inputComponent={inputComponent || PhoneInput.Input}
+          smartCaret={false}
+          value={value || undefined}
+          onChange={handleChange}
+          onCountryChange={handleCountryChange}
+          defaultCountry={defaultCountry}
+          disabled={disabled}
+          placeholder={placeholder}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          id={inputId}
+          aria-invalid={Boolean(errorMessage)}
+          {...props}
+        />
+
+        {errorMessage && (
+          <span
+            id={errorMessageId}
+            className="text-xs font-medium text-error-500"
+          >
+            {errorMessage}
+          </span>
+        )}
+      </div>
+    );
+  }
+);
+
+PhoneInputBO.displayName = "PhoneInputBO";
+```

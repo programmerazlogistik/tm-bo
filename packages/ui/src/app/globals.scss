@@ -1,0 +1,502 @@
+/* ==========================================================================
+   GLOBAL STYLES - MuatMuat UI Package
+   ========================================================================== */
+
+/* Tailwind CSS Imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "@muatmuat/tailwind-config/variables.css";
+
+/* ==========================================================================
+   FONT FACES
+   ========================================================================== */
+
+@font-face {
+  font-family: "Avenir Next LT Pro";
+  src:
+    url("/fonts/AvenirNextLTPro-Demi.woff2") format("woff2"),
+    url("/fonts/AvenirNextLTPro-Demi.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Avenir Next LT Pro";
+  src:
+    url("/fonts/AvenirNextLTPro-Regular.woff2") format("woff2"),
+    url("/fonts/AvenirNextLTPro-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Avenir Next LT Pro";
+  src:
+    url("/fonts/AvenirNextLTPro-Medium.woff2") format("woff2"),
+    url("/fonts/AvenirNextLTPro-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Avenir Next LT Pro";
+  src:
+    url("/fonts/AvenirNextLTPro-Bold.woff2") format("woff2"),
+    url("/fonts/AvenirNextLTPro-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   CHART LIBRARY OVERRIDES
+   ========================================================================== */
+
+.recharts-surface:focus {
+  outline: none;
+}
+
+.recharts-sector:focus {
+  outline: none;
+}
+
+/* ==========================================================================
+   LAYER BASE OVERRIDES
+   ========================================================================== */
+
+@layer base {
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+}
+
+/* ==========================================================================
+   FORM ELEMENT STYLING
+   ========================================================================== */
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY UTILITIES
+   ========================================================================== */
+
+.medium-xs {
+  font-size: 12px;
+  font-weight: 500;
+}
+.medium-sm {
+  font-size: 14px;
+  font-weight: 500;
+}
+.medium-base {
+  font-size: 16px;
+  font-weight: 500;
+}
+.semi-xs {
+  font-size: 12px;
+  font-weight: 600;
+}
+.semi-sm {
+  font-size: 14px;
+  font-weight: 600;
+}
+.semi-base {
+  font-size: 16px;
+  font-weight: 600;
+}
+.bold-xs {
+  font-size: 12px;
+  font-weight: 700;
+}
+.bold-sm {
+  font-size: 14px;
+  font-weight: 700;
+}
+.bold-base {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   ICON STYLING
+   ========================================================================== */
+
+.icon-fill-neutral-50 {
+  path {
+    fill: var(--neutral-50);
+  }
+}
+.icon-stroke-neutral-50 {
+  path {
+    stroke: var(--neutral-50);
+  }
+}
+
+.icon-fill-neutral-400 {
+  path {
+    fill: var(--neutral-400);
+  }
+}
+
+.icon-stroke-neutral-500 {
+  path {
+    stroke: var(--neutral-500);
+  }
+}
+
+.icon-stroke-primary-700 {
+  path {
+    stroke: var(--primary-700);
+  }
+}
+.icon-fill-primary-700 {
+  path {
+    fill: var(--primary-700);
+  }
+}
+.icon-fill-secondary-400 {
+  path {
+    fill: var(--secondary-400);
+  }
+}
+.icon-fill-secondary-700 {
+  path {
+    fill: var(--secondary-700);
+  }
+}
+.icon-fill-muat-parts-non-800 {
+  path {
+    fill: var(--muat-parts-non-800);
+  }
+}
+
+.icon-white {
+  path {
+    stroke: var(--neutral-50);
+  }
+}
+.icon-fill-white {
+  path {
+    fill: var(--neutral-50);
+  }
+}
+
+.icon-stroke-neutral-700 {
+  circle,
+  path,
+  rect {
+    stroke: var(--neutral-700);
+  }
+}
+
+.icon-stroke-neutral-900 {
+  path {
+    stroke: var(--neutral-900);
+  }
+}
+
+.icon-stroke-muat-trans-primary-400 {
+  path {
+    stroke: var(--muat-trans-primary-400);
+  }
+}
+.icon-fill-muat-trans-secondary-900 {
+  path {
+    fill: var(--muat-trans-secondary-900);
+  }
+}
+.icon-stroke-muat-trans-secondary-900 {
+  path {
+    stroke: var(--muat-trans-secondary-900);
+  }
+}
+.icon-muat-trans-secondary-900 {
+  path {
+    fill: var(--muat-trans-secondary-900);
+    stroke: var(--muat-trans-secondary-900);
+  }
+}
+
+// FIX BUG Opsi Pengiriman LB-0022
+.icon-stroke-warning-900 {
+  path {
+    stroke: var(--warning-900);
+  }
+}
+.icon-gray {
+  path {
+    stroke: var(--neutral-600);
+  }
+}
+.icon-blue {
+  path {
+    stroke: var(--primary-700);
+  }
+}
+.icon-green {
+  path {
+    stroke: var(--success-700);
+  }
+}
+.icon-error-400 {
+  path {
+    stroke: var(--error-400);
+  }
+}
+
+/* ==========================================================================
+   FORM STYLING
+   ========================================================================== */
+
+.input-error {
+  div {
+    border-color: var(--error-400);
+  }
+  div:last-child {
+    color: var(--error-400);
+  }
+}
+.input-error:hover {
+  div {
+    border-color: var(--error-400);
+  }
+}
+
+/* ==========================================================================
+   COMPONENT STYLING
+   ========================================================================== */
+
+/* 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2 - LB - 0475 */
+.icon-red {
+  path {
+    stroke: var(--muat-parts-non-800);
+  }
+}
+.cart-outline {
+  path {
+    fill: none;
+    stroke: var(--neutral-50);
+  }
+}
+.bank_checkbox {
+  span:nth-child(3) {
+    /* Your styles here */
+    transform: translateY(0px) !important;
+    font-size: unset !important;
+  }
+}
+.divide-horizontal {
+  width: 100%;
+  height: 1px;
+  background-color: var(--neutral-400);
+}
+.divide-vertical {
+  width: 1px;
+  height: 100%;
+  background-color: var(--neutral-400);
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+.containerMobile {
+  padding-top: 24px;
+  padding-inline: 16px;
+}
+.shadow-muat {
+  box-shadow: 0 4px 11px 0 #41414140;
+}
+
+/* ==========================================================================
+   SCROLLBAR STYLING
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--neutral-200);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-500);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-700);
+}
+
+.scrollbar-custombadanusaha {
+  overflow-y: auto;
+}
+
+.scrollbar-custombadanusaha::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-custombadanusaha::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-custombadanusaha::-webkit-scrollbar-thumb {
+  background: var(--neutral-500);
+  border-radius: 2px;
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
+/* ==========================================================================
+   CALENDAR STYLING
+   ========================================================================== */
+
+.calendar-outline {
+  path {
+    fill: none;
+    stroke: var(--neutral-50);
+  }
+}
+.calendar-fill {
+  path {
+    fill: var(--neutral-50);
+    stroke: #c22716;
+  }
+}
+.react-calendar__tile--now {
+  background-color: var(--muat-parts-member-400) !important;
+  color: var(--neutral-50);
+}
+
+/* ==========================================================================
+   INFO COMPONENT STYLING
+   ========================================================================== */
+
+.info-tooltip-content {
+  ul {
+    margin: 0;
+    margin-bottom: 4px;
+    padding: 0;
+    padding-left: 16px;
+    list-style-position: outside;
+    list-style-type: disc;
+  }
+
+  // li:before {
+  //   content: "•";
+  //   display: inline-block;
+  //   width: 10px;
+  // }
+
+  b {
+    font-weight: 700;
+  }
+
+  p {
+    display: block;
+  }
+}
+
+.info-bottomsheet-content {
+  ul {
+    margin-bottom: 16px;
+    padding: 0;
+    list-style-type: disc;
+    margin-left: 16px;
+  }
+
+  b {
+    font-weight: 700;
+  }
+
+  p {
+    display: block;
+    text-wrap: balance;
+  }
+}
+
+.info-alert-content {
+  b {
+    font-weight: 600;
+  }
+
+  p {
+    margin-top: 4px;
+  }
+}
+
+/* ==========================================================================
+   SLIDER AND TABLE STYLING
+   ========================================================================== */
+
+.slider-list {
+  ol {
+    @apply list-decimal;
+
+    list-style-position: inside;
+  }
+}
+
+.table-tambah-armada-massal {
+  th {
+    @apply px-4;
+  }
+  td {
+    @apply px-4;
+  }
+}
+
+.table-tambah-driver-massal {
+  th {
+    @apply px-3;
+  }
+  td {
+    @apply px-3;
+  }
+}
+
+/* ==========================================================================
+   ANIMATION AND FIX STYLES
+   ========================================================================== */
+
+/* For the popover animation glitch fix */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* This hides the overlay that has the class */
+.is-obscured {
+  visibility: hidden !important;
+}
+
+/* This new rule hides the content that IMMEDIATELY follows the obscured overlay */
+.is-obscured + [data-stack-content="true"] {
+  visibility: hidden !important;
+}

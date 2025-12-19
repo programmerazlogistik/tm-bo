@@ -1,0 +1,255 @@
+{
+  "name": "@muatmuat/ui",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "dev:docs": "next dev",
+    "lint": "eslint src/",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "build": "next build",
+    "build:types": "tsc --project tsconfig.build.json --skipLibCheck",
+    "postinstall": "fumadocs-mdx"
+  },
+  "exports": {
+    "./ActiveFiltersBar": {
+      "types": "./dist/components/ActiveFiltersBar/index.d.ts",
+      "import": "./src/components/ActiveFiltersBar/index.ts",
+      "default": "./src/components/ActiveFiltersBar/index.ts"
+    },
+    "./Alert": {
+      "types": "./dist/components/Alert/index.d.ts",
+      "import": "./src/components/Alert/index.ts",
+      "default": "./src/components/Alert/index.ts"
+    },
+    "./Avatar": {
+      "types": "./dist/components/Avatar/index.d.ts",
+      "import": "./src/components/Avatar/index.ts",
+      "default": "./src/components/Avatar/index.ts"
+    },
+    "./Badge": {
+      "types": "./dist/components/Badge/index.d.ts",
+      "import": "./src/components/Badge/index.ts",
+      "default": "./src/components/Badge/index.ts"
+    },
+    "./BannerCarousel": {
+      "types": "./dist/components/BannerCarousel/index.d.ts",
+      "import": "./src/components/BannerCarousel/index.ts",
+      "default": "./src/components/BannerCarousel/index.ts"
+    },
+    "./BottomSheet": {
+      "types": "./dist/components/BottomSheet/index.d.ts",
+      "import": "./src/components/BottomSheet/index.ts",
+      "default": "./src/components/BottomSheet/index.ts"
+    },
+    "./Breadcrumb": {
+      "types": "./dist/components/Breadcrumb/index.d.ts",
+      "import": "./src/components/Breadcrumb/index.ts",
+      "default": "./src/components/Breadcrumb/index.ts"
+    },
+    "./Calendar": {
+      "types": "./dist/components/Calendar/index.d.ts",
+      "import": "./src/components/Calendar/index.ts",
+      "default": "./src/components/Calendar/index.ts"
+    },
+    "./DateTimePickerWeb": {
+      "types": "./dist/components/Calendar/index.d.ts",
+      "import": "./src/components/Calendar/index.ts",
+      "default": "./src/components/Calendar/index.ts"
+    },
+    "./DateTimePickerResponsive": {
+      "types": "./dist/components/Calendar/index.d.ts",
+      "import": "./src/components/Calendar/index.ts",
+      "default": "./src/components/Calendar/index.ts"
+    },
+    "./Button": {
+      "types": "./dist/components/Button/index.d.ts",
+      "import": "./src/components/Button/index.ts",
+      "default": "./src/components/Button/index.ts"
+    },
+    "./Card": {
+      "types": "./dist/components/Card/index.d.ts",
+      "import": "./src/components/Card/index.ts",
+      "default": "./src/components/Card/index.ts"
+    },
+    "./Form": {
+      "types": "./dist/components/Form/index.d.ts",
+      "import": "./src/components/Form/index.ts",
+      "default": "./src/components/Form/index.ts"
+    },
+    "./Timeline": {
+      "types": "./dist/components/Timeline/index.d.ts",
+      "import": "./src/components/Timeline/index.ts",
+      "default": "./src/components/Timeline/index.ts"
+    },
+    "./IconComponent": {
+      "types": "./dist/components/IconComponent/index.d.ts",
+      "import": "./src/components/IconComponent/index.ts",
+      "default": "./src/components/IconComponent/index.ts"
+    },
+    "./Toaster": {
+      "types": "./dist/components/Toaster/index.d.ts",
+      "import": "./src/components/Toaster/index.ts",
+      "default": "./src/components/Toaster/index.ts"
+    },
+    "./Collapsible": {
+      "types": "./dist/components/Collapsible/index.d.ts",
+      "import": "./src/components/Collapsible/index.ts",
+      "default": "./src/components/Collapsible/index.ts"
+    },
+    "./Cropper": {
+      "types": "./dist/components/Cropper/index.d.ts",
+      "import": "./src/components/Cropper/index.ts",
+      "default": "./src/components/Cropper/index.ts"
+    },
+    "./Footer": {
+      "types": "./dist/components/Footer/index.d.ts",
+      "import": "./src/components/Footer/index.ts",
+      "default": "./src/components/Footer/index.ts"
+    },
+    "./HoverMenu": {
+      "types": "./dist/components/HoverMenu/index.d.ts",
+      "import": "./src/components/HoverMenu/index.ts",
+      "default": "./src/components/HoverMenu/index.ts"
+    },
+    "./ImageComponent": {
+      "types": "./dist/components/ImageComponent/index.d.ts",
+      "import": "./src/components/ImageComponent/index.ts",
+      "default": "./src/components/ImageComponent/index.ts"
+    },
+    "./Lightbox": {
+      "types": "./dist/components/Lightbox/index.d.ts",
+      "import": "./src/components/Lightbox/index.ts",
+      "default": "./src/components/Lightbox/index.ts"
+    },
+    "./Loading": {
+      "types": "./dist/components/Loading/index.d.ts",
+      "import": "./src/components/Loading/index.ts",
+      "default": "./src/components/Loading/index.ts"
+    },
+    "./Modal": {
+      "types": "./dist/components/Modal/index.d.ts",
+      "import": "./src/components/Modal/index.ts",
+      "default": "./src/components/Modal/index.ts"
+    },
+    "./Popover": {
+      "types": "./dist/components/Popover/index.d.ts",
+      "import": "./src/components/Popover/index.ts",
+      "default": "./src/components/Popover/index.ts"
+    },
+    "./Radio": {
+      "types": "./dist/components/Radio/index.d.ts",
+      "import": "./src/components/Radio/index.ts",
+      "default": "./src/components/Radio/index.ts"
+    },
+    "./Select": {
+      "types": "./dist/components/Select/index.d.ts",
+      "import": "./src/components/Select/index.ts",
+      "default": "./src/components/Select/index.ts"
+    },
+    "./ScrollArea": {
+      "types": "./dist/components/ScrollArea/index.d.ts",
+      "import": "./src/components/ScrollArea/index.ts",
+      "default": "./src/components/ScrollArea/index.ts"
+    },
+    "./DisplayOptionsBar": {
+      "types": "./dist/components/DisplayOptionsBar/index.d.ts",
+      "import": "./src/components/DisplayOptionsBar/index.ts",
+      "default": "./src/components/DisplayOptionsBar/index.ts"
+    },
+    "./Dropdown": {
+      "types": "./dist/components/Dropdown/index.d.ts",
+      "import": "./src/components/Dropdown/index.ts",
+      "default": "./src/components/Dropdown/index.ts"
+    },
+    "./Dropzone": {
+      "types": "./dist/components/Dropzone/index.d.ts",
+      "import": "./src/components/Dropzone/index.ts",
+      "default": "./src/components/Dropzone/index.ts"
+    },
+    "./NotificationDot": {
+      "types": "./dist/components/NotificationDot/index.d.ts",
+      "import": "./src/components/NotificationDot/index.ts",
+      "default": "./src/components/NotificationDot/index.ts"
+    },
+    "./Tooltip": {
+      "types": "./dist/components/Tooltip/index.d.ts",
+      "import": "./src/components/Tooltip/index.ts",
+      "default": "./src/components/Tooltip/index.ts"
+    },
+    "./Maps": {
+      "types": "./dist/components/Maps/index.d.ts",
+      "import": "./src/components/Maps/index.ts",
+      "default": "./src/components/Maps/index.ts"
+    },
+    "./Table": {
+      "types": "./dist/components/Table/index.d.ts",
+      "import": "./src/components/Table/index.ts",
+      "default": "./src/components/Table/index.ts"
+    }
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
+    "@muatmuat/hooks": "*",
+    "@muatmuat/lib": "*",
+    "@radix-ui/react-checkbox": "^1.3.3",
+    "@radix-ui/react-collapsible": "^1.1.12",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-hover-card": "^1.1.15",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-portal": "^1.1.9",
+    "@radix-ui/react-scroll-area": "^1.2.10",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "@react-google-maps/api": "^2.20.7",
+    "@tanstack/react-table": "^8.21.3",
+    "class-variance-authority": "^0.7.1",
+    "cropperjs": "^1.6.2",
+    "fumadocs-core": "14.7.7",
+    "fumadocs-mdx": "11.3.1",
+    "fumadocs-ui": "14.7.7",
+    "input-otp": "^1.4.2",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.511.0",
+    "prop-types": "^15.8.1",
+    "react-calendar": "^6.0.0",
+    "react-cropper": "^2.3.3",
+    "react-day-picker": "^9.9.0",
+    "react-hook-form": "^7.62.0",
+    "react-inlinesvg": "^4.2.0",
+    "react-number-format": "^5.4.4",
+    "react-phone-number-input": "^3.4.12",
+    "react-player": "^3.4.0",
+    "recharts": "^3.1.2",
+    "sass": "^1.89.0",
+    "tailwindcss-animate": "^1.0.7",
+    "valibot": "^1.1.0",
+    "vaul": "^1.1.2",
+    "zustand": "^5.0.8"
+  },
+  "peerDependencies": {
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lodash.debounce": "^4.0.8",
+    "next": "*",
+    "react": "*",
+    "react-dom": "*",
+    "swr": "^2.3.6",
+    "tailwind-merge": "^3.3.0",
+    "xior": "^0.7.8"
+  },
+  "devDependencies": {
+    "@muatmuat/config": "*",
+    "@muatmuat/tailwind-config": "*",
+    "@types/cropperjs": "^1.1.5",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.2.4"
+  }
+}

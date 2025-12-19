@@ -1,0 +1,118 @@
+---
+title: "LoadingInteractive"
+description: "Interactive loading component that responds to global loading state using Zustand store"
+---
+
+import { LoadingInteractivePreview } from "../../preview/LoadingInteractive.preview";
+
+## Usage
+
+<LoadingInteractivePreview />
+
+```jsx
+"use client";
+
+import { useState } from "react";
+
+import { LoadingInteractive, useLoadingAction } from "@muatmuat/ui/Loading";
+
+export function LoadingExample() {
+  const { setIsGlobalLoading } = useLoadingAction();
+  const [isLoading, setIsLoading] = useState(true);
+
+  const toggleLoading = () => {
+    const newState = !isLoading;
+    setIsLoading(newState);
+    setIsGlobalLoading(newState);
+  };
+
+  return (
+    <div className="relative">
+      <LoadingInteractive />
+
+      <div className="space-y-4 p-8">
+        <h2 className="text-2xl font-bold">Page Content</h2>
+        <p className="text-neutral-600">
+          This content is behind the loading overlay when active.
+        </p>
+
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 transform rounded-lg border bg-white p-4 shadow-lg">
+          <button
+            onClick={toggleLoading}
+            className="rounded bg-primary-700 px-4 py-2 text-white transition-colors hover:bg-primary-800"
+          >
+            {isLoading ? "Stop Loading" : "Start Loading"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+| Prop   | Type | Default | Description                         |
+| ------ | ---- | ------- | ----------------------------------- |
+| (none) | -    | -       | Component has no configurable props |
+
+### Types
+
+```typescript
+export interface LoadingInteractiveProps {}
+```
+
+## Behavior
+
+- Displays full-screen loading overlay with backdrop blur when global loading state is active
+- Renders conditionally based on Zustand store state, returning null when not loading
+- Centers loading animation using fixed positioning with high z-index (9999)
+- Uses image-based loading animation from `/img/loading-animation.webp`
+- Integrates with global loading state management through useLoadingStore
+
+**Key Guidelines**:
+
+- Requires client-side rendering due to Zustand store dependency
+- Use "use client" directive when using in Next.js App Router
+- Pair with useLoadingAction hook to control loading state
+- Automatically handles translation ready state
+- Best for interactive applications with dynamic loading states
+
+## Component Code
+
+```tsx
+import * as React from "react";
+
+import { ImageComponent } from "@muatmuat/ui/ImageComponent";
+
+import { useLoadingStore } from "./loadingStore";
+
+export interface LoadingInteractiveProps {}
+
+/**
+ * Interactive loading component that responds to global loading state using Zustand store.
+ * Features backdrop blur and centered loading animation. Only renders when loading is active.
+ */
+export const LoadingInteractive = (): React.ReactElement | null => {
+  const isGlobalLoading = useLoadingStore((state) => state.isGlobalLoading);
+  const isTranslationsReady = true;
+
+  if (isGlobalLoading || !isTranslationsReady) {
+    return (
+      <div className="fixed left-0 top-0 z-[9999] flex h-screen w-screen items-center justify-center bg-black/10 backdrop-blur-md">
+        <ImageComponent
+          src={"/img/loading-animation.webp"}
+          width={100}
+          height={100}
+          alt="loading"
+          unoptimized
+        />
+      </div>
+    );
+  }
+
+  return null;
+};
+```

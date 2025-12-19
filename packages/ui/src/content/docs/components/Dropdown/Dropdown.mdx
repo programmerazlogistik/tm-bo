@@ -1,0 +1,469 @@
+---
+title: "Dropdown"
+description: "Compound component for dropdown menus with hover-based submenus and filter triggers built on Radix UI primitives"
+---
+
+import { DropdownPreview } from "../../preview/Dropdown.preview";
+
+## Usage
+
+<DropdownPreview />
+
+```jsx
+import { useState } from "react";
+
+import { Button } from "@muatmuat/ui/Button";
+import { Dropdown } from "@muatmuat/ui/Dropdown";
+import { IconComponent } from "@muatmuat/ui/IconComponent";
+
+function DropdownExample() {
+  const [filterActive, setFilterActive] = useState(false);
+
+  return (
+    <div className="space-y-4">
+      {/* Basic Dropdown */}
+      <Dropdown.Root>
+        <Dropdown.Trigger asChild>
+          <Button variant="primary">
+            Open Menu
+            <IconComponent
+              src="/icons/chevron-down.svg"
+              className="ml-2 h-4 w-4"
+            />
+          </Button>
+        </Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Item onClick={() => console.log("Profile clicked")}>
+            <IconComponent src="/icons/user.svg" className="mr-2 h-4 w-4" />
+            Profile
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => console.log("Settings clicked")}>
+            <IconComponent src="/icons/settings.svg" className="mr-2 h-4 w-4" />
+            Settings
+          </Dropdown.Item>
+          <Dropdown.Item
+            isDestructive
+            onClick={() => console.log("Logout clicked")}
+          >
+            <IconComponent src="/icons/logout.svg" className="mr-2 h-4 w-4" />
+            Logout
+          </Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown.Root>
+
+      {/* Filter Dropdown */}
+      <Dropdown.Root>
+        <Dropdown.FilterTrigger isActive={filterActive} />
+        <Dropdown.Content>
+          <Dropdown.Item onClick={() => setFilterActive(false)}>
+            All Status
+          </Dropdown.Item>
+          <Dropdown.Item onClick={() => setFilterActive(true)}>
+            <div className="mr-2 h-2 w-2 rounded-full bg-green-500" />
+            Active
+          </Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown.Root>
+
+      {/* Nested Dropdown with Hover */}
+      <Dropdown.Root>
+        <Dropdown.Trigger asChild>
+          <Button variant="secondary">
+            <IconComponent src="/icons/menu.svg" className="mr-2 h-4 w-4" />
+            Advanced
+          </Button>
+        </Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Item onClick={() => console.log("Dashboard clicked")}>
+            <IconComponent
+              src="/icons/dashboard.svg"
+              className="mr-2 h-4 w-4"
+            />
+            Dashboard
+          </Dropdown.Item>
+          <Dropdown.HoverRoot title="Reports">
+            <Dropdown.HoverContent>
+              <Dropdown.HoverItem onClick={() => console.log("Sales clicked")}>
+                <IconComponent
+                  src="/icons/chart.svg"
+                  className="mr-2 h-4 w-4"
+                />
+                Sales Report
+              </Dropdown.HoverItem>
+              <Dropdown.HoverItem onClick={() => console.log("Users clicked")}>
+                <IconComponent
+                  src="/icons/users.svg"
+                  className="mr-2 h-4 w-4"
+                />
+                User Report
+              </Dropdown.HoverItem>
+            </Dropdown.HoverContent>
+          </Dropdown.HoverRoot>
+        </Dropdown.Content>
+      </Dropdown.Root>
+    </div>
+  );
+}
+```
+
+## API Reference
+
+### Props
+
+#### Dropdown.Root
+
+Inherits all props from `@radix-ui/react-popover.PopoverPrimitive.Root`
+
+| Prop         | Type                      | Default | Description                          |
+| ------------ | ------------------------- | ------- | ------------------------------------ |
+| open         | `boolean`                 | -       | Controlled open state                |
+| onOpenChange | `(open: boolean) => void` | -       | Callback when open state changes     |
+| defaultOpen  | `boolean`                 | -       | Initial open state when uncontrolled |
+
+#### Dropdown.Trigger
+
+Inherits all props from `@radix-ui/react-popover.PopoverPrimitive.Trigger`
+
+| Prop    | Type      | Default | Description                        |
+| ------- | --------- | ------- | ---------------------------------- |
+| asChild | `boolean` | `false` | Whether to render as child element |
+
+#### Dropdown.FilterTrigger
+
+| Prop     | Type      | Default | Description                                    |
+| -------- | --------- | ------- | ---------------------------------------------- |
+| isActive | `boolean` | `false` | Whether the filter is active (affects styling) |
+| disabled | `boolean` | `false` | Whether the trigger is disabled                |
+
+#### Dropdown.Content
+
+Inherits all props from `@radix-ui/react-popover.PopoverPrimitive.Content`
+
+| Prop       | Type                              | Default    | Description                            |
+| ---------- | --------------------------------- | ---------- | -------------------------------------- |
+| align      | `"start" \| "center" \| "end"`    | `"center"` | Dropdown alignment relative to trigger |
+| sideOffset | `number`                          | `4`        | Distance from trigger element          |
+| appearance | `\{ contentClassName?: string \}` | -          | Additional styling configuration       |
+
+#### Dropdown.Item
+
+| Prop          | Type                                                  | Default | Description                                      |
+| ------------- | ----------------------------------------------------- | ------- | ------------------------------------------------ |
+| onClick       | `(event: React.MouseEvent\<HTMLDivElement\>) => void` | -       | Click handler                                    |
+| isDestructive | `boolean`                                             | `false` | Whether the item represents a destructive action |
+
+#### Dropdown.HoverRoot
+
+Inherits all props from `@radix-ui/react-hover-card.HoverCardPrimitive.Root`
+
+| Prop  | Type     | Default | Description                                     |
+| ----- | -------- | ------- | ----------------------------------------------- |
+| title | `string` | -       | **Required**: Text displayed for the hover item |
+
+#### Dropdown.HoverContent
+
+Inherits all props from `@radix-ui/react-hover-card.HoverCardPrimitive.Content`
+
+| Prop       | Type                                     | Default   | Description                     |
+| ---------- | ---------------------------------------- | --------- | ------------------------------- |
+| align      | `"start" \| "center" \| "end"`           | `"start"` | Submenu alignment               |
+| side       | `"top" \| "right" \| "bottom" \| "left"` | `"right"` | Which side to display submenu   |
+| sideOffset | `number`                                 | `2`       | Distance from parent item       |
+| appearance | `\{ wrapperClassName?: string \}`        | -         | Wrapper styling for scroll area |
+
+#### Dropdown.HoverItem
+
+| Prop    | Type                                                     | Default | Description                        |
+| ------- | -------------------------------------------------------- | ------- | ---------------------------------- |
+| onClick | `(event: React.MouseEvent\<HTMLButtonElement\>) => void` | -       | Click handler                      |
+| asChild | `boolean`                                                | `false` | Whether to render as child element |
+
+### Types
+
+```typescript
+export type FilterTriggerProps = React.ButtonHTMLAttributes\<HTMLButtonElement\> & \{
+  isActive?: boolean;
+  disabled?: boolean;
+\};
+
+export type ContentProps = React.ComponentProps\<typeof PopoverPrimitive.Content\> & \{
+  align?: "start" | "center" | "end";
+  sideOffset?: number;
+  appearance?: \{ contentClassName?: string \};
+\};
+
+export type HoverRootProps = React.ComponentProps\<typeof HoverCardPrimitive.Root\> & \{
+  title?: string;
+\};
+
+export type HoverContentProps = React.ComponentProps\<typeof HoverCardPrimitive.Content\> & \{
+  align?: "start" | "center" | "end";
+  sideOffset?: number;
+  side?: "top" | "right" | "bottom" | "left";
+  appearance?: \{ wrapperClassName?: string \};
+\};
+
+export type HoverItemProps = React.ButtonHTMLAttributes\<HTMLButtonElement\> & \{
+  asChild?: boolean;
+\};
+
+export type ItemProps = React.HTMLAttributes\<HTMLDivElement\> & \{
+  isDestructive?: boolean;
+\};
+```
+
+## Behavior
+
+- **Compound Component Pattern**: Use sub-components (Root, Trigger, Content, Item) together - no main Dropdown component
+- **Hover-Based Submenus**: 100ms delay for smooth hover interactions with automatic positioning
+- **State Management**: Supports both controlled (open/onOpenChange) and uncontrolled modes
+- **Accessibility**: Full keyboard navigation and ARIA support via Radix UI primitives
+
+**Filter Trigger**: Specialized trigger with visual state indicators for filter contexts
+**Nested Menus**: Built-in support for hover-triggered submenus with scrolling
+**Positioning**: Smart collision detection and viewport-aware alignment
+
+## Component Code
+
+```tsx
+import * as React from "react";
+
+import { cn } from "@muatmuat/lib/utils";
+import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
+
+import { IconComponent } from "../IconComponent";
+import {
+  ContentProps,
+  FilterTriggerProps,
+  HoverContentProps,
+  HoverItemProps,
+  HoverRootProps,
+  ItemProps,
+} from "./types";
+
+// 1. Root Component (Popover Wrapper)
+const Root = PopoverPrimitive.Root;
+const Trigger = PopoverPrimitive.Trigger;
+
+const FilterTrigger = React.forwardRef<HTMLButtonElement, FilterTriggerProps>(
+  ({ isActive = false, disabled = false, ...props }, ref) => (
+    <Trigger ref={ref} {...props} asChild>
+      <button
+        className={cn(
+          "flex h-8 w-[104px] items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 p-3",
+          isActive && "border-primary-700",
+          disabled && "bg-neutral-200"
+        )}
+      >
+        <span
+          className={cn(
+            `flex-grow text-left text-xs font-medium text-neutral-600`,
+            isActive && "text-primary-700"
+          )}
+        >
+          Filter
+        </span>
+        <IconComponent
+          src="/icons/filter16.svg"
+          className={cn(
+            `size-4 shrink-0 text-neutral-600`,
+            isActive && "text-primary-700"
+          )}
+        />
+      </button>
+    </Trigger>
+  )
+);
+FilterTrigger.displayName = "FilterTrigger";
+
+// 3. Content Component (The first-level dropdown content)
+const Content = React.forwardRef<HTMLDivElement, ContentProps>(
+  ({ className, align = "center", sideOffset = 4, ...props }, ref) => (
+    <PopoverPrimitive.Portal>
+      <PopoverPrimitive.Content
+        ref={ref}
+        align={align}
+        sideOffset={sideOffset}
+        className={cn(
+          "z-50 w-48 overflow-hidden rounded-md border border-neutral-400 bg-neutral-50 shadow-md outline-none animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          className
+        )}
+        {...props}
+      />
+    </PopoverPrimitive.Portal>
+  )
+);
+Content.displayName = PopoverPrimitive.Content.displayName;
+
+// 4. Item Component (An item in the first-level dropdown that triggers a sub-menu on hover)
+const HoverRoot: React.FC<HoverRootProps> = ({
+  title,
+  children,
+  className,
+}) => (
+  <HoverCardPrimitive.Root openDelay={100} closeDelay={100}>
+    <HoverCardPrimitive.Trigger asChild>
+      <div
+        className={cn(
+          "flex cursor-pointer items-center justify-between px-3 py-2 text-xs font-medium hover:bg-neutral-200 focus:outline-none",
+          className
+        )}
+        tabIndex={0}
+      >
+        <span>{title}</span>
+        <IconComponent
+          src="/icons/chevron-right.svg"
+          className="h-4 w-4 text-neutral-400"
+          alt={`Open submenu for ${title}`}
+        />
+      </div>
+    </HoverCardPrimitive.Trigger>
+    {children}
+  </HoverCardPrimitive.Root>
+);
+
+// 5. SubContent Component (The second-level dropdown content that appears on hover)
+const HoverContent = React.forwardRef<HTMLDivElement, HoverContentProps>(
+  (
+    {
+      className,
+      appearance = {
+        wrapperClassName: "",
+      },
+      align = "start",
+      sideOffset = 2,
+      side = "right",
+      ...props
+    },
+    ref
+  ) => (
+    <HoverCardPrimitive.Portal>
+      <HoverCardPrimitive.Content
+        ref={ref}
+        align={align}
+        sideOffset={sideOffset}
+        side={side}
+        className={cn(
+          "z-50 w-48 overflow-hidden rounded-md border border-neutral-400 bg-white text-neutral-900 shadow-lg outline-none animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          className
+        )}
+        {...props}
+      >
+        {/* Wrapper for fixed height and scrolling */}
+        <div
+          className={cn(
+            "flex max-h-48 flex-col overflow-y-auto",
+            appearance.wrapperClassName
+          )}
+        >
+          {props.children}
+        </div>
+      </HoverCardPrimitive.Content>
+    </HoverCardPrimitive.Portal>
+  )
+);
+HoverContent.displayName = HoverCardPrimitive.Content.displayName;
+
+// 6. SubItem Component (A clickable item within the SubContent)
+const HoverItem = React.forwardRef<HTMLButtonElement, HoverItemProps>(
+  ({ children, onClick, className, asChild = false, ...props }, ref) => {
+    if (asChild && React.isValidElement(children)) {
+      const childElement = children as React.ReactElement<any>;
+      return React.cloneElement(childElement, {
+        ...props,
+        ref,
+        onClick,
+        className: cn(
+          childElement.props.className, // keep child's classes
+          className // add parent classes
+        ),
+      });
+    }
+    return (
+      <button
+        onClick={onClick}
+        className={cn(
+          "flex h-8 w-full flex-shrink-0 items-center rounded px-2.5 text-left text-xs font-medium text-neutral-900 hover:bg-neutral-100 focus:outline-none focus-visible:bg-neutral-100",
+          className
+        )}
+      >
+        {children}
+      </button>
+    );
+  }
+);
+HoverItem.displayName = "HoverItem";
+
+const Item = React.forwardRef<HTMLDivElement, ItemProps>(
+  ({ children, onClick, className, isDestructive = false, ...props }, ref) => {
+    const baseClasses =
+      "flex h-[26px] w-full items-center px-3 py-[6px] text-left text-xs font-normal hover:bg-neutral-100 transition-colors cursor-pointer";
+
+    return (
+      <div
+        ref={ref}
+        role="menuitem"
+        tabIndex={-1} // Makes it focusable but not part of natural tab order (managed by Popover/Menu)
+        onClick={onClick}
+        className={cn(
+          baseClasses,
+          isDestructive ? "!text-error-500" : "text-neutral-900", // Red text for destructive action
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
+);
+Item.displayName = "DropdownItem";
+
+// Type definitions for the Dropdown components
+export type DropdownComponents = {
+  Root: typeof PopoverPrimitive.Root;
+  Trigger: typeof PopoverPrimitive.Trigger;
+  FilterTrigger: React.ForwardRefExoticComponent<
+    FilterTriggerProps & React.RefAttributes<HTMLButtonElement>
+  >;
+  Content: React.ForwardRefExoticComponent<
+    ContentProps & React.RefAttributes<HTMLDivElement>
+  >;
+  HoverRoot: React.FC<HoverRootProps>;
+  HoverContent: React.ForwardRefExoticComponent<
+    HoverContentProps & React.RefAttributes<HTMLDivElement>
+  >;
+  HoverItem: React.ForwardRefExoticComponent<
+    HoverItemProps & React.RefAttributes<HTMLButtonElement>
+  >;
+  Item: React.ForwardRefExoticComponent<
+    ItemProps & React.RefAttributes<HTMLDivElement>
+  >;
+};
+
+// Main Dropdown compound component
+const Dropdown = ({
+  children,
+  ...props
+}: {
+  children: React.ReactNode;
+  [key: string]: any;
+}) => {
+  return <Root {...props}>{children}</Root>;
+};
+
+// Attach sub-components to the main component
+Dropdown.Root = Root;
+Dropdown.Trigger = Trigger;
+Dropdown.FilterTrigger = FilterTrigger;
+Dropdown.Content = Content;
+Dropdown.HoverRoot = HoverRoot;
+Dropdown.HoverContent = HoverContent;
+Dropdown.HoverItem = HoverItem;
+Dropdown.Item = Item;
+
+Dropdown.displayName = "Dropdown";
+
+export { Dropdown };
+```
