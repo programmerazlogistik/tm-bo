@@ -14,7 +14,7 @@ const Sidebar = () => {
     {
       name: "Paket Subscription TM",
       icon: "/icons/sidebar/icon-cms-homepage.svg",
-      href: "/paket-subscription",
+      href: "/package-subscription",
     },
     {
       name: "Promo Subscription TM",
@@ -29,12 +29,12 @@ const Sidebar = () => {
     {
       name: "FAQ",
       icon: "/icons/sidebar/icon-cms-homepage.svg",
-      href: "/paket-subscription",
+      href: "/#",
     },
     {
       name: "Testimonials",
       icon: "/icons/sidebar/icon-cms-homepage.svg",
-      href: "/testimonials",
+      href: "/#",
     },
   ];
 
