@@ -13,7 +13,7 @@ const Sidebar = () => {
   const menuItems = [
     {
       name: "Paket Subscription TM",
-      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      icon: "/icons/sidebar/credit-card.svg",
       href: "/package-subscription",
     },
     {
@@ -23,17 +23,17 @@ const Sidebar = () => {
     },
     {
       name: "Setting Pengurangan",
-      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      icon: "/icons/sidebar/express-delivery.svg",
       href: "/setting-pengurangan",
     },
     {
       name: "FAQ",
-      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      icon: "/icons/sidebar/document.svg",
       href: "/#",
     },
     {
       name: "Testimonials",
-      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      icon: "/icons/sidebar/price.svg",
       href: "/#",
     },
   ];
@@ -79,12 +79,9 @@ const Sidebar = () => {
                         alt={item.name}
                         width={24}
                         height={24}
-                        color={"white"}
                       />
                     </div>
-                    <span className="text-sm font-semibold text-white">
-                      {item.name}
-                    </span>
+                    <span className="text-sm font-semibold">{item.name}</span>
                   </div>
                   <IconComponent
                     src="/icons/chevron-down-bo.svg"
@@ -108,7 +105,6 @@ const Sidebar = () => {
                         alt={item.name}
                         width={24}
                         height={24}
-                        color={"white"}
                       />
                     </div>
                     <span className="text-sm font-semibold text-white">
