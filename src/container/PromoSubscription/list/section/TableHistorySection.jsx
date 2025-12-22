@@ -1,27 +1,24 @@
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { cn } from "@muatmuat/lib/utils";
+import { Button } from "@muatmuat/ui/Button";
+import { Input } from "@muatmuat/ui/Form";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
-import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
-import { toast } from "@muatmuat/ui/Toaster";
 
-import { ActionDropdown } from "@/components/Dropdown/ActionDropdown";
+import { UserTypeLabel } from "@/container/PromoSubscription/utils/enum";
 
-import {
-  PromoStatus,
-  UserTypeLabel,
-} from "@/container/PromoSubscription/utils/enum";
-
-const TableActiveSection = ({
+const TableHistorySection = ({
   promos = [],
-  pagination: externalPagination,
+  pagination: _externalPagination,
   setPagination: setExternalPagination,
   sorting: externalSorting,
   setSorting: setExternalSorting,
   data,
   loading = false,
+  searchValue,
+  onSearchChange,
 }) => {
   const router = useRouter();
 
@@ -53,13 +50,6 @@ const TableActiveSection = ({
     }
   }, [sorting, setExternalSorting]);
 
-  const [modalState, setModalState] = useState({
-    isOpen: false,
-    type: null,
-    promo: null,
-  });
-  const [isProcessing, setIsProcessing] = useState(false);
-
   const formatDateTime = (dateString) => {
     if (!dateString) return "-";
     return new Date(dateString).toLocaleDateString("id-ID", {
@@ -75,31 +65,12 @@ const TableActiveSection = ({
     return new Intl.NumberFormat("id-ID").format(num);
   };
 
-  const handleEdit = useCallback(
-    (promo) => {
-      router.push(`/promo-subscription/${promo.id}/edit`);
-    },
-    [router]
-  );
-
   const handleDetail = useCallback(
     (promo) => {
       router.push(`/promo-subscription/${promo.id}/detail`);
     },
     [router]
   );
-
-  const handleAdd = useCallback(() => {
-    router.push("/promo-subscription/add");
-  }, [router]);
-
-  const openConfirmationModal = useCallback((type, promo) => {
-    setModalState({ isOpen: true, type, promo });
-  }, []);
-
-  const closeConfirmationModal = useCallback(() => {
-    setModalState({ isOpen: false, type: null, promo: null });
-  }, []);
 
   const columns = useMemo(
     () => [
@@ -110,53 +81,15 @@ const TableActiveSection = ({
         cell: ({ row }) => {
           const promo = row.original;
 
-          // Determine which actions to show based on status
-          const actions = [
-            {
-              title: "Detail",
-              onClick: () => handleDetail(promo),
-            },
-          ];
-
-          // If status is "RUNNING", add "Ubah" action
-          if (promo.status === PromoStatus.RUNNING) {
-            actions.push({
-              title: "Ubah",
-              onClick: () => handleEdit(promo),
-            });
-          }
-
-          // If status is "UPCOMING", add both "Ubah" and "Batalkan" actions
-          if (promo.status === PromoStatus.UPCOMING) {
-            actions.push(
-              {
-                title: "Ubah",
-                onClick: () => handleEdit(promo),
-              },
-              {
-                title: "Batalkan",
-                onClick: () => openConfirmationModal("cancel", promo),
-                className: "text-[#F71717]",
-              }
-            );
-          }
-
           return (
             <div className="relative">
-              <ActionDropdown.Root>
-                <ActionDropdown.Trigger />
-                <ActionDropdown.Content>
-                  {actions.map((item) => (
-                    <ActionDropdown.Item
-                      key={item.title}
-                      onClick={item.onClick}
-                      className={item.className}
-                    >
-                      {item.title}
-                    </ActionDropdown.Item>
-                  ))}
-                </ActionDropdown.Content>
-              </ActionDropdown.Root>
+              <Button
+                variant="muatparts-primary-secondary"
+                size="sm"
+                onClick={() => handleDetail(promo)}
+              >
+                Detail
+              </Button>
             </div>
           );
         },
@@ -176,20 +109,12 @@ const TableActiveSection = ({
           const status = row?.original?.status;
 
           // Map API status to Indonesian display
-          const statusMap = {
-            RUNNING: "Berjalan",
-            UPCOMING: "Akan Datang",
-            ENDED: "Berakhir",
-          };
-
-          const displayStatus = statusMap[status] || status;
+          const displayStatus = status === "ENDED" ? "Berakhir" : status;
 
           return (
             <span
               className={cn(
                 "text-sm font-semibold",
-                status === "RUNNING" && "text-green-500",
-                status === "UPCOMING" && "text-amber-500",
                 status === "ENDED" && "text-neutral-500"
               )}
             >
@@ -304,11 +229,31 @@ const TableActiveSection = ({
         enableSorting: true,
       },
     ],
-    []
+    [handleDetail]
   );
 
   return (
     <>
+      <section className="my-4 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <label
+            htmlFor="search"
+            className="shrink-0 whitespace-nowrap text-sm font-medium text-neutral-900"
+          >
+            Pencarian :
+          </label>
+          <div className="w-[240px]">
+            <Input
+              id="search"
+              name="search"
+              placeholder="Cari Promo"
+              value={searchValue}
+              onChange={(e) => onSearchChange(e.target.value)}
+            />
+          </div>
+        </div>
+      </section>
+
       <DataTableBO.Root
         columns={columns}
         data={promos}
@@ -335,56 +280,8 @@ const TableActiveSection = ({
           </>
         )}
       </DataTableBO.Root>
-
-      <ConfirmationModal
-        isOpen={modalState.isOpen}
-        setIsOpen={closeConfirmationModal}
-        variant="bo"
-        title={{
-          text: "Pemberitahuan",
-        }}
-        description={{
-          text:
-            modalState.type === "cancel" && modalState.promo
-              ? `Apakah Anda yakin ingin membatalkan promo ${modalState.promo.id}?`
-              : modalState.type === "delete" && modalState.promo
-                ? `Apakah Anda yakin ingin menghapus promo ${modalState.promo.id}?`
-                : "Apakah Anda yakin ingin melakukan tindakan ini?",
-        }}
-        cancel={{
-          text: "Batal",
-          disabled: isProcessing,
-        }}
-        confirm={{
-          text: isProcessing
-            ? "Memproses..."
-            : modalState.type === "cancel"
-              ? "Ya"
-              : "Hapus",
-          onClick: async () => {
-            setIsProcessing(true);
-            // Handle the action based on type
-            if (modalState.type === "cancel") {
-              // Handle cancellation logic here
-              console.log(`Promo ${modalState.promo.id} cancelled`);
-              // Simulate API call delay
-              await new Promise((resolve) => setTimeout(resolve, 1000));
-              // Show success toast
-              toast.success("Data berhasil disimpan");
-            } else if (modalState.type === "delete") {
-              // Handle deletion logic here
-              console.log(`Promo ${modalState.promo.id} deleted`);
-              // Simulate API call delay
-              await new Promise((resolve) => setTimeout(resolve, 1000));
-            }
-            setIsProcessing(false);
-            closeConfirmationModal();
-          },
-          disabled: isProcessing,
-        }}
-      />
     </>
   );
 };
 
-export default TableActiveSection;
+export default TableHistorySection;

@@ -1,5 +1,12 @@
 "use client";
 
+import { useParams } from "next/navigation";
+
+import FormEditPromoSubscription from "@/container/PromoSubscription/edit/FormEditPromoSubscription";
+
 export default function EditPromoSubscriptionPage() {
-  return <div>Edit Promo Subscription Page</div>;
+  const params = useParams();
+  const { id } = params;
+
+  return <FormEditPromoSubscription promoId={id} />;
 }
