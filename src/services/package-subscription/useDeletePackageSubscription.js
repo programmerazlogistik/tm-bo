@@ -3,14 +3,14 @@ import useSWRMutation from "swr/mutation";
 import { fetcherMuatparts } from "@/lib/axios";
 
 const deletePackageSubscriptionFn = async (url, { arg }) => {
-  return await fetcherMuatparts(`/api/package-subscription/${arg}`, {
+  return await fetcherMuatparts(`/v1/bo/subscription-tm/packages/${arg}`, {
     method: "DELETE",
   });
 };
 
 export const useDeletePackageSubscription = () => {
   const { trigger, isMutating, error } = useSWRMutation(
-    "/api/package-subscription",
+    "/v1/bo/subscription-tm/packages",
     deletePackageSubscriptionFn,
     {
       throwOnError: false,

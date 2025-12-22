@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { toast } from "@muatmuat/ui/Toaster";
 
-import { useUpdatePackageSubscriptionStatus } from "@/services/package-subscription/useUpdatePackageSubscriptionStatus";
+import { useUpdatePromoSectionStatus } from "@/services/cms-homepage/section-promo/useUpdatePromoSectionStatus";
 
 import Toggle from "@/components/Toggle/Toggle";
 
@@ -10,8 +10,8 @@ import ConfirmationModal from "./ConfirmationModal";
 
 const SuccessToggleModal = ({ isOpen, setOpen, type }) => {
   const descriptionMap = {
-    active: "Berhasil Mengaktifkan Paket",
-    inactive: "Berhasil Menonaktifkan Paket",
+    active: "Berhasil Mengaktifkan Promo",
+    inactive: "Berhasil Menonaktifkan Promo",
   };
   return (
     <ConfirmationModal
@@ -30,26 +30,22 @@ const SuccessToggleModal = ({ isOpen, setOpen, type }) => {
   );
 };
 
-const ToggleStatusModal = ({
-  isOpen,
-  setOpen,
-  type,
-  package: pkg,
-  onSuccess,
-}) => {
+const ToggleStatusModal = ({ isOpen, setOpen, type, promo, onSuccess }) => {
   const [isSuccessModalOpen, setSuccessModalOpen] = useState(false);
-  const { updatePackageSubscriptionStatus, isMutating } =
-    useUpdatePackageSubscriptionStatus();
+  const { updatePromoSectionStatus, isMutating } =
+    useUpdatePromoSectionStatus();
 
   const descriptionMap = {
-    active: "Apakah Anda yakin ingin mengaktifkan paket subscription ?",
-    inactive: "Apakah Anda yakin ingin menonaktifkan paket subscription ?",
+    active: "Apakah Anda yakin ingin mengaktifkan promo subscribe ?",
+    inactive: "Apakah Anda yakin ingin menonaktifkan promo subscribe ?",
   };
 
   const handleConfirm = async () => {
     try {
       const newStatus = type === "active";
-      await updatePackageSubscriptionStatus(pkg.id, newStatus);
+      await updatePromoSectionStatus(promo.id, {
+        status: newStatus,
+      });
 
       // Tutup modal konfirmasi dulu
       setOpen(false);
@@ -60,7 +56,7 @@ const ToggleStatusModal = ({
       }, 300);
     } catch (error) {
       toast.error(
-        error?.response?.data?.Message?.Text || "Gagal mengubah status paket"
+        error?.response?.data?.Message?.Text || "Gagal mengubah status promo"
       );
       setOpen(false);
     }
@@ -106,14 +102,14 @@ const ToggleStatusModal = ({
   );
 };
 
-const ToggleStatus = ({ package: pkg, onSuccess }) => {
+const ToggleStatus = ({ promo, onSuccess }) => {
   const [modalState, setModalState] = useState({
     isOpen: false,
     type: null,
   });
 
   const handleToggleClick = () => {
-    const type = pkg.isActive ? "inactive" : "active";
+    const type = promo.isActive ? "inactive" : "active";
     setModalState({ isOpen: true, type });
   };
 
@@ -123,12 +119,12 @@ const ToggleStatus = ({ package: pkg, onSuccess }) => {
 
   return (
     <>
-      <Toggle value={pkg.isActive} onClick={handleToggleClick} />
+      <Toggle value={promo.isActive} onClick={handleToggleClick} />
       <ToggleStatusModal
         isOpen={modalState.isOpen}
         setOpen={closeModal}
         type={modalState.type}
-        package={pkg}
+        promo={promo}
         onSuccess={onSuccess}
       />
     </>

@@ -76,20 +76,20 @@ const PackageSubscriptionList = ({
 
   const handleEdit = useCallback(
     (pkg) => {
-      router.push(`/master-data/package-subscription/edit/${pkg.id}`);
+      router.push(`/package-subscription/${pkg.id}/edit`);
     },
     [router]
   );
 
   const handleDetail = useCallback(
     (pkg) => {
-      router.push(`/master-data/package-subscription/detail/${pkg.id}`);
+      router.push(`/package-subscription/${pkg.id}/detail`);
     },
     [router]
   );
 
   const handleAdd = useCallback(() => {
-    router.push("/master-data/package-subscription/add");
+    router.push("/package-subscription/add");
   }, [router]);
 
   const handleDeletePackage = useCallback(async () => {
@@ -310,33 +310,38 @@ const PackageSubscriptionList = ({
       >
         <DataTableBO.Header>
           <div className="flex w-full justify-between">
-            <Input
-              value={
-                externalInputValue !== undefined
-                  ? externalInputValue
-                  : inputValue
-              }
-              onChange={(e) => {
-                const value = e.target.value;
-                if (onSearchChangeProp) {
-                  onSearchChangeProp(value);
-                } else {
-                  onSearchChange(value);
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-normal text-[#1B1B1B]">
+                Pencarian :
+              </span>
+              <Input
+                value={
+                  externalInputValue !== undefined
+                    ? externalInputValue
+                    : inputValue
                 }
-              }}
-              onKeyPress={(e) => {
-                if (onKeyPressProp) {
-                  onKeyPressProp(e);
-                }
-              }}
-              placeholder="Cari Paket"
-              className="h-8 w-[350px]"
-              appearance={{
-                containerClassName: "h-8 rounded-[6px] border-[#A8A8A8]",
-                inputClassName: "text-xs",
-              }}
-              withReset
-            />
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (onSearchChangeProp) {
+                    onSearchChangeProp(value);
+                  } else {
+                    onSearchChange(value);
+                  }
+                }}
+                onKeyPress={(e) => {
+                  if (onKeyPressProp) {
+                    onKeyPressProp(e);
+                  }
+                }}
+                placeholder="Cari Paket"
+                className="h-8 w-[232px]"
+                appearance={{
+                  containerClassName: "h-8 rounded-[6px] border-[#A8A8A8]",
+                  inputClassName: "text-xs",
+                }}
+                withReset
+              />
+            </div>
             <Button
               variant="muatparts-primary"
               className="h-8 rounded-[20px] bg-[#176CF7] text-sm font-semibold text-white"

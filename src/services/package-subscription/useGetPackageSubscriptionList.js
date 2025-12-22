@@ -12,107 +12,139 @@ const USE_MOCK = true;
 const mockPackageSubscriptionListResponse = {
   Message: {
     Code: 200,
-    Text: "OK",
+    Text: "Data paket subscription berhasil diambil",
   },
-  Data: [
-    {
-      id: "pkg-001",
-      packageName: "Basic",
-      position: 1,
-      startDate: "2025-07-01T00:00:00.000Z",
-      period: "7 Hari",
-      price: 30000000,
-      coin: 150,
-      isPopular: false,
-      status: true,
-      createdBy: "admin",
+  Data: {
+    packages: [
+      {
+        id: "pkg-001",
+        packageName: "Basic",
+        description: "Paket basic untuk kebutuhan standar",
+        startDate: "2025-07-01T00:00:00Z",
+        period: 7,
+        price: 3000000,
+        coinEarned: 500,
+        position: 2,
+        isPopular: false,
+        status: true,
+        purchaseLimitEnabled: true,
+        purchaseQuotaPerUser: 5,
+        isUnlimitedCoin: false,
+        subUserObtained: 2,
+        createdAt: "2025-01-01T00:00:00Z",
+        updatedAt: "2025-12-01T10:00:00Z",
+      },
+      {
+        id: "pkg-002",
+        packageName: "Business Pro",
+        description: "Paket untuk bisnis profesional",
+        startDate: "2025-08-20T00:00:00Z",
+        period: 90,
+        price: 300000000,
+        coinEarned: 1500,
+        position: 1,
+        isPopular: true,
+        status: true,
+        purchaseLimitEnabled: false,
+        purchaseQuotaPerUser: null,
+        isUnlimitedCoin: false,
+        subUserObtained: 10,
+        createdAt: "2025-01-01T00:00:00Z",
+        updatedAt: "2025-12-01T10:00:00Z",
+      },
+      {
+        id: "pkg-003",
+        packageName: "Enterprise",
+        description: "Paket enterprise dengan fitur lengkap",
+        startDate: "2025-12-31T00:00:00Z",
+        period: 30,
+        price: 300000000000,
+        coinEarned: 0,
+        position: 3,
+        isPopular: true,
+        status: true,
+        purchaseLimitEnabled: true,
+        purchaseQuotaPerUser: 3,
+        isUnlimitedCoin: true,
+        subUserObtained: 50,
+        createdAt: "2025-01-01T00:00:00Z",
+        updatedAt: "2025-12-01T10:00:00Z",
+      },
+      {
+        id: "pkg-004",
+        packageName: "Enterprise Pro",
+        description: "Paket enterprise premium",
+        startDate: "2025-12-31T00:00:00Z",
+        period: 30,
+        price: 300000000000,
+        coinEarned: 10000,
+        position: 4,
+        isPopular: false,
+        status: false,
+        purchaseLimitEnabled: false,
+        purchaseQuotaPerUser: null,
+        isUnlimitedCoin: false,
+        subUserObtained: 100,
+        createdAt: "2025-01-01T00:00:00Z",
+        updatedAt: "2025-12-01T10:00:00Z",
+      },
+    ],
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalData: 4,
+      limit: 10,
+      from: 1,
+      to: 4,
     },
-    {
-      id: "pkg-002",
-      packageName: "Business Pro",
-      position: 2,
-      startDate: "2025-08-20T00:00:00.000Z",
-      period: "90 Hari",
-      price: 300000000,
-      coin: 1500,
-      isPopular: false,
-      status: true,
-      createdBy: "admin",
-    },
-    {
-      id: "pkg-003",
-      packageName: "Enterprise",
-      position: 3,
-      startDate: "2025-12-31T00:00:00.000Z",
-      period: "30 Hari",
-      price: 300000000000,
-      coin: null, // Unlimited
-      isPopular: true,
-      status: true,
-      createdBy: "admin",
-    },
-    {
-      id: "pkg-004",
-      packageName: "Enterprise Pro",
-      position: 4,
-      startDate: "2025-12-31T00:00:00.000Z",
-      period: "30 Hari",
-      price: 300000000000,
-      coin: 10000,
-      isPopular: false,
-      status: false,
-      createdBy: "admin",
-    },
-  ],
-  Pagination: {
-    currentPage: 1,
-    totalPages: 1,
-    totalRecords: 4,
-    recordsPerPage: 10,
-    hasNext: false,
-    hasPrev: false,
   },
-  Type: "PACKAGE_SUBSCRIPTION_LIST",
+  Type: "GET_PACKAGES_SUCCESS",
 };
 
 /**
  * @typedef {object} PackageSubscriptionItem
  * @property {string} id
  * @property {string} packageName
- * @property {number} position
+ * @property {string} description
  * @property {string} startDate
- * @property {string} period
+ * @property {number} period
  * @property {number} price
- * @property {number|null} coin - null means unlimited
+ * @property {number} coinEarned
+ * @property {number} position
  * @property {boolean} isPopular
  * @property {boolean} status
- * @property {string|null} createdBy
+ * @property {boolean} purchaseLimitEnabled
+ * @property {number|null} purchaseQuotaPerUser
+ * @property {boolean} isUnlimitedCoin
+ * @property {number} subUserObtained
+ * @property {string} createdAt
+ * @property {string} updatedAt
  */
 
 /**
  * @typedef {object} PaginationInfo
  * @property {number} currentPage
  * @property {number} totalPages
- * @property {number} totalRecords
- * @property {number} recordsPerPage
- * @property {boolean} hasNext
- * @property {boolean} hasPrev
+ * @property {number} totalData
+ * @property {number} limit
+ * @property {number} from
+ * @property {number} to
  */
 
 /**
  * @typedef {object} PackageSubscriptionListResponse
- * @property {PackageSubscriptionItem[]} Data
- * @property {PaginationInfo} Pagination
+ * @property {PackageSubscriptionItem[]} packages
+ * @property {PaginationInfo} pagination
  */
 
 /**
  * Fetches package subscription list from API.
  * @param {object} params - Query parameters
- * @param {number} [params.page] - Page number
- * @param {number} [params.limit] - Records per page
- * @param {string} [params.search] - Search term
- * @param {string} [params.sortBy] - Column to sort by
- * @param {'asc'|'desc'} [params.sortOrder] - Sort order
+ * @param {number} [params.page] - Page number (min: 1)
+ * @param {number} [params.limit] - Records per page (max: 50)
+ * @param {string} [params.search] - Search term (min 3 characters)
+ * @param {string} [params.sort_by] - Column to sort by
+ * @param {'asc'|'desc'} [params.sort_order] - Sort order
  * @returns {Promise<PackageSubscriptionListResponse>}
  */
 export const getPackageSubscriptionList = async (params = {}) => {
@@ -121,10 +153,11 @@ export const getPackageSubscriptionList = async (params = {}) => {
     await new Promise((resolve) => setTimeout(resolve, 300));
     return mockPackageSubscriptionListResponse;
   } else {
-    const response = await fetcherMuatparts.get("/api/package-subscription", {
+    const response = await fetcherMuatparts("/v1/bo/subscription-tm/packages", {
+      method: "GET",
       params,
     });
-    return response.data;
+    return response;
   }
 };
 
@@ -134,8 +167,8 @@ export const getPackageSubscriptionList = async (params = {}) => {
  * @param {number} [params.page=1] - Page number
  * @param {number} [params.limit=10] - Records per page
  * @param {string} [params.search] - Search term
- * @param {string} [params.sortBy] - Column to sort by
- * @param {'asc'|'desc'} [params.sortOrder] - Sort order
+ * @param {string} [params.sortBy] - Column to sort by (will be converted to sort_by)
+ * @param {'asc'|'desc'} [params.sortOrder] - Sort order (will be converted to sort_order)
  * @param {object} [swrOptions] - Additional SWR options
  * @returns {{
  *   data: PackageSubscriptionListResponse | undefined,
@@ -146,9 +179,20 @@ export const getPackageSubscriptionList = async (params = {}) => {
  * }}
  */
 export const useGetPackageSubscriptionList = (params = {}, swrOptions = {}) => {
+  // Convert camelCase to snake_case for API
+  const apiParams = {
+    ...params,
+    sort_by: params.sortBy,
+    sort_order: params.sortOrder,
+  };
+
+  // Remove camelCase versions
+  delete apiParams.sortBy;
+  delete apiParams.sortOrder;
+
   // Build query string for SWR key
   const queryString = new URLSearchParams(
-    Object.entries(params).reduce((acc, [key, value]) => {
+    Object.entries(apiParams).reduce((acc, [key, value]) => {
       if (value !== undefined && value !== null && value !== "") {
         acc[key] = String(value);
       }
@@ -157,12 +201,12 @@ export const useGetPackageSubscriptionList = (params = {}, swrOptions = {}) => {
   ).toString();
 
   const key = queryString
-    ? `/api/package-subscription?${queryString}`
-    : "/api/package-subscription";
+    ? `/v1/bo/subscription-tm/packages?${queryString}`
+    : "/v1/bo/subscription-tm/packages";
 
   const { data, error, isValidating, mutate } = useSWR(
     key,
-    () => getPackageSubscriptionList(params),
+    () => getPackageSubscriptionList(apiParams),
     {
       revalidateOnFocus: false,
       ...swrOptions,
@@ -170,10 +214,11 @@ export const useGetPackageSubscriptionList = (params = {}, swrOptions = {}) => {
   );
 
   return {
-    data,
+    data: data?.Data, // Returns { packages: [...], pagination: {...} }
     isLoading: !error && !data,
     isValidating,
     error,
     mutate,
+    message: data?.Message,
   };
 };

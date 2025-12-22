@@ -4,23 +4,26 @@ import { fetcherMuatparts } from "@/lib/axios";
 
 const updatePackageSubscriptionStatusFn = async (url, { arg }) => {
   const { id, data } = arg;
-  return await fetcherMuatparts(`/api/package-subscription/${id}/status`, {
-    method: "PATCH",
-    data,
-  });
+  return await fetcherMuatparts(
+    `/v1/bo/subscription-tm/packages/${id}/status`,
+    {
+      method: "PATCH",
+      data,
+    }
+  );
 };
 
 export const useUpdatePackageSubscriptionStatus = () => {
   const { trigger, isMutating, error } = useSWRMutation(
-    "/api/package-subscription/status",
+    "/v1/bo/subscription-tm/packages/status",
     updatePackageSubscriptionStatusFn,
     {
       throwOnError: false,
     }
   );
 
-  const updatePackageSubscriptionStatus = async (id, data) => {
-    return await trigger({ id, data });
+  const updatePackageSubscriptionStatus = async (id, isActive) => {
+    return await trigger({ id, data: { isActive } });
   };
 
   return {

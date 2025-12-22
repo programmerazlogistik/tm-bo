@@ -27,14 +27,14 @@ const transformPackageItem = (item) => {
 
   return {
     id: item.id,
-    isActive: item.status || item.isActive || false,
-    posisi: item.position || item.posisi || "-",
-    namaPaket: item.packageName || item.namaPaket || "-",
-    mulaiBerlaku: formatDate(item.startDate || item.mulaiBerlaku),
-    periode: item.period || item.periode || "-",
+    isActive: item.status || false,
+    posisi: item.position || "-",
+    namaPaket: item.packageName || "-",
+    mulaiBerlaku: formatDate(item.startDate),
+    periode: item.period ? `${item.period} Hari` : "-",
     price: item.price || 0,
-    koin: item.coin || item.koin || 0,
-    terpopuler: item.isPopular || item.terpopuler || "-",
+    koin: item.isUnlimitedCoin ? "Unlimited" : item.coinEarned || 0,
+    terpopuler: item.isPopular ? "Ya" : "Tidak",
   };
 };
 
@@ -78,7 +78,7 @@ export default function PackageSubscriptionPage() {
 
   // Transform API data to component format
   const transformedData = useMemo(() => {
-    if (!apiData?.Data) {
+    if (!apiData?.packages) {
       return {
         packages: [],
         pagination: {
@@ -91,12 +91,12 @@ export default function PackageSubscriptionPage() {
     }
 
     return {
-      packages: apiData.Data.map(transformPackageItem),
+      packages: apiData.packages.map(transformPackageItem),
       pagination: {
-        currentPage: apiData.Pagination?.currentPage || 1,
-        itemsPerPage: apiData.Pagination?.recordsPerPage || pagination.pageSize,
-        totalItems: apiData.Pagination?.totalRecords || 0,
-        totalPages: apiData.Pagination?.totalPages || 0,
+        currentPage: apiData.pagination?.currentPage || 1,
+        itemsPerPage: apiData.pagination?.limit || pagination.pageSize,
+        totalItems: apiData.pagination?.totalData || 0,
+        totalPages: apiData.pagination?.totalPages || 0,
       },
     };
   }, [apiData, pagination.pageSize]);
