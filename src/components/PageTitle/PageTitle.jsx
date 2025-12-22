@@ -41,9 +41,8 @@ const PageTitle = ({
           onClick={onBackClick || handleBackClick}
         >
           <ArrowLeft
-            size={20}
             className={cn(
-              "stroke-[#176CF7] text-[#176CF7]",
+              "stroke-[#176CF7] stroke-2 font-bold text-[#176CF7]",
               appearance.iconClassName
             )}
           />
