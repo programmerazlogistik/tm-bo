@@ -61,6 +61,7 @@ function Page() {
   // State for search and pagination
   const [inputValue, setInputValue] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [sorting, setSorting] = useState([{ id: "no", desc: false }]);
 
   // Define columns for the table
   const columns = useMemo(
@@ -68,22 +69,27 @@ function Page() {
       {
         accessorKey: "no",
         header: "NO",
+        enableSorting: true,
       },
       {
         accessorKey: "modul",
         header: "Modul",
+        enableSorting: false,
       },
       {
         accessorKey: "keterangan",
         header: "Keterangan",
+        enableSorting: false,
       },
       {
         accessorKey: "penguranganKoin",
         header: "Pengurangan Koin",
+        enableSorting: false,
       },
       {
         accessorKey: "durasiFitur",
         header: "Durasi Fitur",
+        enableSorting: false,
       },
       {
         accessorKey: "status",
@@ -99,6 +105,7 @@ function Page() {
             {info.getValue()}
           </span>
         ),
+        enableSorting: false,
       },
       {
         accessorKey: "edit",
@@ -106,6 +113,7 @@ function Page() {
         cell: () => (
           <Edit className="h-5 cursor-pointer stroke-1 text-xs text-neutral-600" />
         ),
+        enableSorting: false,
       },
     ],
     []
@@ -162,7 +170,8 @@ function Page() {
         onSearchChange={handleSearchChange}
         pageCount={paginationData.totalPages}
         searchTerm={inputValue}
-        sorting={[]}
+        sorting={sorting}
+        onSortingChange={setSorting}
       >
         <DataTableBO.Header>
           <div className="flex w-full justify-between">

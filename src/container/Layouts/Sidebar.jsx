@@ -13,7 +13,7 @@ const Sidebar = () => {
   const menuItems = [
     {
       name: "Paket Subscription TM",
-      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      icon: "/icons/sidebar/credit-card.svg",
       href: "/package-subscription",
     },
     {
@@ -28,12 +28,12 @@ const Sidebar = () => {
     },
     {
       name: "FAQ",
-      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      icon: "/icons/sidebar/document.svg",
       href: "/#",
     },
     {
       name: "Testimonials",
-      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      icon: "/icons/sidebar/price.svg",
       href: "/#",
     },
   ];
