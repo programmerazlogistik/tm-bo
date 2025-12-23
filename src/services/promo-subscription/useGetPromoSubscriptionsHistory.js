@@ -1,23 +1,31 @@
 import useSWR from "swr";
 
+import { fetcherMuatparts } from "@/lib/axios";
+
 // --- Mock Data for History (API Contract Compliant - ENDED Status Only) ---
+const useMock = false;
+const endpoint = "/v1/bo/subscription-tm/promos/history";
 
 const MOCK_HISTORY_DATA = [
   {
     id: "3fa85f64-5717-4562-b3fc-2c963f66afc1",
+    promoId: "001",
     packageId: "1a85f64-5717-4562-b3fc-2c963f66afc1",
     packageName: "Basic",
     position: 1,
     status: "ENDED",
+    statusLabel: "Selesai",
     startDate: "2023-01-01T00:00:00Z",
     endDate: "2023-06-30T23:59:59Z",
     userTypes: ["NEW_USER"],
+    userTypesLabel: "User Baru",
     promoType: {
       discount: {
         discountAmount: 25000,
         discountPercentage: 25.0,
       },
     },
+    promoTypesLabel: "Discount",
     normalPrice: 100000,
     finalPrice: 75000,
     normalCoinsEarned: 25,
@@ -27,18 +35,22 @@ const MOCK_HISTORY_DATA = [
   },
   {
     id: "3fa85f64-5717-4562-b3fc-2c963f66afc2",
+    promoId: "002",
     packageId: "1a85f64-5717-4562-b3fc-2c963f66afc2",
     packageName: "Business",
     position: 2,
     status: "ENDED",
+    statusLabel: "Selesai",
     startDate: "2023-02-01T00:00:00Z",
     endDate: "2023-07-31T23:59:59Z",
     userTypes: ["NEW_USER", "EXISTING_USER"],
+    userTypesLabel: "User Baru, User Lama",
     promoType: {
       freeCoin: {
         bonusCoins: 15,
       },
     },
+    promoTypesLabel: "Free Coin",
     normalPrice: 150000,
     finalPrice: 150000,
     normalCoinsEarned: 50,
@@ -48,13 +60,16 @@ const MOCK_HISTORY_DATA = [
   },
   {
     id: "3fa85f64-5717-4562-b3fc-2c963f66afc3",
+    promoId: "003",
     packageId: "1a85f64-5717-4562-b3fc-2c963f66afc3",
     packageName: "Business Pro",
     position: 3,
     status: "ENDED",
+    statusLabel: "Selesai",
     startDate: "2023-03-01T00:00:00Z",
     endDate: "2023-08-31T23:59:59Z",
     userTypes: ["NEW_USER"],
+    userTypesLabel: "User Baru",
     promoType: {
       discount: {
         discountAmount: 100000,
@@ -64,6 +79,7 @@ const MOCK_HISTORY_DATA = [
         bonusCoins: 30,
       },
     },
+    promoTypesLabel: "Discount, Free Coin",
     normalPrice: 500000,
     finalPrice: 400000,
     normalCoinsEarned: 100,
@@ -71,282 +87,209 @@ const MOCK_HISTORY_DATA = [
     finalCoinsEarned: 130,
     createdAt: "2023-03-01T10:00:00Z",
   },
-  {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afc4",
-    packageId: "1a85f64-5717-4562-b3fc-2c963f66afc4",
-    packageName: "Enterprise",
-    position: 4,
-    status: "ENDED",
-    startDate: "2023-04-01T00:00:00Z",
-    endDate: "2023-09-30T23:59:59Z",
-    userTypes: ["EXISTING_USER"],
-    promoType: {
-      discount: {
-        discountAmount: 150000,
-        discountPercentage: 15.0,
-      },
-    },
-    normalPrice: 1000000,
-    finalPrice: 850000,
-    normalCoinsEarned: 200,
-    freeCoinsEarned: null,
-    finalCoinsEarned: 200,
-    createdAt: "2023-04-01T10:00:00Z",
-  },
-  {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afc5",
-    packageId: "1a85f64-5717-4562-b3fc-2c963f66afc5",
-    packageName: "Enterprise Pro",
-    position: 5,
-    status: "ENDED",
-    startDate: "2023-05-01T00:00:00Z",
-    endDate: "2023-10-31T23:59:59Z",
-    userTypes: ["NEW_USER", "EXISTING_USER"],
-    promoType: {
-      freeCoin: {
-        bonusCoins: 200,
-      },
-    },
-    normalPrice: 1500000,
-    finalPrice: 1500000,
-    normalCoinsEarned: 500,
-    freeCoinsEarned: 200,
-    finalCoinsEarned: 700,
-    createdAt: "2023-05-01T10:00:00Z",
-  },
-  {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afc6",
-    packageId: "1a85f64-5717-4562-b3fc-2c963f66afc6",
-    packageName: "Starter Pack",
-    position: 6,
-    status: "ENDED",
-    startDate: "2023-06-01T00:00:00Z",
-    endDate: "2023-11-30T23:59:59Z",
-    userTypes: ["NEW_USER"],
-    promoType: {
-      discount: {
-        discountAmount: 20000,
-        discountPercentage: 20.0,
-      },
-    },
-    normalPrice: 100000,
-    finalPrice: 80000,
-    normalCoinsEarned: 30,
-    freeCoinsEarned: null,
-    finalCoinsEarned: 30,
-    createdAt: "2023-06-01T10:00:00Z",
-  },
-  {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afc7",
-    packageId: "1a85f64-5717-4562-b3fc-2c963f66afc7",
-    packageName: "Premium Package",
-    position: 7,
-    status: "ENDED",
-    startDate: "2023-07-01T00:00:00Z",
-    endDate: "2023-12-31T23:59:59Z",
-    userTypes: ["EXISTING_USER"],
-    promoType: {
-      discount: {
-        discountAmount: 30000,
-        discountPercentage: 20.0,
-      },
-      freeCoin: {
-        bonusCoins: 20,
-      },
-    },
-    normalPrice: 150000,
-    finalPrice: 120000,
-    normalCoinsEarned: 50,
-    freeCoinsEarned: 20,
-    finalCoinsEarned: 70,
-    createdAt: "2023-07-01T10:00:00Z",
-  },
-  {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afc8",
-    packageId: "1a85f64-5717-4562-b3fc-2c963f66afc8",
-    packageName: "Gold Subscription",
-    position: 8,
-    status: "ENDED",
-    startDate: "2023-08-01T00:00:00Z",
-    endDate: "2024-01-31T23:59:59Z",
-    userTypes: ["NEW_USER", "EXISTING_USER"],
-    promoType: {
-      freeCoin: {
-        bonusCoins: 50,
-      },
-    },
-    normalPrice: 500000,
-    finalPrice: 500000,
-    normalCoinsEarned: 100,
-    freeCoinsEarned: 50,
-    finalCoinsEarned: 150,
-    createdAt: "2023-08-01T10:00:00Z",
-  },
-  {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afc9",
-    packageId: "1a85f64-5717-4562-b3fc-2c963f66afc9",
-    packageName: "Silver Plan",
-    position: 9,
-    status: "ENDED",
-    startDate: "2023-09-01T00:00:00Z",
-    endDate: "2024-02-29T23:59:59Z",
-    userTypes: ["NEW_USER"],
-    promoType: {
-      discount: {
-        discountAmount: 200000,
-        discountPercentage: 20.0,
-      },
-    },
-    normalPrice: 1000000,
-    finalPrice: 800000,
-    normalCoinsEarned: 150,
-    freeCoinsEarned: null,
-    finalCoinsEarned: 150,
-    createdAt: "2023-09-01T10:00:00Z",
-  },
-  {
-    id: "3fa85f64-5717-4562-b3fc-2c963f66afca",
-    packageId: "1a85f64-5717-4562-b3fc-2c963f66afca",
-    packageName: "Platinum Package",
-    position: 10,
-    status: "ENDED",
-    startDate: "2023-10-01T00:00:00Z",
-    endDate: "2024-03-31T23:59:59Z",
-    userTypes: ["EXISTING_USER"],
-    promoType: {
-      discount: {
-        discountAmount: 300000,
-        discountPercentage: 20.0,
-      },
-      freeCoin: {
-        bonusCoins: 100,
-      },
-    },
-    normalPrice: 1500000,
-    finalPrice: 1200000,
-    normalCoinsEarned: 300,
-    freeCoinsEarned: 100,
-    finalCoinsEarned: 400,
-    createdAt: "2023-10-01T10:00:00Z",
-  },
 ];
 
 // --- Fetcher ---
 
 const fetcher = async (params) => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  let filtered = [...MOCK_HISTORY_DATA];
-
-  // 1. Filter by general search term
-  if (params.filters?.search) {
-    const searchTerm = params.filters.search.toLowerCase();
-    filtered = filtered.filter(
-      (item) =>
-        item.id.toLowerCase().includes(searchTerm) ||
-        item.packageName.toLowerCase().includes(searchTerm) ||
-        (item.userTypes &&
-          item.userTypes.some((u) => u.toLowerCase().includes(searchTerm)))
-    );
-  }
-
-  // 2. Filter by Paket
-  if (params.filters?.paket && params.filters.paket.length > 0) {
-    filtered = filtered.filter((item) =>
-      params.filters.paket.includes(item.packageName)
-    );
-  }
-
-  // 3. Filter by User Types (NEW_USER, EXISTING_USER)
-  if (params.filters?.user && params.filters.user.length > 0) {
-    filtered = filtered.filter((item) =>
-      item.userTypes.some((u) => params.filters.user.includes(u))
-    );
-  }
-
-  // 4. Filter by Promo Type (DISCOUNT, FREE_COIN)
-  if (params.filters?.promoType && params.filters.promoType.length > 0) {
-    filtered = filtered.filter((item) => {
-      const hasDiscount = item.promoType.discount !== undefined;
-      const hasFreeCoin = item.promoType.freeCoin !== undefined;
-
-      return params.filters.promoType.some((type) => {
-        if (type === "DISCOUNT") return hasDiscount;
-        if (type === "FREE_COIN") return hasFreeCoin;
-        return false;
-      });
-    });
-  }
-
-  // 5. Filter by Date Range
-  if (params.filters?.startDate && params.filters?.endDate) {
-    const start =
-      params.filters.startDate instanceof Date
-        ? params.filters.startDate.getTime()
-        : new Date(params.filters.startDate).getTime();
-    const end =
-      params.filters.endDate instanceof Date
-        ? params.filters.endDate.getTime()
-        : new Date(params.filters.endDate).getTime();
-
-    filtered = filtered.filter((item) => {
-      const itemStart = new Date(item.startDate).getTime();
-      const itemEnd = new Date(item.endDate).getTime();
-      return itemStart <= end && itemEnd >= start;
-    });
-  }
-
-  // Sorting
-  if (params.sorting && params.sorting.length > 0) {
-    const sortConfig = params.sorting[0];
-    const { id: sortField, desc: isDescending } = sortConfig;
-
-    filtered.sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
-
-      if (sortField === "startDate" || sortField === "endDate") {
-        aValue = new Date(aValue).getTime();
-        bValue = new Date(bValue).getTime();
-      }
-
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        return isDescending ? bValue - aValue : aValue - bValue;
-      }
-
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        const comparison = aValue.localeCompare(bValue, "id-ID");
-        return isDescending ? -comparison : comparison;
-      }
-
-      if (Array.isArray(aValue) && Array.isArray(bValue)) {
-        const aStr = aValue.join(", ");
-        const bStr = bValue.join(", ");
-        const comparison = aStr.localeCompare(bStr, "id-ID");
-        return isDescending ? -comparison : comparison;
-      }
-
-      if (aValue < bValue) return isDescending ? 1 : -1;
-      if (aValue > bValue) return isDescending ? -1 : 1;
-      return 0;
-    });
-  }
-
-  // Pagination
-  const totalItems = filtered.length;
-  const totalPages = Math.ceil(totalItems / params.limit);
-  const start = (params.page - 1) * params.limit;
-  const paginatedItems = filtered.slice(start, start + params.limit);
-
-  return {
-    items: paginatedItems,
-    pagination: {
-      currentPage: params.page,
-      totalPages,
-      totalItems,
-      itemsPerPage: params.limit,
-    },
+  // Helper maps for UI -> API values
+  const mapUserType = {
+    "User Baru": "NEW_USER",
+    "User Lama": "EXISTING_USER",
   };
+
+  const mapPromoType = {
+    Discount: "DISCOUNT",
+    "Free Coin": "FREE_COIN",
+  };
+
+  if (useMock) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    let filtered = [...MOCK_HISTORY_DATA];
+
+    // 1. Filter by general search term
+    if (params.filters?.search && params.filters.search.length >= 3) {
+      const searchTerm = params.filters.search.toLowerCase();
+      filtered = filtered.filter(
+        (item) =>
+          item.packageName.toLowerCase().includes(searchTerm) ||
+          item.statusLabel.toLowerCase().includes(searchTerm) ||
+          item.userTypesLabel.toLowerCase().includes(searchTerm) ||
+          item.promoTypesLabel.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Filter by ID
+    if (params.filters?.id) {
+      filtered = filtered.filter((item) =>
+        item.promoId.toLowerCase().includes(params.filters.id.toLowerCase())
+      );
+    }
+
+    // Filter by Paket (paketSubscription)
+    if (
+      params.filters?.paketSubscription &&
+      params.filters.paketSubscription.length > 0
+    ) {
+      filtered = filtered.filter((item) =>
+        params.filters.paketSubscription.includes(item.packageName)
+      );
+    }
+
+    // Filter by User Types
+    if (params.filters?.user && params.filters.user.length > 0) {
+      const selectedUserTypes = params.filters.user
+        .map((u) => mapUserType[u])
+        .filter(Boolean);
+      if (selectedUserTypes.length > 0) {
+        filtered = filtered.filter((item) =>
+          item.userTypes.some((u) => selectedUserTypes.includes(u))
+        );
+      }
+    }
+
+    // Filter by Promo Type
+    if (params.filters?.tipePromo && params.filters.tipePromo.length > 0) {
+      const selectedPromoTypes = params.filters.tipePromo
+        .map((t) => mapPromoType[t])
+        .filter(Boolean);
+
+      if (selectedPromoTypes.length > 0) {
+        filtered = filtered.filter((item) => {
+          const hasDiscount = item.promoType.discount !== undefined;
+          const hasFreeCoin = item.promoType.freeCoin !== undefined;
+
+          return selectedPromoTypes.some((type) => {
+            if (type === "DISCOUNT") return hasDiscount;
+            if (type === "FREE_COIN") return hasFreeCoin;
+            return false;
+          });
+        });
+      }
+    }
+
+    // Filter by Date Range
+    if (params.filters?.startDate && params.filters?.endDate) {
+      const start =
+        params.filters.startDate instanceof Date
+          ? params.filters.startDate.getTime()
+          : new Date(params.filters.startDate).getTime();
+      const end =
+        params.filters.endDate instanceof Date
+          ? params.filters.endDate.getTime()
+          : new Date(params.filters.endDate).getTime();
+
+      filtered = filtered.filter((item) => {
+        const itemStart = new Date(item.startDate).getTime();
+        const itemEnd = new Date(item.endDate).getTime();
+        return itemStart <= end && itemEnd >= start;
+      });
+    }
+
+    // Sorting
+    if (params.sorting && params.sorting.length > 0) {
+      const sortConfig = params.sorting[0];
+      const { id: sortField, desc: isDescending } = sortConfig;
+
+      filtered.sort((a, b) => {
+        let aValue = a[sortField];
+        let bValue = b[sortField];
+
+        // Map sorting fields if necessary
+        if (sortField === "startDate" || sortField === "endDate") {
+          aValue = new Date(aValue).getTime();
+          bValue = new Date(bValue).getTime();
+        }
+
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          return isDescending ? bValue - aValue : aValue - bValue;
+        }
+
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          const comparison = aValue.localeCompare(bValue, "id-ID");
+          return isDescending ? -comparison : comparison;
+        }
+
+        if (aValue < bValue) return isDescending ? 1 : -1;
+        if (aValue > bValue) return isDescending ? -1 : 1;
+        return 0;
+      });
+    }
+
+    // Pagination
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / params.limit);
+    const start = (params.page - 1) * params.limit;
+    const paginatedItems = filtered.slice(start, start + params.limit);
+
+    return {
+      items: paginatedItems,
+      pagination: {
+        currentPage: params.page,
+        totalPages,
+        totalItems,
+        itemsPerPage: params.limit,
+        hasNextPage: params.page < totalPages,
+        hasPreviousPage: params.page > 1,
+      },
+    };
+  } else {
+    // Real API Call
+    const queryParams = {
+      page: params.page,
+      limit: params.limit,
+      search:
+        params.filters?.search?.length >= 3 ? params.filters.search : undefined,
+      sort: params.sorting?.[0]?.id,
+      order: params.sorting?.[0]?.desc ? "desc" : "asc",
+      filterId: params.filters?.id,
+      filterPackageIds: params.filters?.paketSubscription?.join(","),
+      filterStartDate: params.filters?.startDate
+        ? (() => {
+            const d = new Date(params.filters.startDate);
+            d.setHours(0, 0, 0, 0);
+            return d.toISOString();
+          })()
+        : undefined,
+      filterEndDate: params.filters?.endDate
+        ? (() => {
+            const d = new Date(params.filters.endDate);
+            d.setHours(23, 59, 59, 999);
+            return d.toISOString();
+          })()
+        : undefined,
+
+      filterUserTypes: params.filters?.user
+        ?.map((u) => mapUserType[u])
+        .filter(Boolean)
+        .join(","),
+
+      filterPromoTypes: params.filters?.tipePromo
+        ?.map((t) => mapPromoType[t] || t)
+        .filter(Boolean)
+        .join(","),
+    };
+
+    // Remove undefined/null/empty params
+    Object.keys(queryParams).forEach(
+      (key) =>
+        (queryParams[key] === undefined ||
+          queryParams[key] === null ||
+          queryParams[key] === "") &&
+        delete queryParams[key]
+    );
+
+    const response = await fetcherMuatparts.get(endpoint, {
+      params: queryParams,
+    });
+
+    const data = response.data?.Data;
+    return {
+      items: data?.items || data?.promos || [],
+      pagination: data?.pagination || {},
+    };
+  }
 };
 
 // --- Hook ---

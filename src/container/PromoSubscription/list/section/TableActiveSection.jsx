@@ -7,12 +7,11 @@ import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
 import { toast } from "@muatmuat/ui/Toaster";
 
+import { useCancelPromoSubscription } from "@/services/promo-subscription/useCancelPromoSubscription";
+
 import { ActionDropdown } from "@/components/Dropdown/ActionDropdown";
 
-import {
-  PromoStatus,
-  UserTypeLabel,
-} from "@/container/PromoSubscription/utils/enum";
+import { PromoStatus } from "@/container/PromoSubscription/utils/enum";
 
 const TableActiveSection = ({
   promos = [],
@@ -22,8 +21,11 @@ const TableActiveSection = ({
   setSorting: setExternalSorting,
   data,
   loading = false,
+  mutate,
 }) => {
   const router = useRouter();
+  const { cancelSubscription, isLoading: isCancelLoading } =
+    useCancelPromoSubscription();
 
   const { sorting, setSorting, pagination, setPagination } = useDataTable();
 
@@ -163,7 +165,7 @@ const TableActiveSection = ({
         enableSorting: false,
       },
       {
-        accessorKey: "id",
+        accessorKey: "promoId",
         header: "ID",
         headerClassName: "font-semibold",
         enableSorting: true,
@@ -174,15 +176,7 @@ const TableActiveSection = ({
         header: "Status",
         cell: ({ row }) => {
           const status = row?.original?.status;
-
-          // Map API status to Indonesian display
-          const statusMap = {
-            RUNNING: "Berjalan",
-            UPCOMING: "Akan Datang",
-            ENDED: "Berakhir",
-          };
-
-          const displayStatus = statusMap[status] || status;
+          const statusLabel = row?.original?.statusLabel;
 
           return (
             <span
@@ -193,7 +187,7 @@ const TableActiveSection = ({
                 status === "ENDED" && "text-neutral-500"
               )}
             >
-              {displayStatus}
+              {statusLabel || status}
             </span>
           );
         },
@@ -224,16 +218,7 @@ const TableActiveSection = ({
         accessorKey: "userTypes",
         header: "User",
         cell: ({ row }) => {
-          const userTypes = row.original.userTypes;
-          if (!userTypes) return "-";
-
-          if (Array.isArray(userTypes)) {
-            return userTypes
-              .map((type) => UserTypeLabel[type] || type)
-              .join(", ");
-          }
-
-          return UserTypeLabel[userTypes] || userTypes;
+          return row.original.userTypesLabel || "-";
         },
         enableSorting: true,
       },
@@ -242,24 +227,20 @@ const TableActiveSection = ({
         accessorKey: "promoType",
         header: "Tipe Promo",
         cell: ({ row }) => {
-          const promoType = row.original.promoType;
-          if (!promoType) return "-";
-
-          const types = [];
-          if (promoType.discount) types.push("Discount");
-          if (promoType.freeCoin) types.push("Free Coin");
-
-          return types.length > 0 ? types.join(", ") : "-";
+          return row.original.promoTypesLabel || "-";
         },
         enableSorting: true,
       },
       {
         headerClassName: "font-semibold",
-        accessorKey: "promoPrice",
+        accessorKey: "finalPrice", // Sorting key needs to match API param
         header: "Harga Promo",
         cell: ({ row }) => {
-          const normalPrice = row.original.normalPrice;
-          const finalPrice = row.original.finalPrice;
+          const pricing = row.original.pricing;
+          if (!pricing) return "-";
+
+          const normalPrice = pricing.normalPrice;
+          const finalPrice = pricing.finalPrice;
 
           // If normalPrice equals finalPrice, no discount applied
           if (normalPrice === finalPrice) {
@@ -279,24 +260,30 @@ const TableActiveSection = ({
       },
       {
         headerClassName: "font-semibold",
-        accessorKey: "freeCoin",
+        accessorKey: "finalCoinsEarned", // Sorting key needs to match API param
         header: "Free Coin",
         cell: ({ row }) => {
-          const normalCoinsEarned = row.original.normalCoinsEarned;
-          const freeCoinsEarned = row.original.freeCoinsEarned;
-          const finalCoinsEarned = row.original.finalCoinsEarned;
+          const coins = row.original.coins;
+          if (!coins) return "-";
+
+          const normalCoins = coins.normalCoins;
+          const bonusCoins = coins.bonusCoins;
+          const totalCoins = coins.totalCoins;
+          const isUnlimited = row.original.isUnlimitedCoin;
+
+          if (isUnlimited) return "Unlimited";
 
           // If no free coins, just show normal coins
-          if (!freeCoinsEarned) {
-            return <span>{formatNumber(normalCoinsEarned)}</span>;
+          if (!bonusCoins) {
+            return <span>{formatNumber(normalCoins)}</span>;
           }
 
           // Show normal coins + bonus
           return (
             <div className="flex flex-col">
-              <span>{formatNumber(finalCoinsEarned)}</span>
+              <span>{formatNumber(totalCoins)}</span>
               <span className="text-sm text-gray-500">
-                (+{formatNumber(freeCoinsEarned)} bonus)
+                (+{formatNumber(bonusCoins)} bonus)
               </span>
             </div>
           );
@@ -316,7 +303,11 @@ const TableActiveSection = ({
         paginationData={{
           currentPage: pagination?.pageIndex + 1 || 1,
           totalPages: data?.pagination?.totalPages || 1,
-          totalItems: data?.pagination?.totalItems || 0,
+          totalItems:
+            data?.pagination?.totalItems ||
+            data?.pagination?.totalRecords ||
+            data?.pagination?.TotalData ||
+            0,
           itemsPerPage: pagination?.pageSize || 10,
         }}
         pagination={pagination}
@@ -345,32 +336,50 @@ const TableActiveSection = ({
         }}
         description={{
           text:
-            modalState.type === "cancel" && modalState.promo
-              ? `Apakah Anda yakin ingin membatalkan promo ${modalState.promo.id}?`
-              : modalState.type === "delete" && modalState.promo
-                ? `Apakah Anda yakin ingin menghapus promo ${modalState.promo.id}?`
-                : "Apakah Anda yakin ingin melakukan tindakan ini?",
+            modalState.type === "cancel" && modalState.promo ? (
+              <span>
+                Apakah Anda yakin ingin membatalkan promo{" "}
+                <strong>{modalState.promo.promoId}</strong> ?
+              </span>
+            ) : modalState.type === "delete" && modalState.promo ? (
+              <span>
+                Apakah Anda yakin ingin menghapus promo{" "}
+                <strong>{modalState.promo.promoId}</strong> ?
+              </span>
+            ) : null,
         }}
         cancel={{
           text: "Batal",
           disabled: isProcessing,
         }}
         confirm={{
-          text: isProcessing
-            ? "Memproses..."
-            : modalState.type === "cancel"
-              ? "Ya"
-              : "Hapus",
+          text:
+            isProcessing || isCancelLoading
+              ? "Memproses..."
+              : modalState.type === "cancel"
+                ? "Ya"
+                : "Hapus",
           onClick: async () => {
             setIsProcessing(true);
             // Handle the action based on type
             if (modalState.type === "cancel") {
-              // Handle cancellation logic here
-              console.log(`Promo ${modalState.promo.id} cancelled`);
-              // Simulate API call delay
-              await new Promise((resolve) => setTimeout(resolve, 1000));
-              // Show success toast
-              toast.success("Data berhasil disimpan");
+              try {
+                // Call the cancel API
+                const response = await cancelSubscription(modalState.promo.id);
+
+                if (response?.Message?.Code === 200) {
+                  // Show success toast
+                  toast.success("Promo berhasil dibatalkan");
+                  // Use mutate to refresh the data
+                  if (mutate) {
+                    await mutate();
+                  }
+                } else {
+                  toast.error("Gagal membatalkan promo");
+                }
+              } catch (error) {
+                toast.error(error.message || "Gagal membatalkan promo");
+              }
             } else if (modalState.type === "delete") {
               // Handle deletion logic here
               console.log(`Promo ${modalState.promo.id} deleted`);
@@ -380,7 +389,7 @@ const TableActiveSection = ({
             setIsProcessing(false);
             closeConfirmationModal();
           },
-          disabled: isProcessing,
+          disabled: isProcessing || isCancelLoading,
         }}
       />
     </>

@@ -167,32 +167,27 @@ const PromoSubscriptionList = () => {
           />
 
           {/* Show error state */}
-          {error && (
+          {error ? (
             <div className="rounded-md bg-red-50 p-4 text-red-700">
-              Error loading data: {error.message}
+              <p className="text-center">Data tidak ditemukan</p>
             </div>
+          ) : (
+            <TableActiveSection
+              promos={data?.items || []}
+              pagination={pagination}
+              setPagination={handlePaginationChange}
+              sorting={sorting}
+              setSorting={setSorting}
+              data={data}
+              loading={loading}
+              mutate={mutate}
+            />
           )}
-
-          <TableActiveSection
-            promos={data?.items || []}
-            pagination={pagination}
-            setPagination={handlePaginationChange}
-            sorting={sorting}
-            setSorting={setSorting}
-            data={data}
-            loading={loading}
-          />
         </>
       ) : (
         <>
-          {/* Show error state for history */}
-          {historyError && (
-            <div className="rounded-md bg-red-50 p-4 text-red-700">
-              Error loading data: {historyError.message}
-            </div>
-          )}
-
           <TableHistorySection
+            historyError={historyError}
             promos={historyData?.items || []}
             pagination={historyPagination}
             setPagination={handleHistoryPaginationChange}

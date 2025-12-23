@@ -6,20 +6,13 @@ import { DatePickerWeb } from "@muatmuat/ui/Calendar";
 import { Input } from "@muatmuat/ui/Form";
 import { Controller } from "react-hook-form";
 
-import { MultiSelect } from "@/components/Select/MultiSelect";
+import { useGetPackageSubscriptionList } from "@/services/package-subscription/useGetPackageSubscriptionList";
 
-// Mock data for the new dropdowns
-const paketOptions = [
-  { value: "Business", label: "Business" },
-  { value: "Business Pro", label: "Business Pro" },
-  { value: "Enterprise", label: "Enterprise" },
-  { value: "Enterprise Pro", label: "Enterprise Pro" },
-];
+import { MultiSelect } from "@/components/Select/MultiSelect";
 
 const statusOptions = [
   { value: "Berjalan", label: "Berjalan" },
   { value: "Akan Datang", label: "Akan Datang" },
-  { value: "Selesai", label: "Selesai" },
 ];
 
 const userOptions = [
@@ -30,14 +23,6 @@ const userOptions = [
   {
     value: "User Lama",
     label: "User Lama",
-  },
-  {
-    value: "Seller Muatparts Mart",
-    label: "Seller Muatparts Mart",
-  },
-  {
-    value: "Semua Pengguna",
-    label: "Semua Pengguna",
   },
 ];
 
@@ -62,6 +47,20 @@ const FilterSection = ({
   handleSubmit,
   activeTab,
 }) => {
+  // Fetch packages for filter options
+  const { data: packageData, isLoading: isLoadingPackages } =
+    useGetPackageSubscriptionList({
+      limit: 50, // Fetch enough to show in dropdown
+      sort_by: "packageName",
+      sort_order: "asc",
+    });
+
+  const paketOptions =
+    packageData?.packages?.map((pkg) => ({
+      value: pkg.id,
+      label: pkg.packageName,
+    })) || [];
+
   if (!isFilterOpen) return null;
 
   return (
@@ -127,8 +126,13 @@ const FilterSection = ({
                     value={Array.isArray(field.value) ? field.value : []}
                     onValueChange={field.onChange}
                     options={paketOptions}
-                    placeholder="Pilih Paket Subscription"
+                    placeholder={
+                      isLoadingPackages
+                        ? "Loading..."
+                        : "Pilih Paket Subscription"
+                    }
                     selectAllText="Semua Paket"
+                    disabled={isLoadingPackages}
                   >
                     <MultiSelect.Trigger className="flex-1" />
                     <MultiSelect.Content>

@@ -6,7 +6,7 @@ import DetailHistoryPromoSubscription from "@/container/PromoSubscription/detail
 
 export default function DetailHistoryPromoSubscriptionPage() {
   const params = useParams();
-  const { id: promoId, logId } = params;
+  const { id, logId } = params;
 
-  return <DetailHistoryPromoSubscription promoId={promoId} logId={logId} />;
+  return <DetailHistoryPromoSubscription id={id} historyId={logId} />;
 }

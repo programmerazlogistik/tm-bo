@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@muatmuat/ui/Button";
 import { DateTimePickerWeb } from "@muatmuat/ui/Calendar";
@@ -6,88 +7,101 @@ import { Input } from "@muatmuat/ui/Form";
 import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { toast } from "@muatmuat/ui/Toaster";
 import { Controller, useForm } from "react-hook-form";
+import { mutate } from "swr";
 
+import { useGetPackageSubscriptionList } from "@/services/package-subscription/useGetPackageSubscriptionList";
 import { useCreatePromoSubscription } from "@/services/promo-subscription/useCreatePromoSubscription";
 
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { MultiSelect } from "@/components/Select/MultiSelect";
 
-// Validation schema removed - using manual validation with modals instead
+import { UserType, UserTypeLabel } from "../utils/enum";
 
 const FormPromoSubscription = () => {
+  const router = useRouter();
   const { createSubscription, isLoading } = useCreatePromoSubscription();
+
+  // State Modals (Disamakan dengan flow Edit)
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isEmptyFieldModalOpen, setIsEmptyFieldModalOpen] = useState(false);
-  const [isDuplicatePromoModalOpen, setIsDuplicatePromoModalOpen] =
-    useState(false);
   const [isDiscountAboveNormalModalOpen, setIsDiscountAboveNormalModalOpen] =
     useState(false);
   const [
     isNavigationConfirmationModalOpen,
     setIsNavigationConfirmationModalOpen,
   ] = useState(false);
+  const [isConflictModalOpen, setIsConflictModalOpen] = useState(false);
 
-  const { control, watch, setValue, reset } = useForm({
+  const {
+    control,
+    watch,
+    setValue,
+    reset,
+    formState: { isDirty },
+  } = useForm({
     defaultValues: {
+      packageId: "",
       packageName: "",
-      userType: [],
+      userTypes: [],
       startDate: null,
       endDate: null,
-      promoType: [],
-      normalPrice: 1000000,
+      promoTypes: [],
+      normalPrice: 0,
       discountAmount: 0,
       discountPercentage: 0,
-      discountedPrice: 1000000,
-      normalCoin: 500,
-      bonusCoin: 0,
-      totalCoin: 500,
+      finalPrice: 0,
+      normalCoinsEarned: 0,
+      freeCoinsEarned: 0,
+      finalCoinsEarned: 0,
     },
   });
 
   // Watch form values
-  const promoType = watch("promoType");
+  const promoTypes = watch("promoTypes");
   const discountAmount = watch("discountAmount");
   const discountPercentage = watch("discountPercentage");
   const normalPrice = watch("normalPrice");
-  const bonusCoin = watch("bonusCoin");
-  const normalCoin = watch("normalCoin");
+  const freeCoinsEarned = watch("freeCoinsEarned");
+  const normalCoinsEarned = watch("normalCoinsEarned");
 
   // Reset discount fields when discount is deselected
   useEffect(() => {
-    if (!promoType.includes("Discount")) {
+    if (!isDirty) return;
+    if (!promoTypes.includes("DISCOUNT")) {
       setValue("discountAmount", 0);
       setValue("discountPercentage", 0);
-      setValue("discountedPrice", normalPrice);
+      setValue("finalPrice", normalPrice);
     }
-  }, [promoType, normalPrice, setValue]);
+  }, [promoTypes, normalPrice, setValue, isDirty]);
 
   // Reset discounted price when both discount fields are cleared
   useEffect(() => {
     if (
-      promoType.includes("Discount") &&
+      promoTypes.includes("DISCOUNT") &&
       (discountAmount === 0 || discountAmount === undefined) &&
       (discountPercentage === 0 || discountPercentage === undefined)
     ) {
-      setValue("discountedPrice", normalPrice);
+      setValue("finalPrice", normalPrice);
     }
-  }, [discountAmount, discountPercentage, normalPrice, promoType, setValue]);
+  }, [discountAmount, discountPercentage, normalPrice, promoTypes, setValue]);
 
   // Reset free coin fields when free coin is deselected
   useEffect(() => {
-    if (!promoType.includes("Free Coin")) {
-      setValue("bonusCoin", 0);
-      setValue("totalCoin", normalCoin);
+    if (!isDirty) return;
+    if (!promoTypes.includes("FREE_COIN")) {
+      setValue("freeCoinsEarned", 0);
+      setValue("finalCoinsEarned", normalCoinsEarned);
     }
-  }, [promoType, normalCoin, setValue]);
+  }, [promoTypes, normalCoinsEarned, setValue, isDirty]);
 
   // Reset total coin when bonus coin is cleared
   useEffect(() => {
-    if (promoType.includes("Free Coin")) {
-      if (bonusCoin === 0 || bonusCoin === undefined) {
-        setValue("totalCoin", normalCoin || 0);
+    if (promoTypes.includes("FREE_COIN")) {
+      if (freeCoinsEarned === 0 || freeCoinsEarned === undefined) {
+        setValue("finalCoinsEarned", normalCoinsEarned || 0);
       }
     }
-  }, [bonusCoin, normalCoin, promoType, setValue]);
+  }, [freeCoinsEarned, normalCoinsEarned, promoTypes, setValue]);
 
   // Format number with thousand separators
   const formatNumber = (num) => {
@@ -101,60 +115,141 @@ const FormPromoSubscription = () => {
     return parseInt(str.replace(/\./g, "")) || 0;
   };
 
-  // Calculate discounted price
-  useEffect(() => {
-    if (normalPrice !== undefined) {
-      // Check if either discount field has a value greater than 0
-      const hasDiscount =
-        (discountAmount !== undefined && discountAmount > 0) ||
-        (discountPercentage !== undefined && discountPercentage > 0);
-
-      if (hasDiscount) {
-        const amountDiscount = discountAmount || 0;
-        const percentageDiscount =
-          (normalPrice * (discountPercentage || 0)) / 100;
-        const totalDiscount = amountDiscount + percentageDiscount;
-        const calculatedDiscountedPrice = Math.max(
-          0,
-          normalPrice - totalDiscount
-        );
-        setValue("discountedPrice", calculatedDiscountedPrice);
-      } else {
-        setValue("discountedPrice", normalPrice);
-      }
+  // Sync discount from Amount (Rp)
+  const syncDiscountFromAmount = (amount) => {
+    if (normalPrice && normalPrice > 0) {
+      const percentage = (amount / normalPrice) * 100;
+      setValue("discountPercentage", parseFloat(percentage.toFixed(2)), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      const final = Math.max(0, normalPrice - amount);
+      setValue("finalPrice", final, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
     }
-  }, [discountAmount, discountPercentage, normalPrice, setValue]);
+  };
+
+  // Sync discount from Percentage (%)
+  const syncDiscountFromPercentage = (percentage) => {
+    if (normalPrice && normalPrice > 0) {
+      const amount = (percentage / 100) * normalPrice;
+      setValue("discountAmount", Math.round(amount), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      const final = Math.max(0, normalPrice - amount);
+      setValue("finalPrice", final, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  };
 
   // Calculate total coin
   useEffect(() => {
-    if (normalCoin !== undefined && bonusCoin !== undefined) {
-      const normal = normalCoin || 0;
-      const bonus = bonusCoin || 0;
-      setValue("totalCoin", normal + bonus);
+    if (normalCoinsEarned !== undefined && freeCoinsEarned !== undefined) {
+      const normal = normalCoinsEarned || 0;
+      const bonus = freeCoinsEarned || 0;
+      setValue("finalCoinsEarned", normal + bonus);
     }
-  }, [bonusCoin, normalCoin, setValue]);
+  }, [freeCoinsEarned, normalCoinsEarned, setValue]);
 
-  // Options for selects
-  const userTypeOptions = [
-    { value: "User Baru", label: "User Baru" },
-    { value: "User Lama", label: "User Lama" },
-  ];
+  // Fetch package list for options
+  const { data: packageData, isLoading: isLoadingPackages } =
+    useGetPackageSubscriptionList({
+      limit: 50,
+      sort_by: "packageName",
+      sort_order: "asc",
+    });
 
-  const promoTypeOptions = [
-    { value: "Discount", label: "Discount" },
-    { value: "Free Coin", label: "Free Coin" },
-  ];
+  const packageOptions = useMemo(
+    () =>
+      packageData?.packages?.map((pkg) => ({
+        value: pkg.id,
+        label: pkg.packageName,
+        price: pkg.price,
+        coinEarned: pkg.coinEarned,
+        isUnlimitedCoin: pkg.isUnlimitedCoin,
+      })) || [],
+    [packageData]
+  );
+
+  const selectedPackageId = watch("packageId");
+  const isUnlimitedCoin = useMemo(() => {
+    const pkg = packageOptions.find((p) => p.value === selectedPackageId);
+    return pkg?.isUnlimitedCoin || false;
+  }, [packageOptions, selectedPackageId]);
+
+  // Remove FREE_COIN if isUnlimitedCoin is true
+  useEffect(() => {
+    if (isUnlimitedCoin && promoTypes.includes("FREE_COIN")) {
+      const newTypes = promoTypes.filter((t) => t !== "FREE_COIN");
+      setValue("promoTypes", newTypes, { shouldValidate: true });
+    }
+  }, [isUnlimitedCoin, promoTypes, setValue]);
+
+  // Handle package selection
+  const handlePackageChange = (selectedId) => {
+    // MultiSelect returns array for valid selections, handle single select behavior
+    const id = Array.isArray(selectedId)
+      ? selectedId[selectedId.length - 1]
+      : selectedId;
+
+    setValue("packageId", id);
+
+    const selectedPackage = packageOptions.find((pkg) => pkg.value === id);
+    if (selectedPackage) {
+      setValue("packageName", selectedPackage.label);
+      // Determine normalized price (handle string or number)
+      const price =
+        typeof selectedPackage.price === "string"
+          ? parseFloat(selectedPackage.price)
+          : selectedPackage.price;
+      setValue("normalPrice", price);
+      setValue("normalCoinsEarned", selectedPackage.coinEarned);
+      // Reset dependent fields
+      setValue("discountAmount", 0);
+      setValue("discountPercentage", 0);
+      setValue("finalPrice", price);
+      setValue("finalCoinsEarned", selectedPackage.coinEarned);
+    }
+  };
+
+  const userTypeOptions = useMemo(
+    () => [
+      { value: UserType.NEW_USER, label: UserTypeLabel[UserType.NEW_USER] },
+      {
+        value: UserType.EXISTING_USER,
+        label: UserTypeLabel[UserType.EXISTING_USER],
+      },
+    ],
+    []
+  );
+
+  const promoTypeOptions = useMemo(() => {
+    const options = [
+      { value: "DISCOUNT", label: "Discount" },
+      { value: "FREE_COIN", label: "Free Coin" },
+    ];
+
+    if (isUnlimitedCoin) {
+      return options.filter((o) => o.value !== "FREE_COIN");
+    }
+
+    return options;
+  }, [isUnlimitedCoin]);
 
   // Handle form submission
   const onSubmit = (data) => {
-    console.log("Form submitted with data:", data);
-    // Validate all required fields
+    // Validate required fields
     const isPackageNameEmpty =
       !data.packageName || data.packageName.trim() === "";
-    const isUserTypeEmpty = !data.userType || data.userType.length === 0;
+    const isUserTypeEmpty = !data.userTypes || data.userTypes.length === 0;
     const isStartDateEmpty = !data.startDate;
     const isEndDateEmpty = !data.endDate;
-    const isPromoTypeEmpty = !data.promoType || data.promoType.length === 0;
+    const isPromoTypeEmpty = !data.promoTypes || data.promoTypes.length === 0;
 
     // Check if any required field is empty
     const isAnyRequiredFieldEmpty =
@@ -165,40 +260,29 @@ const FormPromoSubscription = () => {
       isPromoTypeEmpty;
 
     if (isAnyRequiredFieldEmpty) {
-      console.log("Required fields are empty");
       setIsEmptyFieldModalOpen(true);
       return;
     }
 
     // Check if discount is selected but no discount values provided
-    const isDiscountSelected = data.promoType.includes("Discount");
-    const isFreeCoinSelected = data.promoType.includes("Free Coin");
+    const isDiscountSelected = data.promoTypes.includes("DISCOUNT");
+    const isFreeCoinSelected = data.promoTypes.includes("FREE_COIN");
 
     const isDiscountInvalid =
       isDiscountSelected &&
       data.discountAmount === 0 &&
       data.discountPercentage === 0;
 
-    const isFreeCoinInvalid = isFreeCoinSelected && data.bonusCoin === 0;
+    const isFreeCoinInvalid = isFreeCoinSelected && data.freeCoinsEarned === 0;
 
     if (isDiscountInvalid || isFreeCoinInvalid) {
-      console.log("Discount or Free Coin fields are invalid");
       setIsEmptyFieldModalOpen(true);
       return;
     }
 
     // Check if discount amount is above normal price
     if (isDiscountSelected && data.discountAmount > data.normalPrice) {
-      console.log("Discount amount is above normal price");
       setIsDiscountAboveNormalModalOpen(true);
-      return;
-    }
-
-    // Check for duplicate promo (mock implementation)
-    // In a real app, this would be an API call
-    const isDuplicate = false; // Mock value
-    if (isDuplicate) {
-      setIsDuplicatePromoModalOpen(true);
       return;
     }
 
@@ -209,35 +293,71 @@ const FormPromoSubscription = () => {
 
   // Handle save confirmation
   const handleSaveConfirmation = async () => {
+    setIsConfirmationModalOpen(false);
     const formData = watch();
 
+    // Map form data back to API format
+    const submitData = {
+      packageId: formData.packageId,
+      userTypes: formData.userTypes,
+      startDate: formData.startDate ? formData.startDate.toISOString() : null,
+      endDate: formData.endDate ? formData.endDate.toISOString() : null,
+      promoTypes: formData.promoTypes,
+    };
+
+    if (formData.promoTypes.includes("DISCOUNT")) {
+      submitData.discount = {
+        discountAmount: formData.discountAmount,
+        discountPercentage: formData.discountPercentage,
+      };
+    }
+
+    if (formData.promoTypes.includes("FREE_COIN")) {
+      submitData.freeCoin = {
+        bonusCoins: formData.freeCoinsEarned,
+      };
+    }
+
     try {
-      const response = await createSubscription(formData);
-      if (response.success) {
-        toast.success("Data berhasil disimpan");
-        setIsConfirmationModalOpen(false);
-        // Reset form after successful submission
-        reset({
-          packageName: "",
-          userType: [],
-          startDate: null,
-          endDate: null,
-          promoType: [],
-          normalPrice: 1000000,
-          discountAmount: 0,
-          discountPercentage: 0,
-          discountedPrice: 1000000,
-          normalCoin: 500,
-          bonusCoin: 0,
-          totalCoin: 500,
-        });
-      } else {
-        toast.error("Gagal menyimpan data");
-      }
-    } catch (error) {
-      toast.error(
-        `Gagal menyimpan data: ${error.message || "Terjadi kesalahan tidak dikenal"}`
+      await createSubscription(submitData);
+
+      toast.success("Data berhasil disimpan");
+      setIsConfirmationModalOpen(false);
+
+      // Mutate list to refresh data
+      mutate(
+        (key) =>
+          typeof key === "string" && key.startsWith("promo-subscriptions-")
       );
+
+      // Redirect to list
+      router.push("/promo-subscription");
+
+      // Reset form after successful submission
+      reset({
+        packageId: "",
+        packageName: "",
+        userTypes: [],
+        startDate: null,
+        endDate: null,
+        promoTypes: [],
+        normalPrice: 0,
+        discountAmount: 0,
+        discountPercentage: 0,
+        finalPrice: 0,
+        normalCoinsEarned: 0,
+        freeCoinsEarned: 0,
+        finalCoinsEarned: 0,
+      });
+    } catch (error) {
+      // Check if the error is a 409 conflict response
+      if (error?.response?.data?.Message?.Code === 409) {
+        setIsConflictModalOpen(true);
+      } else {
+        toast.error(
+          `Gagal menyimpan data: ${error.message || "Terjadi kesalahan tidak dikenal"}`
+        );
+      }
     }
   };
 
@@ -254,7 +374,7 @@ const FormPromoSubscription = () => {
     <section>
       <PageTitle
         withBack={true}
-        onBack={() => setIsNavigationConfirmationModalOpen(true)}
+        onBackClick={() => setIsNavigationConfirmationModalOpen(true)}
         className="mb-2.5 text-[24px] font-bold text-[#176CF7]"
         appearance={{
           iconClassName: "size-6",
@@ -271,29 +391,32 @@ const FormPromoSubscription = () => {
         }}
         className="space-y-2"
       >
-        {/* Nama Paket */}
+        {/* Nama Paket (Package Selection - Matches Edit Flow) */}
         <div className="grid grid-cols-[280px_1fr] items-center">
           <label className="text-sm font-semibold text-neutral-600">
             Nama Paket *
           </label>
           <Controller
-            name="packageName"
+            name="packageId"
             control={control}
             render={({ field }) => (
-              <Input
-                {...field}
-                placeholder="Masukkan nama paket"
-                className="w-full"
-                aria-label="Nama paket"
-                appearance={{
-                  containerClassName: "h-8 rounded-[6px] border-[#A8A8A8]",
-                  inputClassName: "text-sm",
-                }}
-                // status={errors.packageName ? "error" : undefined} - using modals instead
-              />
+              <MultiSelect.Root
+                value={field.value ? [field.value] : []}
+                onValueChange={handlePackageChange}
+                options={packageOptions}
+                placeholder={
+                  isLoadingPackages ? "Loading..." : "Pilih Nama Paket"
+                }
+                enableSelectAll={false}
+              >
+                <MultiSelect.Trigger className="w-full" />
+                <MultiSelect.Content>
+                  <MultiSelect.Search placeholder="Cari Nama Paket" />
+                  <MultiSelect.List className="h-max" />
+                </MultiSelect.Content>
+              </MultiSelect.Root>
             )}
           />
-          {/* Error messages removed - using modals instead */}
         </div>
 
         {/* Tipe User */}
@@ -302,7 +425,7 @@ const FormPromoSubscription = () => {
             Tipe User *
           </label>
           <Controller
-            name="userType"
+            name="userTypes"
             control={control}
             render={({ field }) => (
               <MultiSelect.Root
@@ -319,7 +442,6 @@ const FormPromoSubscription = () => {
               </MultiSelect.Root>
             )}
           />
-          {/* Error messages removed - using modals instead */}
         </div>
 
         {/* Masa Berlaku */}
@@ -364,7 +486,7 @@ const FormPromoSubscription = () => {
             Tipe Promo *
           </label>
           <Controller
-            name="promoType"
+            name="promoTypes"
             control={control}
             render={({ field }) => (
               <MultiSelect.Root
@@ -381,15 +503,14 @@ const FormPromoSubscription = () => {
               </MultiSelect.Root>
             )}
           />
-          {/* Error messages removed - using modals instead */}
         </div>
 
         {/* Discount Fields */}
-        {(promoType.includes("Discount") ||
-          promoType.includes("Free Coin")) && (
+        {(promoTypes.includes("DISCOUNT") ||
+          promoTypes.includes("FREE_COIN")) && (
           <>
             {/* Discount Section */}
-            {promoType.includes("Discount") && (
+            {promoTypes.includes("DISCOUNT") && (
               <>
                 {/* Harga Normal */}
                 <div className="grid grid-cols-[280px_1fr] items-center">
@@ -431,9 +552,11 @@ const FormPromoSubscription = () => {
                       <Input
                         {...field}
                         value={formatNumber(field.value) || ""}
-                        onChange={(e) =>
-                          field.onChange(parseFormattedNumber(e.target.value))
-                        }
+                        onChange={(e) => {
+                          const val = parseFormattedNumber(e.target.value);
+                          field.onChange(val);
+                          syncDiscountFromAmount(val);
+                        }}
                         placeholder="1.000.000"
                         aria-label="Jumlah discount"
                         appearance={{
@@ -444,7 +567,6 @@ const FormPromoSubscription = () => {
                       />
                     )}
                   />
-                  {/* Error messages removed - using modals instead */}
                 </div>
 
                 {/* Discount Percentage */}
@@ -460,9 +582,11 @@ const FormPromoSubscription = () => {
                         <Input
                           {...field}
                           value={formatNumber(field.value) || ""}
-                          onChange={(e) =>
-                            field.onChange(parseFormattedNumber(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const val = parseFormattedNumber(e.target.value);
+                            field.onChange(val);
+                            syncDiscountFromPercentage(val);
+                          }}
                           text={{
                             right: (
                               <span className="font-medium text-neutral-600">
@@ -481,7 +605,6 @@ const FormPromoSubscription = () => {
                       )}
                     />
                   </div>
-                  {/* Error messages removed - using modals instead */}
                 </div>
 
                 {/* Harga Setelah Diskon */}
@@ -490,7 +613,7 @@ const FormPromoSubscription = () => {
                     Harga Setelah Diskon (Rp)*
                   </label>
                   <Controller
-                    name="discountedPrice"
+                    name="finalPrice"
                     control={control}
                     render={({ field }) => (
                       <Input
@@ -515,7 +638,7 @@ const FormPromoSubscription = () => {
             )}
 
             {/* Free Coin Section */}
-            {promoType.includes("Free Coin") && (
+            {promoTypes.includes("FREE_COIN") && (
               <>
                 {/* Koin Normal */}
                 <div className="grid grid-cols-[280px_1fr] items-center">
@@ -523,7 +646,7 @@ const FormPromoSubscription = () => {
                     Coin Normal *
                   </label>
                   <Controller
-                    name="normalCoin"
+                    name="normalCoinsEarned"
                     control={control}
                     render={({ field }) => (
                       <Input
@@ -551,7 +674,7 @@ const FormPromoSubscription = () => {
                     Bonus Koin*
                   </label>
                   <Controller
-                    name="bonusCoin"
+                    name="freeCoinsEarned"
                     control={control}
                     render={({ field }) => (
                       <Input
@@ -570,7 +693,6 @@ const FormPromoSubscription = () => {
                       />
                     )}
                   />
-                  {/* Error messages removed - using modals instead */}
                 </div>
 
                 {/* Total Koin */}
@@ -579,7 +701,7 @@ const FormPromoSubscription = () => {
                     Total Koin*
                   </label>
                   <Controller
-                    name="totalCoin"
+                    name="finalCoinsEarned"
                     control={control}
                     render={({ field }) => (
                       <Input
@@ -661,23 +783,6 @@ const FormPromoSubscription = () => {
         withCloseIcon={true}
       />
 
-      {/* Duplicate Promo Warning Modal */}
-      <ConfirmationModal
-        isOpen={isDuplicatePromoModalOpen}
-        setIsOpen={setIsDuplicatePromoModalOpen}
-        variant="bo"
-        title={{
-          text: "Warning",
-        }}
-        description={{
-          text: "Promo dengan paket yang sama masih aktif pada periode ini",
-        }}
-        cancel={{
-          text: "Tutup",
-          showOnlyCancel: true,
-        }}
-      />
-
       {/* Discount Above Normal Warning Modal */}
       <ConfirmationModal
         isOpen={isDiscountAboveNormalModalOpen}
@@ -692,6 +797,10 @@ const FormPromoSubscription = () => {
         cancel={{
           text: "Tutup",
           showOnlyCancel: true,
+          classname: "hidden",
+        }}
+        confirm={{
+          classname: "hidden",
         }}
       />
 
@@ -715,6 +824,28 @@ const FormPromoSubscription = () => {
           onClick: () => handleNavigationConfirmation(false),
         }}
         reverseButtonPosition={true}
+      />
+
+      {/* Conflict Modal - No buttons */}
+      <ConfirmationModal
+        isOpen={isConflictModalOpen}
+        setIsOpen={setIsConflictModalOpen}
+        variant="bo"
+        title={{
+          text: "Warning",
+        }}
+        description={{
+          text: "Promo dengan paket yang sama masih aktif pada periode ini.",
+        }}
+        cancel={{
+          text: "Tutup",
+          showOnlyCancel: true,
+          classname: "hidden",
+        }}
+        confirm={{
+          classname: "hidden",
+        }}
+        withCloseIcon={true}
       />
     </section>
   );

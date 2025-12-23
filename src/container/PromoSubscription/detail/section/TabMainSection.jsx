@@ -39,25 +39,20 @@ const TabMainSection = ({ promoData, isHistoryView = false }) => {
   // Set initial form values when data loads
   useEffect(() => {
     if (promoData) {
-      // Extract promo types from object structure
-      const promoTypes = [];
-      if (promoData.promoType?.discount) promoTypes.push("DISCOUNT");
-      if (promoData.promoType?.freeCoin) promoTypes.push("FREE_COIN");
-
       reset({
+        promoId: promoData.promoId || "",
         packageName: promoData.packageName || "",
         userTypes: promoData.userTypes || [],
         startDate: promoData.startDate ? new Date(promoData.startDate) : null,
         endDate: promoData.endDate ? new Date(promoData.endDate) : null,
-        promoTypes: promoTypes,
-        normalPrice: promoData.normalPrice || 0,
-        discountAmount: promoData.promoType?.discount?.discountAmount || 0,
-        discountPercentage:
-          promoData.promoType?.discount?.discountPercentage || 0,
-        finalPrice: promoData.finalPrice || 0,
-        normalCoinsEarned: promoData.normalCoinsEarned || 0,
-        freeCoinsEarned: promoData.freeCoinsEarned || 0,
-        finalCoinsEarned: promoData.finalCoinsEarned || 0,
+        promoTypes: promoData.promoTypes || [],
+        normalPrice: promoData.discount?.normalPrice || 0,
+        discountAmount: promoData.discount?.discountAmount || 0,
+        discountPercentage: promoData.discount?.discountPercentage || 0,
+        finalPrice: promoData.discount?.finalPrice || 0,
+        normalCoinsEarned: promoData.coin?.normalCoins || 0,
+        freeCoinsEarned: promoData.coin?.bonusCoins || 0, // Maps to freeCoinsEarned/bonusCoins
+        finalCoinsEarned: promoData.coin?.totalCoins || 0, // Maps to finalCoinsEarned/totalCoins
       });
     }
   }, [promoData, reset]);
@@ -106,6 +101,30 @@ const TabMainSection = ({ promoData, isHistoryView = false }) => {
   return (
     <>
       <div className="space-y-2">
+        {/* Promo ID */}
+        <div className="grid grid-cols-[280px_1fr] items-center">
+          <label className="text-sm font-semibold text-neutral-600">
+            ID Promo
+          </label>
+          <Controller
+            name="promoId"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                className="w-full"
+                aria-label="Promo ID"
+                disabled
+                appearance={{
+                  containerClassName:
+                    "h-8 rounded-[6px] bg-white border-none pl-0",
+                  inputClassName: "text-sm",
+                }}
+              />
+            )}
+          />
+        </div>
+
         {/* Nama Paket */}
         <div className="grid grid-cols-[280px_1fr] items-center">
           <label className="text-sm font-semibold text-neutral-600">

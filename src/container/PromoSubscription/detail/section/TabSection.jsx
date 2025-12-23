@@ -7,8 +7,8 @@ const TabSection = ({ currentTab, setCurrentTab }) => {
         className={cn(
           "flex w-full items-center justify-center border-r-2 py-2",
           currentTab === "main"
-            ? "bg-primary-700 text-white"
-            : "border-gray-300 text-gray-500"
+            ? "bg-neutral-400 text-gray-900"
+            : "border-gray-300 text-gray-900"
         )}
         onClick={() => setCurrentTab("main")}
       >
@@ -18,8 +18,8 @@ const TabSection = ({ currentTab, setCurrentTab }) => {
         className={cn(
           "flex w-full items-center justify-center py-2",
           currentTab === "history"
-            ? "bg-primary-700 text-white"
-            : "border-gray-300 text-gray-500"
+            ? "bg-neutral-400 text-gray-900"
+            : "border-gray-300 text-gray-900"
         )}
         onClick={() => setCurrentTab("history")}
       >
