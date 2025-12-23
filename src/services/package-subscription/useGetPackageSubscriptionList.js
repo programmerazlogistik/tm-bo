@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 /**
  * Mock response for package subscription list
@@ -148,17 +148,17 @@ const mockPackageSubscriptionListResponse = {
  * @returns {Promise<PackageSubscriptionListResponse>}
  */
 export const getPackageSubscriptionList = async (params = {}) => {
+  let response;
   if (USE_MOCK) {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 300));
-    return mockPackageSubscriptionListResponse;
+    response = { data: mockPackageSubscriptionListResponse };
   } else {
-    const response = await fetcherMuatparts("/v1/bo/subscription-tm/packages", {
-      method: "GET",
+    response = await fetcherMuatparts.get("/v1/bo/subscription-tm/packages", {
       params,
     });
-    return response;
   }
+  return response.data;
 };
 
 /**
@@ -190,21 +190,11 @@ export const useGetPackageSubscriptionList = (params = {}, swrOptions = {}) => {
   delete apiParams.sortBy;
   delete apiParams.sortOrder;
 
-  // Build query string for SWR key
-  const queryString = new URLSearchParams(
-    Object.entries(apiParams).reduce((acc, [key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        acc[key] = String(value);
-      }
-      return acc;
-    }, {})
-  ).toString();
+  const key = params
+    ? `package-subscription-list-${JSON.stringify(apiParams)}`
+    : "package-subscription-list";
 
-  const key = queryString
-    ? `/v1/bo/subscription-tm/packages?${queryString}`
-    : "/v1/bo/subscription-tm/packages";
-
-  const { data, error, isValidating, mutate } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     key,
     () => getPackageSubscriptionList(apiParams),
     {
@@ -215,8 +205,7 @@ export const useGetPackageSubscriptionList = (params = {}, swrOptions = {}) => {
 
   return {
     data: data?.Data, // Returns { packages: [...], pagination: {...} }
-    isLoading: !error && !data,
-    isValidating,
+    isLoading,
     error,
     mutate,
     message: data?.Message,
