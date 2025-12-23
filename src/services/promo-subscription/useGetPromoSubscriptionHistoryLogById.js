@@ -1,111 +1,101 @@
 import useSWR from "swr";
 
-// Mock data for history log detail
-const MOCK_HISTORY_LOG_DETAIL = {
-  "LOG-001": {
-    id: "LOG-001",
-    lastUpdate: "2024-01-20T17:00:00Z",
-    activity: "Create",
-    by: "User",
-    username: "Carena",
-    email: "carena@gmail.com",
-    status: "Berjalan",
-    // Promo data snapshot at the time of this log
-    packageName: "Business",
-    userType: ["User Baru"],
-    startDate: "2024-01-01T00:00:00Z",
-    endDate: "2024-01-31T23:59:59Z",
-    promoType: ["Discount"],
-    normalPrice: 150000,
-    discountAmount: 50000,
-    discountPercentage: 33,
-    discountedPrice: 100000,
-    normalCoin: 50,
-    bonusCoin: 0,
-    totalCoin: 50,
-  },
-  "LOG-002": {
-    id: "LOG-002",
-    lastUpdate: "2024-01-21T14:30:00Z",
+import { fetcherMuatparts } from "@/lib/axios";
+
+// --- Mock Data for History Log Detail ---
+const useMock = false;
+const endpoint = (id, historyId) =>
+  `/v1/bo/subscription-tm/promos/${id}/history/${historyId}`;
+
+const MOCK_HISTORY_LOG_DETAIL_DATA = {
+  "3fa85f64-5717-4562-b3fc-2c963f66afb1": {
+    id: "3fa85f64-5717-4562-b3fc-2c963f66afb1",
+    promoId: "001",
     activity: "Update",
-    by: "User",
-    username: "Nandi",
-    email: "nandi@gmail.com",
-    status: "Berjalan",
-    packageName: "Business Pro",
-    userType: ["User Lama", "User Baru"],
-    startDate: "2024-02-01T00:00:00Z",
-    endDate: "2025-02-01T00:00:00Z",
-    promoType: ["Free Coin"],
-    normalPrice: 500000,
-    discountAmount: 0,
-    discountPercentage: 0,
-    discountedPrice: 500000,
-    normalCoin: 100,
-    bonusCoin: 50,
-    totalCoin: 150,
-  },
-  "LOG-003": {
-    id: "LOG-003",
-    lastUpdate: "2024-01-22T09:15:00Z",
-    activity: "Update",
-    by: "User",
-    username: "Carena",
-    email: "carena@gmail.com",
-    status: "Akan Datang",
-    packageName: "Enterprise",
-    userType: ["User Baru"],
-    startDate: "2024-06-01T00:00:00Z",
-    endDate: "2024-12-31T23:59:59Z",
-    promoType: ["Discount", "Free Coin"],
-    normalPrice: 1000000,
-    discountAmount: 150000,
-    discountPercentage: 15,
-    discountedPrice: 850000,
-    normalCoin: 200,
-    bonusCoin: 50,
-    totalCoin: 250,
-  },
-  "LOG-004": {
-    id: "LOG-004",
-    lastUpdate: "2024-01-23T16:45:00Z",
-    activity: "Create",
-    by: "User",
-    username: "Nandi",
-    email: "nandi@gmail.com",
-    status: "Berakhir",
-    packageName: "Basic",
-    userType: ["User Baru"],
-    startDate: "2023-01-01T00:00:00Z",
-    endDate: "2023-06-30T23:59:59Z",
-    promoType: ["Discount"],
-    normalPrice: 100000,
-    discountAmount: 25000,
-    discountPercentage: 25,
-    discountedPrice: 75000,
-    normalCoin: 25,
-    bonusCoin: 0,
-    totalCoin: 25,
+    actorType: "Admin",
+    username: "admin",
+    email: "admin@example.com",
+    statusBefore: "UPCOMING",
+    statusAfter: "UPCOMING",
+    snapshotBefore: {
+      packageName: "Paket Premium",
+      status: "UPCOMING",
+      userTypes: ["NEW_USER"],
+      startDate: "2024-01-01T00:00:00Z",
+      endDate: "2024-12-31T23:59:59Z",
+      promoTypes: ["DISCOUNT"],
+      discount: {
+        normalPrice: 1000000,
+        discountAmount: 100000,
+        discountPercentage: 10.0,
+        finalPrice: 900000,
+      },
+      coin: {
+        normalCoins: 100,
+        bonusCoins: 0,
+        totalCoins: 100,
+      },
+    },
+    snapshotAfter: {
+      packageName: "Paket Premium",
+      status: "UPCOMING",
+      userTypes: ["NEW_USER"],
+      startDate: "2024-01-01T00:00:00Z",
+      endDate: "2024-12-31T23:59:59Z",
+      promoTypes: ["DISCOUNT"],
+      discount: {
+        normalPrice: 1000000,
+        discountAmount: 150000,
+        discountPercentage: 15.0,
+        finalPrice: 850000,
+      },
+      coin: {
+        normalCoins: 100,
+        bonusCoins: 0,
+        totalCoins: 100,
+      },
+    },
+    changedFields: [
+      {
+        field: "discountAmount",
+        oldValue: 100000,
+        newValue: 150000,
+      },
+      {
+        field: "discountPercentage",
+        oldValue: 10.0,
+        newValue: 15.0,
+      },
+    ],
+    createdAt: "2024-01-15T10:30:00Z",
   },
 };
 
-const fetcher = async (logId) => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const logDetail = MOCK_HISTORY_LOG_DETAIL[logId];
-
-  if (!logDetail) {
-    throw new Error("History log not found");
+// --- Fetcher ---
+const fetcher = async ({ id, historyId }) => {
+  if (useMock) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const data =
+      MOCK_HISTORY_LOG_DETAIL_DATA["3fa85f64-5717-4562-b3fc-2c963f66afb1"];
+    if (!data) throw new Error("History log not found");
+    return data;
+  } else {
+    // Real API call
+    const response = await fetcherMuatparts.get(endpoint(id, historyId));
+    return response.data?.Data;
   }
-
-  return logDetail;
 };
 
-export const useGetPromoSubscriptionHistoryLogById = (logId) => {
+// --- Hook ---
+export const useGetPromoSubscriptionHistoryLogById = ({ id, historyId }) => {
+  const key =
+    id && historyId
+      ? `promo-subscription-history-log-${id}-${historyId}`
+      : null;
+
   const { data, error, isLoading, mutate } = useSWR(
-    logId ? `promo-subscription-history-log-${logId}` : null,
-    () => fetcher(logId),
+    key,
+    () => fetcher({ id, historyId }),
     {
       revalidateOnFocus: false,
     }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { LoadingStatic } from "@muatmuat/ui/Loading";
 
 import { useGetPromoSubscriptionHistoryLogById } from "@/services/promo-subscription/useGetPromoSubscriptionHistoryLogById";
 
@@ -6,14 +6,15 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 
 import TabMainSection from "../detail/section/TabMainSection";
 
-const DetailHistoryPromoSubscription = ({ promoId, logId }) => {
+const DetailHistoryPromoSubscription = ({ id, historyId }) => {
   const { data: logData, isLoading: isDataLoading } =
-    useGetPromoSubscriptionHistoryLogById(logId);
-
-  const [currentTab, setCurrentTab] = useState("main");
+    useGetPromoSubscriptionHistoryLogById({
+      id: id,
+      historyId: historyId,
+    });
 
   if (isDataLoading) {
-    return <div>Loading...</div>;
+    return <LoadingStatic />;
   }
 
   return (
@@ -30,7 +31,10 @@ const DetailHistoryPromoSubscription = ({ promoId, logId }) => {
           Detail History Promo Subscription
         </PageTitle>
       </div>
-      <TabMainSection promoData={logData} />
+      <TabMainSection
+        promoData={{ ...logData?.snapshotAfter, promoId: logData?.promoId }}
+        isHistoryView={true}
+      />
     </section>
   );
 };

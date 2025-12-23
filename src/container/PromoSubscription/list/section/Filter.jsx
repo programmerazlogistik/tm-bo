@@ -45,7 +45,11 @@ const Filter = ({ onFilterSubmit, onResetFilters }) => {
 
   // Update store search when debounced value changes
   useEffect(() => {
-    setSearch(debouncedSearch);
+    if (debouncedSearch.length === 0 || debouncedSearch.length >= 3) {
+      setSearch(debouncedSearch);
+    } else {
+      setSearch("");
+    }
   }, [debouncedSearch, setSearch]);
 
   const { control, register, handleSubmit, reset } = useForm({

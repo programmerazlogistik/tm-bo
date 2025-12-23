@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "@muatmuat/hooks/use-debounce";
 import { cn } from "@muatmuat/lib/utils";
 import { Button } from "@muatmuat/ui/Button";
-import { Input } from "@muatmuat/ui/Form";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
 import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
 
@@ -15,7 +14,7 @@ const TabHistorySection = ({ promoId }) => {
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 5,
   });
 
   const [sorting, setSorting] = useState([]);
@@ -73,6 +72,16 @@ const TabHistorySection = ({ promoId }) => {
     });
   };
 
+  const getStatusLabel = (status) => {
+    if (!status) return "-";
+    const statusMap = {
+      RUNNING: "Berjalan",
+      UPCOMING: "Akan Datang",
+      ENDED: "Berakhir",
+    };
+    return statusMap[status] || status;
+  };
+
   const handleDetail = useCallback(
     (log) => {
       router.push(`/promo-subscription/${promoId}/history/${log.id}`);
@@ -83,10 +92,10 @@ const TabHistorySection = ({ promoId }) => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "lastUpdate",
+        accessorKey: "createdAt",
         header: "Last Update",
         headerClassName: "font-semibold",
-        cell: ({ row }) => formatDateTime(row.original.lastUpdate),
+        cell: ({ row }) => formatDateTime(row.original.createdAt),
         enableSorting: true,
       },
       {
@@ -96,7 +105,7 @@ const TabHistorySection = ({ promoId }) => {
         enableSorting: true,
       },
       {
-        accessorKey: "by",
+        accessorKey: "actorType",
         header: "By",
         headerClassName: "font-semibold",
         enableSorting: true,
@@ -115,20 +124,21 @@ const TabHistorySection = ({ promoId }) => {
       },
       {
         headerClassName: "font-semibold",
-        accessorKey: "status",
+        accessorKey: "statusAfter",
         header: "Status",
         cell: ({ row }) => {
-          const status = row?.original?.status;
+          const status = row?.original?.statusAfter;
+          const statusLabel = getStatusLabel(status);
           return (
             <span
               className={cn(
                 "text-sm font-semibold",
-                status === "Berjalan" && "text-green-500",
-                status === "Akan Datang" && "text-amber-500",
-                status === "Berakhir" && "text-neutral-500"
+                status === "RUNNING" && "text-green-500",
+                status === "UPCOMING" && "text-amber-500",
+                status === "ENDED" && "text-neutral-500"
               )}
             >
-              {status}
+              {statusLabel}
             </span>
           );
         },
@@ -155,35 +165,15 @@ const TabHistorySection = ({ promoId }) => {
 
   return (
     <>
-      <section className="my-4 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <label
-            htmlFor="search"
-            className="shrink-0 whitespace-nowrap text-sm font-medium text-neutral-900"
-          >
-            Pencarian :
-          </label>
-          <div className="w-[240px]">
-            <Input
-              id="search"
-              name="search"
-              placeholder="Cari Log"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-        </div>
-      </section>
-
       <DataTableBO.Root
         columns={columns}
-        data={data?.items || []}
+        data={data?.history || []}
         pageCount={data?.pagination?.totalPages || 1}
         paginationData={{
           currentPage: pagination?.pageIndex + 1 || 1,
           totalPages: data?.pagination?.totalPages || 1,
-          totalItems: data?.pagination?.totalItems || 0,
-          itemsPerPage: pagination?.pageSize || 10,
+          totalItems: data?.pagination?.totalData || 0,
+          itemsPerPage: pagination?.pageSize || 5,
         }}
         pagination={pagination}
         onPaginationChange={setPagination}

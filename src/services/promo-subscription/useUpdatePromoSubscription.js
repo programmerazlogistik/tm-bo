@@ -1,21 +1,8 @@
 import { useState } from "react";
 
-// Mock function to simulate API call
-const updatePromoSubscription = async (id, data) => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+import { fetcherMuatparts } from "@/lib/axios";
 
-  // In a real app, this would be an API call
-  // For now, we'll just return a success response
-  return {
-    success: true,
-    data: {
-      id,
-      ...data,
-      updatedAt: new Date().toISOString(),
-    },
-  };
-};
+const useMock = false;
 
 export const useUpdatePromoSubscription = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,9 +13,26 @@ export const useUpdatePromoSubscription = () => {
     setError(null);
 
     try {
-      const response = await updatePromoSubscription(id, data);
-      setIsLoading(false);
-      return response;
+      if (useMock) {
+        // Simulate API delay
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Mock success response
+        const response = {
+          Message: { Code: 200, Text: "Promo updated successfully" },
+          Data: { id, ...data, updatedAt: new Date().toISOString() },
+          Type: "UPDATE_PROMO_SUCCESS",
+        };
+        setIsLoading(false);
+        return response;
+      } else {
+        const response = await fetcherMuatparts.put(
+          `/v1/bo/subscription-tm/promos/${id}`,
+          data
+        );
+        setIsLoading(false);
+        return response.data;
+      }
     } catch (err) {
       setError(err.message || "Failed to update promo subscription");
       setIsLoading(false);

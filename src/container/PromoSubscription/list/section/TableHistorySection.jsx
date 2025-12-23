@@ -19,6 +19,7 @@ const TableHistorySection = ({
   loading = false,
   searchValue,
   onSearchChange,
+  historyError,
 }) => {
   const router = useRouter();
 
@@ -96,7 +97,7 @@ const TableHistorySection = ({
         enableSorting: false,
       },
       {
-        accessorKey: "id",
+        accessorKey: "promoId",
         header: "ID",
         headerClassName: "font-semibold",
         enableSorting: true,
@@ -167,24 +168,20 @@ const TableHistorySection = ({
         accessorKey: "promoType",
         header: "Tipe Promo",
         cell: ({ row }) => {
-          const promoType = row.original.promoType;
-          if (!promoType) return "-";
-
-          const types = [];
-          if (promoType.discount) types.push("Discount");
-          if (promoType.freeCoin) types.push("Free Coin");
-
-          return types.length > 0 ? types.join(", ") : "-";
+          return row.original.promoTypesLabel || "-";
         },
         enableSorting: true,
       },
       {
         headerClassName: "font-semibold",
-        accessorKey: "promoPrice",
+        accessorKey: "finalPrice", // Sorting key needs to match API param
         header: "Harga Promo",
         cell: ({ row }) => {
-          const normalPrice = row.original.normalPrice;
-          const finalPrice = row.original.finalPrice;
+          const pricing = row.original.pricing;
+          if (!pricing) return "-";
+
+          const normalPrice = pricing.normalPrice;
+          const finalPrice = pricing.finalPrice;
 
           // If normalPrice equals finalPrice, no discount applied
           if (normalPrice === finalPrice) {
@@ -204,24 +201,30 @@ const TableHistorySection = ({
       },
       {
         headerClassName: "font-semibold",
-        accessorKey: "freeCoin",
+        accessorKey: "finalCoinsEarned", // Sorting key needs to match API param
         header: "Free Coin",
         cell: ({ row }) => {
-          const normalCoinsEarned = row.original.normalCoinsEarned;
-          const freeCoinsEarned = row.original.freeCoinsEarned;
-          const finalCoinsEarned = row.original.finalCoinsEarned;
+          const coins = row.original.coins;
+          if (!coins) return "-";
+
+          const normalCoins = coins.normalCoins;
+          const bonusCoins = coins.bonusCoins;
+          const totalCoins = coins.totalCoins;
+          const isUnlimited = row.original.isUnlimitedCoin;
+
+          if (isUnlimited) return "Unlimited";
 
           // If no free coins, just show normal coins
-          if (!freeCoinsEarned) {
-            return <span>{formatNumber(normalCoinsEarned)}</span>;
+          if (!bonusCoins) {
+            return <span>{formatNumber(normalCoins)}</span>;
           }
 
           // Show normal coins + bonus
           return (
             <div className="flex flex-col">
-              <span>{formatNumber(finalCoinsEarned)}</span>
+              <span>{formatNumber(totalCoins)}</span>
               <span className="text-sm text-gray-500">
-                (+{formatNumber(freeCoinsEarned)} bonus)
+                (+{formatNumber(bonusCoins)} bonus)
               </span>
             </div>
           );
@@ -254,32 +257,43 @@ const TableHistorySection = ({
         </div>
       </section>
 
-      <DataTableBO.Root
-        columns={columns}
-        data={promos}
-        pageCount={data?.pagination?.totalPages || 1}
-        paginationData={{
-          currentPage: pagination?.pageIndex + 1 || 1,
-          totalPages: data?.pagination?.totalPages || 1,
-          totalItems: data?.pagination?.totalItems || 0,
-          itemsPerPage: pagination?.pageSize || 10,
-        }}
-        pagination={pagination}
-        onPaginationChange={setExternalPagination || setPagination}
-        sorting={externalSorting || sorting}
-        onSortingChange={setExternalSorting || setSorting}
-      >
-        {loading ? (
-          <div className="flex h-64 items-center justify-center">
-            <LoadingStatic />
-          </div>
-        ) : (
-          <>
-            <DataTableBO.Content Table={TableBO} />
-            <DataTableBO.Pagination />
-          </>
-        )}
-      </DataTableBO.Root>
+      {/* Show error state for history */}
+      {historyError ? (
+        <div className="rounded-md bg-red-50 p-4 text-red-700">
+          Error loading data: {historyError.message}
+        </div>
+      ) : (
+        <DataTableBO.Root
+          columns={columns}
+          data={promos}
+          pageCount={data?.pagination?.totalPages || 1}
+          paginationData={{
+            currentPage: pagination?.pageIndex + 1 || 1,
+            totalPages: data?.pagination?.totalPages || 1,
+            totalItems:
+              data?.pagination?.totalItems ||
+              data?.pagination?.totalRecords ||
+              data?.pagination?.TotalData ||
+              0,
+            itemsPerPage: pagination?.pageSize || 10,
+          }}
+          pagination={pagination}
+          onPaginationChange={setExternalPagination || setPagination}
+          sorting={externalSorting || sorting}
+          onSortingChange={setExternalSorting || setSorting}
+        >
+          {loading ? (
+            <div className="flex h-64 items-center justify-center">
+              <LoadingStatic />
+            </div>
+          ) : (
+            <>
+              <DataTableBO.Content Table={TableBO} />
+              <DataTableBO.Pagination />
+            </>
+          )}
+        </DataTableBO.Root>
+      )}
     </>
   );
 };

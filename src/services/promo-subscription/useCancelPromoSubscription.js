@@ -4,11 +4,11 @@ import { fetcherMuatparts } from "@/lib/axios";
 
 const useMock = false;
 
-export const useCreatePromoSubscription = () => {
+export const useCancelPromoSubscription = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const createSubscription = async (data) => {
+  const cancelSubscription = async (id) => {
     setIsLoading(true);
     setError(null);
 
@@ -19,33 +19,32 @@ export const useCreatePromoSubscription = () => {
 
         // Mock success response
         const response = {
-          Message: { Code: 200, Text: "Success" },
+          Message: { Code: 200, Text: "Promo cancelled successfully" },
           Data: {
-            id: `SUB-${Math.floor(Math.random() * 10000)}`,
-            ...data,
-            createdAt: new Date().toISOString(),
+            id,
+            packageName: "Test Package",
+            cancelledAt: new Date().toISOString(),
           },
-          Type: "CREATE_PROMO_SUCCESS",
+          Type: "CANCEL_PROMO_SUCCESS",
         };
         setIsLoading(false);
         return response;
       } else {
-        const response = await fetcherMuatparts.post(
-          "/v1/bo/subscription-tm/promos",
-          data
+        const response = await fetcherMuatparts.delete(
+          `/v1/bo/subscription-tm/promos/${id}`
         );
         setIsLoading(false);
         return response.data;
       }
     } catch (err) {
-      setError(err.message || "Failed to create promo subscription");
+      setError(err.message || "Failed to cancel promo subscription");
       setIsLoading(false);
       throw err;
     }
   };
 
   return {
-    createSubscription,
+    cancelSubscription,
     isLoading,
     error,
   };
