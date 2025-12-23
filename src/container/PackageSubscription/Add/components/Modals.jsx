@@ -69,7 +69,7 @@ export const ConfirmBackModal = ({ isOpen, setOpen, onConfirm, onCancel }) => {
       }}
       description={{
         className: "w-[337px]",
-        text: "Anda belum menyimpan data!",
+        text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
       }}
       cancel={{
         className: "min-w-[112px] md:px-3",

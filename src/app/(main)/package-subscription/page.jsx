@@ -47,6 +47,16 @@ export default function PackageSubscriptionPage() {
   const [inputValue, setInputValue] = useState("");
   const [sorting, setSorting] = useState([]);
 
+  // Mapping field names from Indonesian (frontend) to English (API)
+  const fieldNameMapping = {
+    posisi: "position",
+    namaPaket: "packageName",
+    mulaiBerlaku: "startDate",
+    periode: "period",
+    price: "price",
+    koin: "coinEarned",
+  };
+
   // Calculate API params
   const apiParams = useMemo(() => {
     const params = {
@@ -62,7 +72,9 @@ export default function PackageSubscriptionPage() {
     // Add sorting if exists
     if (sorting.length > 0) {
       const sort = sorting[0];
-      params.sortBy = sort.id;
+      // Map frontend field name to API field name
+      const apiFieldName = fieldNameMapping[sort.id] || sort.id;
+      params.sortBy = apiFieldName;
       params.sortOrder = sort.desc ? "desc" : "asc";
     }
 

@@ -3,9 +3,10 @@ import useSWRMutation from "swr/mutation";
 import { fetcherMuatparts } from "@/lib/axios";
 
 const deletePackageSubscriptionFn = async (url, { arg }) => {
-  return await fetcherMuatparts(`/v1/bo/subscription-tm/packages/${arg}`, {
-    method: "DELETE",
-  });
+  const response = await fetcherMuatparts.delete(
+    `/v1/bo/subscription-tm/packages/${arg}`
+  );
+  return response.data;
 };
 
 export const useDeletePackageSubscription = () => {
@@ -13,7 +14,7 @@ export const useDeletePackageSubscription = () => {
     "/v1/bo/subscription-tm/packages",
     deletePackageSubscriptionFn,
     {
-      throwOnError: false,
+      throwOnError: true,
     }
   );
 

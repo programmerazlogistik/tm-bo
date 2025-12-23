@@ -13,12 +13,12 @@ const Sidebar = () => {
   const menuItems = [
     {
       name: "Paket Subscription TM",
-      icon: "/icons/sidebar/credit-card.svg",
+      icon: "/icons/sidebar/icon-cms-homepage.svg",
       href: "/package-subscription",
     },
     {
       name: "Promo Subscription TM",
-      icon: "/icons/sidebar/icon-cms-homepage.svg",
+      icon: "/icons/sidebar/credit-card.svg",
       href: "/promo-subscription",
     },
     {

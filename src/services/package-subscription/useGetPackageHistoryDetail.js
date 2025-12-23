@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 /**
  * Mock package history detail data
@@ -142,12 +142,10 @@ const getPackageHistoryDetail = async (id, historyId) => {
       Type: "GET_PACKAGE_HISTORY_DETAIL_SUCCESS",
     };
   } else {
-    return await fetcherMuatparts(
-      `/v1/bo/subscription-tm/packages/${id}/history/${historyId}`,
-      {
-        method: "GET",
-      }
+    const response = await fetcherMuatparts.get(
+      `/v1/bo/subscription-tm/packages/${id}/history/${historyId}`
     );
+    return response.data;
   }
 };
 

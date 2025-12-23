@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 /**
  * Mock popular package data
@@ -59,13 +59,11 @@ const checkPopularPackage = async (excludeId = null) => {
       params.excludeId = excludeId;
     }
 
-    return await fetcherMuatparts(
+    const response = await fetcherMuatparts.get(
       "/v1/bo/subscription-tm/packages/check-popular",
-      {
-        method: "GET",
-        params,
-      }
+      { params }
     );
+    return response.data;
   }
 };
 

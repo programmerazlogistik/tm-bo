@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 /**
  * Count active packages in the system
@@ -36,12 +36,10 @@ const countActivePackages = async () => {
       Type: "COUNT_ACTIVE_PACKAGES_SUCCESS",
     };
   } else {
-    return await fetcherMuatparts(
-      "/v1/bo/subscription-tm/packages/count-active",
-      {
-        method: "GET",
-      }
+    const response = await fetcherMuatparts.get(
+      "/v1/bo/subscription-tm/packages/count-active"
     );
+    return response.data;
   }
 };
 

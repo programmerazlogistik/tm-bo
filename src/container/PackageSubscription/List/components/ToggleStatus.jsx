@@ -1,18 +1,19 @@
 import { useState } from "react";
 
-import { toast } from "@muatmuat/ui/Toaster";
-
 import { useUpdatePackageSubscriptionStatus } from "@/services/package-subscription/useUpdatePackageSubscriptionStatus";
 
 import Toggle from "@/components/Toggle/Toggle";
 
 import ConfirmationModal from "./ConfirmationModal";
 
-const SuccessToggleModal = ({ isOpen, setOpen, type }) => {
-  const descriptionMap = {
-    active: "Berhasil Mengaktifkan Paket",
-    inactive: "Berhasil Menonaktifkan Paket",
+const SuccessToggleModal = ({ isOpen, setOpen, type, packageName }) => {
+  const getDescription = () => {
+    if (type === "active") {
+      return `Paket <strong>${packageName}</strong> berhasil diaktifkan`;
+    }
+    return `Paket <strong>${packageName}</strong> berhasil dinonaktifkan`;
   };
+
   return (
     <ConfirmationModal
       isOpen={isOpen}
@@ -22,7 +23,25 @@ const SuccessToggleModal = ({ isOpen, setOpen, type }) => {
       }}
       description={{
         className: "w-[337px]",
-        text: descriptionMap[type] || descriptionMap.active,
+        text: getDescription(),
+      }}
+      withCancel={false}
+      withConfirm={false}
+    />
+  );
+};
+
+const ErrorModal = ({ isOpen, setOpen, message }) => {
+  return (
+    <ConfirmationModal
+      isOpen={isOpen}
+      setIsOpen={setOpen}
+      title={{
+        text: "Warning",
+      }}
+      description={{
+        className: "w-[337px]",
+        text: message,
       }}
       withCancel={false}
       withConfirm={false}
@@ -38,13 +57,12 @@ const ToggleStatusModal = ({
   onSuccess,
 }) => {
   const [isSuccessModalOpen, setSuccessModalOpen] = useState(false);
+  const [errorModalState, setErrorModalState] = useState({
+    isOpen: false,
+    message: "",
+  });
   const { updatePackageSubscriptionStatus, isMutating } =
     useUpdatePackageSubscriptionStatus();
-
-  const descriptionMap = {
-    active: "Apakah Anda yakin ingin mengaktifkan paket subscription ?",
-    inactive: "Apakah Anda yakin ingin menonaktifkan paket subscription ?",
-  };
 
   const handleConfirm = async () => {
     try {
@@ -59,10 +77,18 @@ const ToggleStatusModal = ({
         setSuccessModalOpen(true);
       }, 300);
     } catch (error) {
-      toast.error(
-        error?.response?.data?.Message?.Text || "Gagal mengubah status paket"
-      );
+      const errorMessage =
+        error?.response?.data?.Data ||
+        error?.response?.data?.Message?.Text ||
+        "Gagal mengubah status paket";
+
+      // Tutup modal konfirmasi dulu
       setOpen(false);
+
+      // Tunggu modal konfirmasi tertutup, baru buka error modal
+      setTimeout(() => {
+        setErrorModalState({ isOpen: true, message: errorMessage });
+      }, 300);
     }
   };
 
@@ -72,6 +98,10 @@ const ToggleStatusModal = ({
     if (onSuccess) {
       onSuccess();
     }
+  };
+
+  const handleCloseErrorModal = () => {
+    setErrorModalState({ isOpen: false, message: "" });
   };
 
   return (
@@ -84,7 +114,7 @@ const ToggleStatusModal = ({
         }}
         description={{
           className: "w-[337px]",
-          text: descriptionMap[type] || descriptionMap.active,
+          text: `Apakah Anda yakin ingin ${type === "active" ? "mengaktifkan" : "menonaktifkan"}<br/>Paket <strong>${pkg.namaPaket}</strong>?`,
         }}
         cancel={{
           className: "min-w-[112px] md:px-3",
@@ -101,6 +131,12 @@ const ToggleStatusModal = ({
         isOpen={isSuccessModalOpen}
         setOpen={handleCloseSuccessModal}
         type={type}
+        packageName={pkg.namaPaket}
+      />
+      <ErrorModal
+        isOpen={errorModalState.isOpen}
+        setOpen={handleCloseErrorModal}
+        message={errorModalState.message}
       />
     </>
   );

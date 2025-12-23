@@ -4,10 +4,11 @@ import { fetcherMuatparts } from "@/lib/axios";
 
 const updatePackageSubscriptionFn = async (url, { arg }) => {
   const { id, data } = arg;
-  return await fetcherMuatparts(`/v1/bo/subscription-tm/packages/${id}`, {
-    method: "PUT",
-    data,
-  });
+  const response = await fetcherMuatparts.put(
+    `/v1/bo/subscription-tm/packages/${id}`,
+    data
+  );
+  return response.data;
 };
 
 export const useUpdatePackageSubscription = () => {

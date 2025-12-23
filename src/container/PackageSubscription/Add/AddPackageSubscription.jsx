@@ -6,10 +6,14 @@ import { useState } from "react";
 import { Button } from "@muatmuat/ui/Button";
 import { DateTimePickerWeb } from "@muatmuat/ui/Calendar";
 import { Input, Select, TextArea } from "@muatmuat/ui/Form";
+import { IconComponent } from "@muatmuat/ui/IconComponent";
 import { toast } from "@muatmuat/ui/Toaster";
 import { InfoTooltip } from "@muatmuat/ui/Tooltip";
 
 import { useCreatePackageSubscription } from "@/services/package-subscription/useCreatePackageSubscription";
+import { useGetPopularPackage } from "@/services/package-subscription/useGetPopularPackage";
+import { validateNameUnique } from "@/services/package-subscription/useValidateNameUnique";
+import { validatePositionUnique } from "@/services/package-subscription/useValidatePositionUnique";
 
 import Toggle from "@/components/Toggle/Toggle";
 
@@ -49,6 +53,7 @@ const AddPackageSubscription = () => {
   });
 
   const { createPackageSubscription } = useCreatePackageSubscription();
+  const { data: popularData } = useGetPopularPackage();
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -158,10 +163,43 @@ const AddPackageSubscription = () => {
     return validateRequiredFields() && validateFields();
   };
 
+  const validateUniqueness = async () => {
+    // Validate name uniqueness
+    const nameResult = await validateNameUnique(formData.namaPaket);
+    if (!nameResult?.Data?.isAvailable) {
+      showWarning(
+        nameResult?.Data?.message ||
+          "Nama paket yang anda masukkan sudah terdaftar"
+      );
+      return false;
+    }
+
+    // Validate position uniqueness
+    const positionResult = await validatePositionUnique(
+      formData.posisiPaketPembelian
+    );
+    if (!positionResult?.Data?.isAvailable) {
+      showWarning(
+        positionResult?.Data?.message ||
+          "Posisi yang anda masukkan sudah terdaftar"
+      );
+      return false;
+    }
+
+    return true;
+  };
+
   const saveData = async () => {
     setIsLoading(true);
 
     try {
+      // Validate uniqueness before saving
+      const isUnique = await validateUniqueness();
+      if (!isUnique) {
+        setIsLoading(false);
+        return;
+      }
+
       const payload = mapFormDataToPayload(formData);
       await createPackageSubscription(payload);
 
@@ -322,8 +360,12 @@ const AddPackageSubscription = () => {
         <div className="mb-6 flex items-start gap-6">
           <label className="flex w-[200px] items-center gap-2 pt-2 text-sm font-semibold text-[#868686]">
             Batas Pembelian Paket
-            <InfoTooltip side="right" className="max-w-[336px]">
-              <p className="text-xs font-medium text-[#1B1B1B]">
+            <InfoTooltip
+              side="top"
+              icon="/icons/info.svg"
+              className="max-w-[336px]"
+            >
+              <p className="text-center text-xs font-medium text-[#1B1B1B]">
                 Membatasi jumlah pembelian paket oleh masing-masing pengguna.
               </p>
             </InfoTooltip>
@@ -339,30 +381,29 @@ const AddPackageSubscription = () => {
         </div>
 
         {/* Kuota Pembelian per User */}
-        {formData.batasPembelianPaket && (
-          <div className="mb-6 flex items-start gap-6">
-            <label className="w-[200px] pt-2 text-sm font-semibold text-[#868686]">
-              Kuota Pembelian per User
-            </label>
-            <div className="flex-1">
-              <Input
-                value={
-                  formData.kuotaPembelianPerUser
-                    ? formatNumber(formData.kuotaPembelianPerUser)
-                    : ""
-                }
-                onChange={(e) =>
-                  handleNumberChange("kuotaPembelianPerUser", e.target.value)
-                }
-                placeholder="Masukkan Jumlah Kuota Pembelian"
-                className="w-full"
-                appearance={{
-                  inputClassName: "text-sm",
-                }}
-              />
-            </div>
+        <div className="mb-6 flex items-start gap-6">
+          <label className="w-[200px] pt-2 text-sm font-semibold text-[#868686]">
+            Kuota Pembelian per User
+          </label>
+          <div className="flex-1">
+            <Input
+              value={
+                formData.kuotaPembelianPerUser
+                  ? formatNumber(formData.kuotaPembelianPerUser)
+                  : ""
+              }
+              onChange={(e) =>
+                handleNumberChange("kuotaPembelianPerUser", e.target.value)
+              }
+              placeholder="Masukkan Jumlah Kuota Pembelian"
+              className="w-full"
+              disabled={!formData.batasPembelianPaket}
+              appearance={{
+                inputClassName: "text-sm",
+              }}
+            />
           </div>
-        )}
+        </div>
 
         {/* Harga */}
         <div className="mb-6 flex items-start gap-6">
@@ -429,11 +470,23 @@ const AddPackageSubscription = () => {
           <label className="w-[200px] pt-2 text-sm font-semibold text-[#868686]">
             Jadikan sebagai Paket Populer
           </label>
-          <div className="flex-1">
+          <div className="flex flex-1 flex-row items-center justify-start gap-2">
             <Toggle
               value={formData.isPaketPopuler}
               onClick={(value) => handleInputChange("isPaketPopuler", value)}
+              disabled={popularData?.hasPopular}
             />
+            {popularData?.hasPopular && (
+              <div className="flex w-[205px] items-center gap-2 rounded-md bg-[#176CF7] px-2 py-1">
+                <IconComponent
+                  src="/icons/info-white.svg"
+                  className="text-primary-50"
+                />
+                <span className="text-sm font-semibold text-primary-50">
+                  Sudah ada paket populer
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

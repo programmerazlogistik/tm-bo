@@ -4,13 +4,11 @@ import { fetcherMuatparts } from "@/lib/axios";
 
 const updatePackageSubscriptionStatusFn = async (url, { arg }) => {
   const { id, data } = arg;
-  return await fetcherMuatparts(
+  const response = await fetcherMuatparts.patch(
     `/v1/bo/subscription-tm/packages/${id}/status`,
-    {
-      method: "PATCH",
-      data,
-    }
+    data
   );
+  return response.data;
 };
 
 export const useUpdatePackageSubscriptionStatus = () => {
@@ -18,7 +16,7 @@ export const useUpdatePackageSubscriptionStatus = () => {
     "/v1/bo/subscription-tm/packages/status",
     updatePackageSubscriptionStatusFn,
     {
-      throwOnError: false,
+      throwOnError: true,
     }
   );
 

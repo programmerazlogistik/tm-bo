@@ -6,15 +6,16 @@ import { useCallback, useMemo, useState } from "react";
 import { Button } from "@muatmuat/ui/Button";
 import { Input } from "@muatmuat/ui/Form";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
-import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
-import { toast } from "@muatmuat/ui/Toaster";
 
 import { useDeletePackageSubscription } from "@/services/package-subscription/useDeletePackageSubscription";
 
 import { ActionDropdown } from "@/components/Dropdown/ActionDropdown";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
+import { sweetAlert } from "@/lib/sweetAlert";
+
+import ConfirmationModal from "./components/ConfirmationModal";
 import ToggleStatus from "./components/ToggleStatus";
 
 // Format currency to IDR
@@ -59,6 +60,11 @@ const PackageSubscriptionList = ({
     package: null,
   });
 
+  const [errorModalState, setErrorModalState] = useState({
+    isOpen: false,
+    message: "",
+  });
+
   const tableData = useMemo(() => {
     return data?.packages || [];
   }, [data]);
@@ -97,22 +103,39 @@ const PackageSubscriptionList = ({
       try {
         await deletePackageSubscription(modalState.package.id);
 
-        toast.success("Berhasil menghapus paket");
+        closeConfirmationModal();
 
-        // Refresh the data
-        if (onRefresh) onRefresh();
+        // Tunggu modal konfirmasi tertutup, baru tampilkan sweetAlert
+        setTimeout(() => {
+          sweetAlert(
+            <p className="text-[26.25px] font-bold leading-[31.5px] text-[#595959]">
+              Data berhasil dihapus
+            </p>,
+            "OK",
+            () => {
+              if (onRefresh) onRefresh();
+            }
+          );
+        }, 300);
       } catch (error) {
-        toast.error(
-          error?.response?.data?.Message?.Text || `Gagal menghapus paket`
-        );
+        const errorMessage =
+          error?.response?.data?.Data ||
+          error?.response?.data?.Message?.Text ||
+          "Gagal menghapus paket";
+
+        closeConfirmationModal();
+
+        // Tunggu modal konfirmasi tertutup, baru buka error modal
+        setTimeout(() => {
+          setErrorModalState({ isOpen: true, message: errorMessage });
+        }, 300);
       }
     }
-    closeConfirmationModal();
   }, [
     modalState,
     closeConfirmationModal,
-    onRefresh,
     deletePackageSubscription,
+    onRefresh,
   ]);
 
   const columns = useMemo(() => {
@@ -263,10 +286,12 @@ const PackageSubscriptionList = ({
         size: 120,
         enableSorting: false,
         cell: ({ row }) => {
-          const value = row.original.terpopuler;
+          const isPopular = row.original.terpopuler;
           return (
-            <div className="text-xs font-normal leading-[18px] text-[#1B1B1B]">
-              {value || <span className="text-[#868686]">-</span>}
+            <div className="text-xs leading-[18px]">
+              {isPopular === "Ya" && (
+                <span className="font-bold text-[#1B1B1B]">Terpopuler</span>
+              )}
             </div>
           );
         },
@@ -366,13 +391,12 @@ const PackageSubscriptionList = ({
       <ConfirmationModal
         isOpen={modalState.isOpen && modalState.type === "delete"}
         setIsOpen={closeConfirmationModal}
-        variant="bo"
         title={{
           text: "Pemberitahuan",
         }}
         description={{
           text: modalState.package
-            ? `Apakah Anda yakin ingin menghapus paket "${modalState.package.namaPaket}"?`
+            ? `Apakah Anda yakin ingin menghapus<br/>paket <strong>${modalState.package.namaPaket}</strong> ?`
             : "Apakah Anda yakin ingin menghapus paket ini?",
         }}
         cancel={{
@@ -383,6 +407,21 @@ const PackageSubscriptionList = ({
           onClick: handleDeletePackage,
         }}
         disabled={isDeleting}
+      />
+
+      {/* Error Modal */}
+      <ConfirmationModal
+        isOpen={errorModalState.isOpen}
+        setIsOpen={() => setErrorModalState({ isOpen: false, message: "" })}
+        title={{
+          text: "Warning",
+        }}
+        description={{
+          className: "w-[337px]",
+          text: errorModalState.message,
+        }}
+        withCancel={false}
+        withConfirm={false}
       />
     </div>
   );

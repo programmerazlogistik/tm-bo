@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 /**
  * Mock data for package subscription details
@@ -107,7 +107,8 @@ export const useGetPackageSubscriptionDetail = (id) => {
         Type: "GET_PACKAGE_DETAIL_SUCCESS",
       };
     } else {
-      return await fetcherMuatparts(url);
+      const response = await fetcherMuatparts.get(url);
+      return response.data;
     }
   };
 

@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 /**
  * Mock existing package positions for validation
@@ -17,7 +17,7 @@ const existingPositions = [1, 2, 3, 4];
  * @param {string} [excludeId] - ID to exclude (for edit mode)
  * @returns {Promise<Object>} Validation result
  */
-const validatePositionUnique = async (position, excludeId = null) => {
+export const validatePositionUnique = async (position, excludeId = null) => {
   if (USE_MOCK) {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 300));
@@ -61,13 +61,11 @@ const validatePositionUnique = async (position, excludeId = null) => {
       params.excludeId = excludeId;
     }
 
-    return await fetcherMuatparts(
+    const response = await fetcherMuatparts.get(
       "/v1/bo/subscription-tm/packages/validate-position",
-      {
-        method: "GET",
-        params,
-      }
+      { params }
     );
+    return response.data;
   }
 };
 

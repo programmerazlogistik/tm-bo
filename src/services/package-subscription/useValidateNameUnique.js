@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 /**
  * Mock existing package names for validation
@@ -22,7 +22,7 @@ const existingPackageNames = [
  * @param {string} [excludeId] - ID to exclude (for edit mode)
  * @returns {Promise<Object>} Validation result
  */
-const validateNameUnique = async (name, excludeId = null) => {
+export const validateNameUnique = async (name, excludeId = null) => {
   if (USE_MOCK) {
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 300));
@@ -66,13 +66,11 @@ const validateNameUnique = async (name, excludeId = null) => {
       params.excludeId = excludeId;
     }
 
-    return await fetcherMuatparts(
+    const response = await fetcherMuatparts.get(
       "/v1/bo/subscription-tm/packages/validate-name",
-      {
-        method: "GET",
-        params,
-      }
+      { params }
     );
+    return response.data;
   }
 };
 
