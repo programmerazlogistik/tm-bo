@@ -283,7 +283,7 @@ const AddPackageSubscription = () => {
             Mulai Berlaku*
           </label>
           <div className="flex-1">
-            <div className="[&_span]:!text-xs [&_span]:!font-medium [&_span]:!text-[#7B7B7B]">
+            <div className="[&_span.text-neutral-400]:!text-[#7B7B7B] [&_span]:!text-xs [&_span]:!font-medium [&_span]:!text-black">
               <DateTimePickerWeb
                 value={formData.mulaiBerlaku}
                 onChange={(date) => handleInputChange("mulaiBerlaku", date)}
@@ -524,12 +524,14 @@ const AddPackageSubscription = () => {
         setOpen={setConfirmModalOpen}
         onConfirm={handleConfirmSave}
         isLoading={isLoading}
+        description="Apakah anda yakin akan menyimpan data?"
       />
       <ConfirmBackModal
         isOpen={isBackModalOpen}
         setOpen={setBackModalOpen}
         onConfirm={handleConfirmBackSave}
         onCancel={handleCancelBack}
+        description="Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan"
       />
       <WarningModal
         isOpen={warningModalState.isOpen}

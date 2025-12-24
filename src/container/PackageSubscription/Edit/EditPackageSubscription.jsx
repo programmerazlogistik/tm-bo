@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 import { Button } from "@muatmuat/ui/Button";
 import { DateTimePickerWeb } from "@muatmuat/ui/Calendar";
 import { Input, Select, TextArea } from "@muatmuat/ui/Form";
+import { IconComponent } from "@muatmuat/ui/IconComponent";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
 import { toast } from "@muatmuat/ui/Toaster";
 import { InfoTooltip } from "@muatmuat/ui/Tooltip";
 
 import { useGetPackageSubscriptionDetail } from "@/services/package-subscription/useGetPackageSubscriptionDetail";
+import { useGetPopularPackage } from "@/services/package-subscription/useGetPopularPackage";
 import { useUpdatePackageSubscription } from "@/services/package-subscription/useUpdatePackageSubscription";
 
 import Toggle from "@/components/Toggle/Toggle";
@@ -54,18 +56,21 @@ const EditPackageSubscription = ({ id }) => {
   const { data: packageData, isLoading: isFetching } =
     useGetPackageSubscriptionDetail(id);
   const { updatePackageSubscription } = useUpdatePackageSubscription();
+  const { data: popularData } = useGetPopularPackage();
 
   // Load data when packageData is available
   useEffect(() => {
     if (packageData) {
       const loadedData = {
         namaPaket: packageData.packageName || "",
-        mulaiBerlaku: packageData.startDate || null,
+        mulaiBerlaku: packageData.startDate
+          ? new Date(packageData.startDate)
+          : null,
         deskripsiPaket: packageData.description || "",
         periode: String(packageData.period || ""),
-        subUserYangDiperoleh: String(packageData.subUserObtained || ""),
-        batasPembelianPaket: packageData.purchaseLimitEnabled || false,
-        kuotaPembelianPerUser: String(packageData.purchaseQuotaPerUser || ""),
+        subUserYangDiperoleh: String(packageData.subUsersEarned || ""),
+        batasPembelianPaket: packageData.isLimitedPurchase || false,
+        kuotaPembelianPerUser: String(packageData.maxPurchasePerUser || ""),
         harga: String(packageData.price || ""),
         koin: packageData.isUnlimitedCoin
           ? "0"
@@ -267,7 +272,7 @@ const EditPackageSubscription = ({ id }) => {
             Mulai Berlaku*
           </label>
           <div className="flex-1">
-            <div className="[&_span]:!text-xs [&_span]:!font-medium [&_span]:!text-[#7B7B7B]">
+            <div className="[&_span.text-neutral-400]:!text-[#7B7B7B] [&_span]:!text-xs [&_span]:!font-medium [&_span]:!text-black">
               <DateTimePickerWeb
                 value={formData.mulaiBerlaku}
                 onChange={(date) => handleInputChange("mulaiBerlaku", date)}
@@ -344,8 +349,12 @@ const EditPackageSubscription = ({ id }) => {
         <div className="mb-6 flex items-start gap-6">
           <label className="flex w-[200px] items-center gap-2 pt-2 text-sm font-semibold text-[#868686]">
             Batas Pembelian Paket
-            <InfoTooltip side="right" className="max-w-[336px]">
-              <p className="text-xs font-medium text-[#1B1B1B]">
+            <InfoTooltip
+              side="top"
+              icon="/icons/info.svg"
+              className="max-w-[336px]"
+            >
+              <p className="text-center text-xs font-medium text-[#1B1B1B]">
                 Membatasi jumlah pembelian paket oleh masing-masing pengguna.
               </p>
             </InfoTooltip>
@@ -451,11 +460,23 @@ const EditPackageSubscription = ({ id }) => {
           <label className="w-[200px] pt-2 text-sm font-semibold text-[#868686]">
             Jadikan sebagai Paket Populer
           </label>
-          <div className="flex-1">
+          <div className="flex flex-1 flex-row items-center justify-start gap-2">
             <Toggle
               value={formData.isPaketPopuler}
               onClick={(value) => handleInputChange("isPaketPopuler", value)}
+              disabled={popularData?.hasPopular && !formData.isPaketPopuler}
             />
+            {popularData?.hasPopular && !formData.isPaketPopuler && (
+              <div className="flex w-[205px] items-center gap-2 rounded-md bg-[#176CF7] px-2 py-1">
+                <IconComponent
+                  src="/icons/info-white.svg"
+                  className="text-primary-50"
+                />
+                <span className="text-sm font-semibold text-primary-50">
+                  Sudah ada paket populer
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -493,12 +514,14 @@ const EditPackageSubscription = ({ id }) => {
         setOpen={setConfirmModalOpen}
         onConfirm={handleConfirmSave}
         isLoading={isLoading}
+        description="Apakah anda yakin akan menyimpan perubahan?"
       />
       <ConfirmBackModal
         isOpen={isBackModalOpen}
         setOpen={setBackModalOpen}
         onConfirm={handleConfirmBackSave}
         onCancel={handleCancelBack}
+        description="Apakah kamu yakin ingin berpindah halaman? Data yang telah diubah tidak akan disimpan"
       />
       <WarningModal
         isOpen={warningModalState.isOpen}

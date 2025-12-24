@@ -26,7 +26,13 @@ WarningModal.propTypes = {
   message: PropTypes.string.isRequired,
 };
 
-export const ConfirmSaveModal = ({ isOpen, setOpen, onConfirm, isLoading }) => {
+export const ConfirmSaveModal = ({
+  isOpen,
+  setOpen,
+  onConfirm,
+  isLoading,
+  description,
+}) => {
   return (
     <ConfirmationModal
       isOpen={isOpen}
@@ -36,7 +42,7 @@ export const ConfirmSaveModal = ({ isOpen, setOpen, onConfirm, isLoading }) => {
       }}
       description={{
         className: "w-[337px]",
-        text: "Apakah anda yakin akan menyimpan data?",
+        text: description || "Apakah anda yakin akan menyimpan data?",
       }}
       cancel={{
         className: "min-w-[112px] md:px-3",
@@ -57,9 +63,16 @@ ConfirmSaveModal.propTypes = {
   setOpen: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  description: PropTypes.string,
 };
 
-export const ConfirmBackModal = ({ isOpen, setOpen, onConfirm, onCancel }) => {
+export const ConfirmBackModal = ({
+  isOpen,
+  setOpen,
+  onConfirm,
+  onCancel,
+  description,
+}) => {
   return (
     <ConfirmationModal
       isOpen={isOpen}
@@ -69,7 +82,9 @@ export const ConfirmBackModal = ({ isOpen, setOpen, onConfirm, onCancel }) => {
       }}
       description={{
         className: "w-[337px]",
-        text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
+        text:
+          description ||
+          "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
       }}
       cancel={{
         className: "min-w-[112px] md:px-3",
@@ -91,4 +106,5 @@ ConfirmBackModal.propTypes = {
   setOpen: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  description: PropTypes.string,
 };

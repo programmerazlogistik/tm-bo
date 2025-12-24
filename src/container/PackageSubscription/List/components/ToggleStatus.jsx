@@ -57,6 +57,7 @@ const ToggleStatusModal = ({
   onSuccess,
 }) => {
   const [isSuccessModalOpen, setSuccessModalOpen] = useState(false);
+  const [successType, setSuccessType] = useState(null);
   const [errorModalState, setErrorModalState] = useState({
     isOpen: false,
     message: "",
@@ -68,6 +69,9 @@ const ToggleStatusModal = ({
     try {
       const newStatus = type === "active";
       await updatePackageSubscriptionStatus(pkg.id, newStatus);
+
+      // Simpan type yang sebenarnya untuk ditampilkan di success modal
+      setSuccessType(type);
 
       // Tutup modal konfirmasi dulu
       setOpen(false);
@@ -130,7 +134,7 @@ const ToggleStatusModal = ({
       <SuccessToggleModal
         isOpen={isSuccessModalOpen}
         setOpen={handleCloseSuccessModal}
-        type={type}
+        type={successType}
         packageName={pkg.namaPaket}
       />
       <ErrorModal

@@ -1,23 +1,29 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import { Button } from "@muatmuat/ui/Button";
 import { DateTimePickerWeb } from "@muatmuat/ui/Calendar";
-import { Input, Select, TextArea } from "@muatmuat/ui/Form";
+import { Input, TextArea } from "@muatmuat/ui/Form";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
 import { DataTableBO, TableBO } from "@muatmuat/ui/Table";
 import { InfoTooltip } from "@muatmuat/ui/Tooltip";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 
+import { useDeletePackageSubscription } from "@/services/package-subscription/useDeletePackageSubscription";
 import { useGetPackageHistory } from "@/services/package-subscription/useGetPackageHistory";
 import { useGetPackageSubscriptionDetail } from "@/services/package-subscription/useGetPackageSubscriptionDetail";
 
 import Toggle from "@/components/Toggle/Toggle";
 
+import { sweetAlert } from "@/lib/sweetAlert";
+
 import BackButton from "../Add/components/BackButton";
 import { INITIAL_FORM_STATE, PERIODE_OPTIONS } from "../Add/constants";
 import { formatCurrency, formatNumber } from "../Add/helpers";
+import ConfirmationModal from "../List/components/ConfirmationModal";
 
 const TAB_OPTIONS = [
   { value: "home", label: "Utama" },
@@ -25,12 +31,20 @@ const TAB_OPTIONS = [
 ];
 
 const DetailPackageSubscription = ({ id }) => {
+  const router = useRouter();
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const [activeTab, setActiveTab] = useState("home");
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [errorModalState, setErrorModalState] = useState({
+    isOpen: false,
+    message: "",
+  });
 
   const { data: packageData, isLoading: isFetching } =
     useGetPackageSubscriptionDetail(id);
+  const { deletePackageSubscription, isMutating: isDeleting } =
+    useDeletePackageSubscription();
 
   const { data: historyData, isLoading: isLoadingHistory } =
     useGetPackageHistory(id, {
@@ -48,9 +62,9 @@ const DetailPackageSubscription = ({ id }) => {
           : null,
         deskripsiPaket: packageData.description || "",
         periode: String(packageData.period || ""),
-        subUserYangDiperoleh: String(packageData.subUserObtained || ""),
-        batasPembelianPaket: packageData.purchaseLimitEnabled || false,
-        kuotaPembelianPerUser: String(packageData.purchaseQuotaPerUser || ""),
+        subUserYangDiperoleh: String(packageData.subUsersEarned || ""),
+        batasPembelianPaket: packageData.isLimitedPurchase || false,
+        kuotaPembelianPerUser: String(packageData.maxPurchasePerUser || ""),
         harga: String(packageData.price || ""),
         koin: packageData.isUnlimitedCoin
           ? "0"
@@ -153,8 +167,8 @@ const DetailPackageSubscription = ({ id }) => {
           const isActive = status === true || status === "active";
           return (
             <div
-              className={`text-xs font-semibold leading-[18px] ${
-                isActive ? "text-[#00A03E]" : "text-[#F71717]"
+              className={`text-xs font-bold leading-[18px] ${
+                isActive ? "text-[#3ECD00]" : "text-[#F71717]"
               }`}
             >
               {isActive ? "Active" : "Nonactive"}
@@ -167,15 +181,15 @@ const DetailPackageSubscription = ({ id }) => {
         header: "Detail",
         enableSorting: false,
         size: 80,
-        cell: () => {
+        cell: ({ row }) => {
+          const historyId = row.original.id;
           const handleDetailClick = () => {
-            // TODO: Implement detail modal or navigation
-            // Will show history detail modal in future implementation
+            router.push(`/package-subscription/${id}/detail/${historyId}`);
           };
 
           return (
             <button
-              className="text-xs font-semibold leading-[18px] text-[#0095DA] hover:underline"
+              className="text-xs font-medium leading-[18px] text-[#176CF7] underline"
               onClick={handleDetailClick}
             >
               Detail
@@ -198,10 +212,43 @@ const DetailPackageSubscription = ({ id }) => {
     return {
       currentPage: historyData.pagination.currentPage,
       itemsPerPage: historyData.pagination.limit,
-      totalItems: historyData.pagination.totalData,
+      totalItems: historyData.pagination.totalRecords,
       totalPages: historyData.pagination.totalPages,
     };
   }, [historyData]);
+
+  const handleDeletePackage = async () => {
+    try {
+      await deletePackageSubscription(id);
+
+      setDeleteModalOpen(false);
+
+      // Tunggu modal konfirmasi tertutup, baru tampilkan sweetAlert
+      setTimeout(() => {
+        sweetAlert(
+          <p className="text-[26.25px] font-bold leading-[31.5px] text-[#595959]">
+            Data berhasil dihapus
+          </p>,
+          "OK",
+          () => {
+            router.push("/package-subscription");
+          }
+        );
+      }, 300);
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.Data ||
+        error?.response?.data?.Message?.Text ||
+        "Gagal menghapus paket";
+
+      setDeleteModalOpen(false);
+
+      // Tunggu modal konfirmasi tertutup, baru buka error modal
+      setTimeout(() => {
+        setErrorModalState({ isOpen: true, message: errorMessage });
+      }, 300);
+    }
+  };
 
   if (isFetching) {
     return (
@@ -215,7 +262,13 @@ const DetailPackageSubscription = ({ id }) => {
     <div>
       {/* Header with Back Button and Tabs */}
       <div className="flex items-center justify-between">
-        <BackButton title="Detail Paket Subscription" />
+        <BackButton
+          title={
+            activeTab === "home"
+              ? "Detail Paket Subscription"
+              : "Log Paket Subscription"
+          }
+        />
 
         <div
           className="flex"
@@ -263,7 +316,7 @@ const DetailPackageSubscription = ({ id }) => {
               Mulai Berlaku*
             </label>
             <div className="flex-1">
-              <div className="[&_span]:!text-xs [&_span]:!font-medium [&_span]:!text-[#7B7B7B]">
+              <div className="[&_span.text-neutral-400]:!text-[#7B7B7B] [&_span]:!text-xs [&_span]:!font-medium [&_span]:!text-black">
                 <DateTimePickerWeb
                   value={formData.mulaiBerlaku}
                   placeholder="Pilih Tanggal & Jam"
@@ -300,11 +353,35 @@ const DetailPackageSubscription = ({ id }) => {
               Periode*
             </label>
             <div className="flex-1">
-              <Select
-                value={formData.periode}
+              <Input
+                value={
+                  formData.periode
+                    ? PERIODE_OPTIONS.find(
+                        (opt) => opt.value === formData.periode
+                      )?.label || formData.periode
+                    : ""
+                }
                 placeholder="Pilih Periode"
-                options={PERIODE_OPTIONS}
                 className="w-full"
+                appearance={{
+                  inputClassName: "text-sm",
+                }}
+                icon={{
+                  right: (
+                    <svg
+                      width="9"
+                      height="5"
+                      viewBox="0 0 9 5"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M0.160633 0.132759C0.350798 -0.0429105 0.64065 -0.0429465 0.830555 0.124946L0.867013 0.160754L4.31949 3.89513L4.37287 3.942C4.42796 3.9816 4.48853 3.99995 4.54605 3.99995C4.6228 3.99995 4.70534 3.96746 4.77261 3.89513L8.13264 0.260363L8.1691 0.224556C8.35905 0.056785 8.64892 0.0572786 8.83902 0.233019C9.04178 0.42048 9.05447 0.736637 8.86701 0.9394L5.50569 4.57482L5.50438 4.57612C5.25677 4.84231 4.91326 4.99995 4.54605 4.99995C4.17884 4.99995 3.83533 4.84231 3.58772 4.57612L3.58641 4.57482L0.132638 0.839139L0.100086 0.800077C-0.0523482 0.59756 -0.0294857 0.308531 0.160633 0.132759Z"
+                        fill="#555555"
+                      />
+                    </svg>
+                  ),
+                }}
                 disabled
               />
             </div>
@@ -336,8 +413,12 @@ const DetailPackageSubscription = ({ id }) => {
           <div className="mb-6 flex items-start gap-6">
             <label className="flex w-[200px] items-center gap-2 pt-2 text-sm font-semibold text-[#868686]">
               Batas Pembelian Paket
-              <InfoTooltip side="right" className="max-w-[336px]">
-                <p className="text-xs font-medium text-[#1B1B1B]">
+              <InfoTooltip
+                side="top"
+                icon="/icons/info.svg"
+                className="max-w-[336px]"
+              >
+                <p className="text-center text-xs font-medium text-[#1B1B1B]">
                   Membatasi jumlah pembelian paket oleh masing-masing pengguna.
                 </p>
               </InfoTooltip>
@@ -453,6 +534,13 @@ const DetailPackageSubscription = ({ id }) => {
               />
             </div>
           </div>
+          <Button
+            variant="muatparts-error-secondary"
+            className="ml-[224px] w-[112px]"
+            onClick={() => setDeleteModalOpen(true)}
+          >
+            Hapus
+          </Button>
         </div>
       )}
 
@@ -479,6 +567,41 @@ const DetailPackageSubscription = ({ id }) => {
           )}
         </div>
       )}
+
+      {/* Konfirmasi Hapus */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        setIsOpen={setDeleteModalOpen}
+        title={{
+          text: "Pemberitahuan",
+        }}
+        description={{
+          text: `Apakah Anda yakin ingin menghapus<br/>paket <strong>${formData.namaPaket}</strong> ?`,
+        }}
+        cancel={{
+          text: "Batal",
+        }}
+        confirm={{
+          text: isDeleting ? "Menghapus..." : "Simpan",
+          onClick: handleDeletePackage,
+        }}
+        disabled={isDeleting}
+      />
+
+      {/* Error Modal */}
+      <ConfirmationModal
+        isOpen={errorModalState.isOpen}
+        setIsOpen={() => setErrorModalState({ isOpen: false, message: "" })}
+        title={{
+          text: "Warning",
+        }}
+        description={{
+          className: "w-[337px]",
+          text: errorModalState.message,
+        }}
+        withCancel={false}
+        withConfirm={false}
+      />
     </div>
   );
 };
