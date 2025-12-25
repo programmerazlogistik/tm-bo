@@ -2,7 +2,6 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-// --- Mock Data for Detail (Matches "Contoh Response" structure with nested objects) ---
 const useMock = false;
 const endpoint = "/v1/bo/subscription-tm/promos";
 

@@ -14,7 +14,6 @@ export const useUpdatePromoSubscription = () => {
 
     try {
       if (useMock) {
-        // Simulate API delay
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         // Mock success response

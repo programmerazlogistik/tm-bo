@@ -192,15 +192,32 @@ const fetcher = async (params) => {
       const sortConfig = params.sorting[0];
       const { id: sortField, desc: isDescending } = sortConfig;
 
-      filtered.sort((a, b) => {
-        let aValue = a[sortField];
-        let bValue = b[sortField];
-
-        // Map sorting fields if necessary
-        if (sortField === "startDate" || sortField === "endDate") {
-          aValue = new Date(aValue).getTime();
-          bValue = new Date(bValue).getTime();
+      // Map UI field names to API field names for sorting
+      const getSortValue = (item, field) => {
+        switch (field) {
+          case "packageName":
+            return item.packageName;
+          case "startDate":
+          case "endDate":
+            return new Date(item[field]).getTime();
+          case "userTypes":
+            return item.userTypes?.join(",");
+          case "promoType":
+            return item.promoTypesLabel;
+          case "finalPrice":
+            return item.finalPrice || item.pricing?.finalPrice;
+          case "finalCoinsEarned":
+            return item.finalCoinsEarned || item.coins?.totalCoins;
+          case "promoId":
+            return item.id; // API uses 'id' for promoId
+          default:
+            return item[field];
         }
+      };
+
+      filtered.sort((a, b) => {
+        const aValue = getSortValue(a, sortField);
+        const bValue = getSortValue(b, sortField);
 
         if (typeof aValue === "number" && typeof bValue === "number") {
           return isDescending ? bValue - aValue : aValue - bValue;
@@ -241,7 +258,24 @@ const fetcher = async (params) => {
       limit: params.limit,
       search:
         params.filters?.search?.length >= 3 ? params.filters.search : undefined,
-      sort: params.sorting?.[0]?.id,
+      sort:
+        params.sorting?.[0]?.id === "packageName"
+          ? "packageName"
+          : params.sorting?.[0]?.id === "startDate"
+            ? "startDate"
+            : params.sorting?.[0]?.id === "endDate"
+              ? "endDate"
+              : params.sorting?.[0]?.id === "userTypes"
+                ? "userTypes"
+                : params.sorting?.[0]?.id === "promoType"
+                  ? "promoType"
+                  : params.sorting?.[0]?.id === "finalPrice"
+                    ? "finalPrice"
+                    : params.sorting?.[0]?.id === "finalCoinsEarned"
+                      ? "finalCoinsEarned"
+                      : params.sorting?.[0]?.id === "promoId"
+                        ? "id"
+                        : "id",
       order: params.sorting?.[0]?.desc ? "desc" : "asc",
       filterId: params.filters?.id,
       filterPackageIds: params.filters?.paketSubscription?.join(","),

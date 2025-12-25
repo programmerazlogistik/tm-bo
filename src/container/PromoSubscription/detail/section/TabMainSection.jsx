@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@muatmuat/ui/Button";
@@ -7,6 +8,8 @@ import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { toast } from "@muatmuat/ui/Toaster";
 import { Controller, useForm } from "react-hook-form";
 
+import { useCancelPromoSubscription } from "@/services/promo-subscription/useCancelPromoSubscription";
+
 import { MultiSelect } from "@/components/Select/MultiSelect";
 
 import {
@@ -15,8 +18,11 @@ import {
   UserTypeLabel,
 } from "@/container/PromoSubscription/utils/enum";
 
-const TabMainSection = ({ promoData, isHistoryView = false }) => {
+const TabMainSection = ({ promoData, isHistoryView = false, mutate }) => {
+  const router = useRouter();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const { cancelSubscription, isLoading: isCancelLoading } =
+    useCancelPromoSubscription();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { control, reset, watch } = useForm({
@@ -89,13 +95,27 @@ const TabMainSection = ({ promoData, isHistoryView = false }) => {
   // Handle cancel confirmation
   const handleCancelConfirmation = async () => {
     setIsProcessing(true);
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    // Show success toast
-    toast.success("Promo berhasil dibatalkan");
+    try {
+      // Call the cancel API
+      const response = await cancelSubscription(promoData?.id);
+
+      if (response?.Message?.Code === 200) {
+        // Show success toast
+        toast.success("Promo berhasil dibatalkan");
+        // Use mutate to refresh the data
+        if (mutate) {
+          await mutate();
+        }
+        // Navigate back to the promo subscription list page
+        router.replace("/promo-subscription");
+      } else {
+        toast.error("Gagal membatalkan promo");
+      }
+    } catch (error) {
+      toast.error(error.message || "Gagal membatalkan promo");
+    }
     setIsProcessing(false);
     setIsCancelModalOpen(false);
-    // In a real app, you would redirect or refresh the data
   };
 
   return (
@@ -463,15 +483,21 @@ const TabMainSection = ({ promoData, isHistoryView = false }) => {
           text: "Pemberitahuan",
         }}
         description={{
-          text: "Apakah Anda yakin ingin membatalkan promo?",
+          text: (
+            <span>
+              Apakah Anda yakin ingin membatalkan promo{" "}
+              <strong>{promoData?.promoId}</strong> ?
+            </span>
+          ),
         }}
         cancel={{
           text: "Batal",
+          disabled: isProcessing || isCancelLoading,
         }}
         confirm={{
-          text: isProcessing ? "Memproses..." : "Ya",
+          text: isProcessing || isCancelLoading ? "Memproses..." : "Ya",
           onClick: handleCancelConfirmation,
-          disabled: isProcessing,
+          disabled: isProcessing || isCancelLoading,
         }}
       />
     </>

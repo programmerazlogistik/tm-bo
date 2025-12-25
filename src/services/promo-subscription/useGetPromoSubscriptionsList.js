@@ -239,18 +239,35 @@ const fetcher = async (params) => {
       const sortConfig = params.sorting[0];
       const { id: sortField, desc: isDescending } = sortConfig;
 
-      filtered.sort((a, b) => {
-        let aValue = a[sortField];
-        let bValue = b[sortField];
-
-        // Handle specific nested fields if necessary for sorting
-        if (sortField === "finalPrice") {
-          aValue = a.pricing?.finalPrice;
-          bValue = b.pricing?.finalPrice;
-        } else if (sortField === "finalCoinsEarned") {
-          aValue = a.coins?.totalCoins;
-          bValue = b.coins?.totalCoins;
+      // Map UI field names to API field names for sorting
+      const getSortValue = (item, field) => {
+        switch (field) {
+          case "packageName":
+            return item.packageName;
+          case "status":
+            return item.status;
+          case "startDate":
+            return item.startDate;
+          case "endDate":
+            return item.endDate;
+          case "userTypes":
+            return item.userTypes?.join(",");
+          case "promoType":
+            return item.promoTypes?.join(",");
+          case "finalPrice":
+            return item.pricing?.finalPrice;
+          case "finalCoinsEarned":
+            return item.coins?.totalCoins;
+          case "promoId":
+            return item.id; // API uses 'id' for promoId
+          default:
+            return item[field];
         }
+      };
+
+      filtered.sort((a, b) => {
+        const aValue = getSortValue(a, sortField);
+        const bValue = getSortValue(b, sortField);
 
         if (typeof aValue === "string" && typeof bValue === "string") {
           const comparison = aValue.localeCompare(bValue, "id-ID");
@@ -287,7 +304,26 @@ const fetcher = async (params) => {
       limit: params.limit,
       search:
         params.filters?.search?.length >= 3 ? params.filters.search : undefined,
-      sort: params.sorting?.[0]?.id,
+      sort:
+        params.sorting?.[0]?.id === "packageName"
+          ? "packageName"
+          : params.sorting?.[0]?.id === "status"
+            ? "status"
+            : params.sorting?.[0]?.id === "startDate"
+              ? "startDate"
+              : params.sorting?.[0]?.id === "endDate"
+                ? "endDate"
+                : params.sorting?.[0]?.id === "userTypes"
+                  ? "userTypes"
+                  : params.sorting?.[0]?.id === "promoType"
+                    ? "promoType"
+                    : params.sorting?.[0]?.id === "finalPrice"
+                      ? "finalPrice"
+                      : params.sorting?.[0]?.id === "finalCoinsEarned"
+                        ? "finalCoinsEarned"
+                        : params.sorting?.[0]?.id === "promoId"
+                          ? "id"
+                          : "id",
       order: params.sorting?.[0]?.desc ? "desc" : "asc",
       filterId: params.filters?.id,
       filterPackageIds: params.filters?.paketSubscription?.join(","),
