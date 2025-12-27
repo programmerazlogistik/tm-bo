@@ -1,7 +1,6 @@
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
-import { useDebounce } from "@muatmuat/hooks/use-debounce";
 import { cn } from "@muatmuat/lib/utils";
 import { Button } from "@muatmuat/ui/Button";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
@@ -9,19 +8,18 @@ import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
 
 import { useGetPromoSubscriptionHistoryLogs } from "@/services/promo-subscription/useGetPromoSubscriptionHistoryLogs";
 
-const TabHistorySection = ({ promoId }) => {
+const TabHistorySection = ({
+  promoId,
+  pagination: externalPagination,
+  setPagination: setExternalPagination,
+  sorting: externalSorting,
+  setSorting: setExternalSorting,
+}) => {
   const router = useRouter();
 
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-  });
-
-  const [sorting, setSorting] = useState([]);
-  const [search, setSearch] = useState("");
+  const { sorting, setSorting, pagination, setPagination } = useDataTable();
 
   // Debounce search with 300ms delay
-  const debouncedSearch = useDebounce(search, 300);
 
   const { sorting: internalSorting, setSorting: setInternalSorting } =
     useDataTable();
@@ -55,9 +53,6 @@ const TabHistorySection = ({ promoId }) => {
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     sorting: sorting,
-    filters: {
-      search: debouncedSearch,
-    },
   });
 
   const formatDateTime = (dateString) => {
@@ -96,31 +91,31 @@ const TabHistorySection = ({ promoId }) => {
         header: "Last Update",
         headerClassName: "font-semibold",
         cell: ({ row }) => formatDateTime(row.original.createdAt),
-        enableSorting: true,
+        enableSorting: false,
       },
       {
         accessorKey: "activity",
         header: "Activity",
         headerClassName: "font-semibold",
-        enableSorting: true,
+        enableSorting: false,
       },
       {
         accessorKey: "actorType",
         header: "By",
         headerClassName: "font-semibold",
-        enableSorting: true,
+        enableSorting: false,
       },
       {
         accessorKey: "username",
         header: "Username",
         headerClassName: "font-semibold",
-        enableSorting: true,
+        enableSorting: false,
       },
       {
         accessorKey: "email",
         header: "Email",
         headerClassName: "font-semibold",
-        enableSorting: true,
+        enableSorting: false,
       },
       {
         headerClassName: "font-semibold",
@@ -142,7 +137,7 @@ const TabHistorySection = ({ promoId }) => {
             </span>
           );
         },
-        enableSorting: true,
+        enableSorting: false,
       },
       {
         accessorKey: "detail",

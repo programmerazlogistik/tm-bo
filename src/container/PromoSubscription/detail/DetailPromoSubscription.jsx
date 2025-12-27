@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import { useGetPromoSubscriptionById } from "@/services/promo-subscription/useGetPromoSubscriptionById";
-import { useGetPromoSubscriptionsList } from "@/services/promo-subscription/useGetPromoSubscriptionsList";
 
 import PageTitle from "@/components/PageTitle/PageTitle";
 
@@ -10,18 +9,18 @@ import TabMainSection from "./section/TabMainSection";
 import TabSection from "./section/TabSection";
 
 const DetailPromoSubscription = ({ promoId }) => {
-  const { data: promoData, isLoading: isDataLoading,  } =
+  const { data: promoData, isLoading: isDataLoading } =
     useGetPromoSubscriptionById(promoId);
 
-  // We also need the list mutate function for when canceling from detail page
-  const { mutate: mutateList } = useGetPromoSubscriptionsList({
-    page: 1,
-    limit: 10,
-    sorting: [],
-    filters: {},
+  const [currentTab, setCurrentTab] = useState("main");
+
+  // State for History tab
+  const [historyPagination, setHistoryPagination] = useState({
+    pageIndex: 0,
+    pageSize: 5,
   });
 
-  const [currentTab, setCurrentTab] = useState("main");
+  const [historySorting, setHistorySorting] = useState([]);
 
   if (isDataLoading) {
     return <div>Loading...</div>;
@@ -45,9 +44,15 @@ const DetailPromoSubscription = ({ promoId }) => {
         <TabSection currentTab={currentTab} setCurrentTab={setCurrentTab} />
       </div>
       {currentTab === "main" ? (
-        <TabMainSection promoData={promoData} mutate={mutateList} />
+        <TabMainSection promoData={promoData} />
       ) : (
-        <TabHistorySection promoId={promoId} />
+        <TabHistorySection
+          promoId={promoId}
+          pagination={historyPagination}
+          setPagination={setHistoryPagination}
+          sorting={historySorting}
+          setSorting={setHistorySorting}
+        />
       )}
     </section>
   );

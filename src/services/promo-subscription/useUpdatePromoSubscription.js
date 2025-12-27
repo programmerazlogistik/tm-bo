@@ -16,7 +16,6 @@ export const useUpdatePromoSubscription = () => {
       if (useMock) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Mock success response
         const response = {
           Message: { Code: 200, Text: "Promo updated successfully" },
           Data: { id, ...data, updatedAt: new Date().toISOString() },
