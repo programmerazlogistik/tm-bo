@@ -107,7 +107,7 @@ const TabMainSection = ({ promoData, isHistoryView = false, mutate }) => {
           await mutate();
         }
         // Navigate back to the promo subscription list page
-        router.replace("/promo-subscription");
+        router.push("/promo-subscription");
       } else {
         toast.error("Gagal membatalkan promo");
       }

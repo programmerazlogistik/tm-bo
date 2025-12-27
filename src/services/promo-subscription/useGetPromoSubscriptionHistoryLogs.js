@@ -2,7 +2,6 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-// --- Mock Data for History Logs ---
 const useMock = false;
 const endpoint = (id) => `/v1/bo/subscription-tm/promos/${id}/history`;
 

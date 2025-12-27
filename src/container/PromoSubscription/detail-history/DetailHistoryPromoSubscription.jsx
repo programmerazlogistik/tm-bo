@@ -32,7 +32,10 @@ const DetailHistoryPromoSubscription = ({ id, historyId }) => {
         </PageTitle>
       </div>
       <TabMainSection
-        promoData={{ ...logData?.snapshotAfter, promoId: logData?.promoId }}
+        promoData={{
+          ...logData?.snapshotAfter,
+          promoId: logData?.promoIdFormatted,
+        }}
         isHistoryView={true}
       />
     </section>
