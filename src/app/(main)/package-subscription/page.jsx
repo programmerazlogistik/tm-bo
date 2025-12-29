@@ -54,7 +54,7 @@ export default function PackageSubscriptionPage() {
     mulaiBerlaku: "startDate",
     periode: "period",
     price: "price",
-    koin: "coinEarned",
+    koin: "coinsEarned",
   };
 
   // Calculate API params
