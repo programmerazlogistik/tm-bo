@@ -60,9 +60,7 @@ const PromoSubscriptionList = () => {
         const newState =
           typeof updater === "function" ? updater(prev) : updater;
 
-        // Update store if page index changed
         if (newState.pageIndex !== prev.pageIndex) {
-          // Note: The store uses 1-based indexing while react-table uses 0-based
           // setPage(newState.pageIndex + 1);
         }
 

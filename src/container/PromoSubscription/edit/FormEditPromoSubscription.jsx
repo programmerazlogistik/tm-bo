@@ -183,7 +183,6 @@ const FormEditPromoSubscription = ({ promoId }) => {
     }
   }, [freeCoinsEarned, normalCoinsEarned, setValue]);
 
-  // Fetch package list for options
   const { data: packageData, isLoading: isLoadingPackages } =
     useGetPackageSubscriptionList({
       limit: 50,
