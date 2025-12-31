@@ -13,7 +13,6 @@ export const SettingPenguranganList = ({
   errorMessage,
   open,
   openConfirmation,
-  handleOpenModal,
   handleSubmit,
   handleSave,
   handleStatusActiveToggle,

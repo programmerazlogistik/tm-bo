@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { Edit } from "@muatmuat/icons";
 import { Button } from "@muatmuat/ui/Button";
 
 import { useGetDetailRules } from "@/services/setting-pengurangan/useGetDetailRules";
@@ -34,7 +33,6 @@ function Page() {
   // Fetch data from API
   const {
     data: apiData,
-    error,
     isLoading,
     mutate,
   } = useGetListRules({
@@ -69,6 +67,22 @@ function Page() {
   // jika mau ubah sorting bisa ubah disini
   const columns = useMemo(
     () => [
+      {
+        accessorKey: "edit",
+        header: "Edit",
+        cell: ({ row }) => (
+          <Button
+            variant="muatparts-primary"
+            onClick={() => {
+              handleOpenModal(row.original);
+            }}
+            className="rounded-xl border border-primary-700 bg-transparent leading-none text-primary-700 hover:bg-primary-700 hover:text-white"
+          >
+            Edit
+          </Button>
+        ),
+        enableSorting: false,
+      },
       {
         accessorKey: "no",
         header: "NO",
@@ -107,22 +121,6 @@ function Page() {
           >
             {info.getValue()}
           </span>
-        ),
-        enableSorting: false,
-      },
-      {
-        accessorKey: "edit",
-        header: "Edit",
-        cell: ({ row }) => (
-          <Button
-            variant="ghost"
-            className="h-6 w-6 p-0"
-            onClick={() => {
-              handleOpenModal(row.original);
-            }}
-          >
-            <Edit className="h-5 w-5 stroke-1 text-neutral-600" />
-          </Button>
         ),
         enableSorting: false,
       },
