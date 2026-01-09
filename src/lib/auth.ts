@@ -5,7 +5,6 @@ import {
   AuthUser,
   createAuthAdapter,
 } from "@muatmuat/lib/auth-adapter";
-import SHA1 from "crypto-js/sha1";
 
 import { getProfile } from "@/services/globals/getProfile";
 import { postAdminLogin } from "@/services/globals/postAdminLogin";
@@ -53,7 +52,7 @@ export const { AuthProvider, useAuth } = createAuthAdapter({
 
     const response = await postAdminLogin({
       email: credential.email,
-      token: SHA1(credential.password).toString(),
+      token: credential.password,
     });
 
     accessToken = response.accessToken!;

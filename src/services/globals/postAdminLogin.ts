@@ -1,4 +1,4 @@
-import { fetcherMPPInter } from "@/lib/axios";
+import { fetcherAuth } from "@/lib/axios";
 import type { DeepPartial } from "@/lib/typescript-utils";
 
 const USE_MOCK = false;
@@ -55,10 +55,7 @@ export async function postAdminLogin(
   }
 
   try {
-    const response = await fetcherMPPInter.post(
-      "/v1/bo/auth/login/admin",
-      payload
-    );
+    const response = await fetcherAuth.post("/v1/bo/auth/login/admin", payload);
     return response.data?.Data;
   } catch (error) {
     // Type guard for API errors

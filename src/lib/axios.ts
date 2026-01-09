@@ -27,3 +27,7 @@ export const fetcherMuatparts = createAxios(
 export const fetcherMock = createAxios(
   `${process.env.NEXT_PUBLIC_ASSET_REVERSE}/api`
 );
+
+export const fetcherAuth = createAxios(
+  process.env.NEXT_PUBLIC_AUTH_API
+);

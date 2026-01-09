@@ -41,7 +41,7 @@ export default function LoginPage() {
         timer: 1500,
         showConfirmButton: false,
       }).then(() => {
-        router.push("/vendor-internasional/vendor-terdaftar");
+        router.push("/");
       });
     } catch (error) {
       MySwal.fire({
