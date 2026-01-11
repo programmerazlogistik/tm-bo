@@ -2,7 +2,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@muatmuat/ui/Button";
-import { DateTimePickerWeb } from "@muatmuat/ui/Calendar";
 import { Input } from "@muatmuat/ui/Form";
 import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { toast } from "@muatmuat/ui/Toaster";
@@ -15,9 +14,14 @@ import { useCreatePromoSubscription } from "@/services/promo-subscription/useCre
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { MultiSelect } from "@/components/Select/MultiSelect";
 
+import { DateTimePickerWeb } from "@/container/PackageSubscription/Add/components/DateTimePickerWeb";
+
 import { UserType, UserTypeLabel } from "../utils/enum";
 
 const FormPromoSubscription = () => {
+  // 26. 03 - TM - LB - 0027
+  // 26. 03 - TM - LB - 0028
+  // 26. 03 - TM - LB - 0032
   const router = useRouter();
   const { createSubscription, isLoading } = useCreatePromoSubscription();
 
@@ -404,15 +408,13 @@ const FormPromoSubscription = () => {
                 value={field.value ? [field.value] : []}
                 onValueChange={handlePackageChange}
                 options={packageOptions}
-                placeholder={
-                  isLoadingPackages ? "Loading..." : "Pilih Nama Paket"
-                }
+                placeholder={isLoadingPackages ? "Loading..." : "Pilih Paket"}
                 enableSelectAll={false}
               >
                 <MultiSelect.Trigger className="w-full" />
                 <MultiSelect.Content>
                   <MultiSelect.Search placeholder="Cari Nama Paket" />
-                  <MultiSelect.List className="h-max" />
+                  <MultiSelect.List className="max-h-[150px] overflow-y-auto" />
                 </MultiSelect.Content>
               </MultiSelect.Root>
             )}
@@ -432,7 +434,7 @@ const FormPromoSubscription = () => {
                 value={field.value}
                 onValueChange={field.onChange}
                 options={userTypeOptions}
-                placeholder="Pilih tipe user"
+                placeholder="Pilih Tipe User"
                 enableSelectAll={false}
               >
                 <MultiSelect.Trigger className="w-full" />
@@ -460,6 +462,7 @@ const FormPromoSubscription = () => {
                   placeholder="Pilih tanggal dan waktu"
                   dateFormat="dd MMM yyyy, HH:mm"
                   showTime={true}
+                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                 />
               )}
             />
@@ -474,6 +477,7 @@ const FormPromoSubscription = () => {
                   placeholder="Pilih tanggal dan waktu"
                   dateFormat="dd MMM yyyy, HH:mm"
                   showTime={true}
+                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                 />
               )}
             />
@@ -493,7 +497,7 @@ const FormPromoSubscription = () => {
                 value={field.value}
                 onValueChange={field.onChange}
                 options={promoTypeOptions}
-                placeholder="Pilih tipe promo"
+                placeholder="Pilih Tipe Promo"
                 enableSelectAll={false}
               >
                 <MultiSelect.Trigger className="w-full" />

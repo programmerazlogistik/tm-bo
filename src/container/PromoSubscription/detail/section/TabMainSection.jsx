@@ -2,7 +2,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@muatmuat/ui/Button";
-import { DateTimePickerWeb } from "@muatmuat/ui/Calendar";
 import { Input } from "@muatmuat/ui/Form";
 import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { toast } from "@muatmuat/ui/Toaster";
@@ -10,8 +9,7 @@ import { Controller, useForm } from "react-hook-form";
 
 import { useCancelPromoSubscription } from "@/services/promo-subscription/useCancelPromoSubscription";
 
-import { MultiSelect } from "@/components/Select/MultiSelect";
-
+import { DateTimePickerWeb } from "@/container/PackageSubscription/Add/components/DateTimePickerWeb";
 import {
   PromoStatus,
   UserType,
@@ -19,6 +17,7 @@ import {
 } from "@/container/PromoSubscription/utils/enum";
 
 const TabMainSection = ({ promoData, isHistoryView = false, mutate }) => {
+  // 26. 03 - TM - LB - 0035
   const router = useRouter();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { cancelSubscription, isLoading: isCancelLoading } =
@@ -177,21 +176,25 @@ const TabMainSection = ({ promoData, isHistoryView = false, mutate }) => {
           <Controller
             name="userTypes"
             control={control}
-            render={({ field }) => (
-              <MultiSelect.Root
-                value={field.value}
-                onValueChange={() => {}}
-                options={userTypeOptions}
-                placeholder="Pilih tipe user"
-                enableSelectAll={false}
-                disabled
-              >
-                <MultiSelect.Trigger className="w-full" />
-                <MultiSelect.Content>
-                  <MultiSelect.List className="h-max" />
-                </MultiSelect.Content>
-              </MultiSelect.Root>
-            )}
+            render={({ field }) =>
+              (() => {
+                const selectedLabels = userTypeOptions
+                  .filter((opt) => field.value?.includes(opt.value))
+                  .map((opt) => opt.label)
+                  .join(", ");
+                return (
+                  <Input
+                    value={selectedLabels}
+                    className="w-full"
+                    disabled
+                    appearance={{
+                      containerClassName: "h-8 rounded-[6px] border-[#A8A8A8]",
+                      inputClassName: "text-sm",
+                    }}
+                  />
+                );
+              })()
+            }
           />
         </div>
 
@@ -241,21 +244,25 @@ const TabMainSection = ({ promoData, isHistoryView = false, mutate }) => {
           <Controller
             name="promoTypes"
             control={control}
-            render={({ field }) => (
-              <MultiSelect.Root
-                value={field.value}
-                onValueChange={() => {}}
-                options={promoTypeOptions}
-                placeholder="Pilih tipe promo"
-                enableSelectAll={false}
-                disabled
-              >
-                <MultiSelect.Trigger className="w-full" />
-                <MultiSelect.Content>
-                  <MultiSelect.List className="h-max" />
-                </MultiSelect.Content>
-              </MultiSelect.Root>
-            )}
+            render={({ field }) =>
+              (() => {
+                const selectedLabels = promoTypeOptions
+                  .filter((opt) => field.value?.includes(opt.value))
+                  .map((opt) => opt.label)
+                  .join(", ");
+                return (
+                  <Input
+                    value={selectedLabels}
+                    className="w-full"
+                    disabled
+                    appearance={{
+                      containerClassName: "h-8 rounded-[6px] border-[#A8A8A8]",
+                      inputClassName: "text-sm",
+                    }}
+                  />
+                );
+              })()
+            }
           />
         </div>
 

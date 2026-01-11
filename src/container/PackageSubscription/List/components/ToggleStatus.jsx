@@ -141,6 +141,7 @@ const ToggleStatusModal = ({
         isOpen={errorModalState.isOpen}
         setOpen={handleCloseErrorModal}
         message={errorModalState.message}
+        
       />
     </>
   );

@@ -12,6 +12,7 @@ export const TextAreaField = ({
   onChange,
   placeholder,
   rows = 4,
+  maxLength,
 }) => {
   return (
     <FormField label={label} required={required}>
@@ -24,7 +25,15 @@ export const TextAreaField = ({
         appearance={{
           textareaClassName: "text-sm",
         }}
+        maxLength={maxLength}
       />
+      {maxLength && (
+        <div className="mt-1 flex justify-end">
+          <p className="text-xs">
+            {value.length}/{maxLength}
+          </p>
+        </div>
+      )}
     </FormField>
   );
 };

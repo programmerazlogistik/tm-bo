@@ -17,6 +17,8 @@ import { ToggleField } from "./ToggleField";
  * Basic information section of the form
  */
 export const BasicInfoSection = ({ formData, onInputChange }) => {
+  // 26. 03 - TM - LB - 0009
+  // 26. 03 - TM - LB - 0011
   return (
     <>
       <TextInputField
@@ -25,6 +27,7 @@ export const BasicInfoSection = ({ formData, onInputChange }) => {
         value={formData.namaPaket}
         onChange={(value) => onInputChange("namaPaket", value)}
         placeholder="Masukkan Nama Paket"
+        maxLength={30}
       />
 
       <DateTimeField
@@ -42,6 +45,7 @@ export const BasicInfoSection = ({ formData, onInputChange }) => {
         onChange={(value) => onInputChange("deskripsiPaket", value)}
         placeholder="Masukkan Deskripsi Paket"
         rows={4}
+        maxLength={300}
       />
 
       <SelectField
@@ -60,11 +64,11 @@ export const BasicInfoSection = ({ formData, onInputChange }) => {
  * User and quota configuration section
  */
 export const UserQuotaSection = ({ formData, onInputChange }) => {
+  // 26. 03 - TM - LB - 0012
   const handleNumberChange = (field, value) => {
     const numericValue = parseNumber(value);
     onInputChange(field, numericValue);
   };
-
   return (
     <>
       <TextInputField
@@ -96,6 +100,11 @@ export const UserQuotaSection = ({ formData, onInputChange }) => {
         onChange={(value) => handleNumberChange("kuotaPembelianPerUser", value)}
         placeholder="Masukkan Jumlah Kuota Pembelian"
         disabled={!formData.batasPembelianPaket}
+        errorMessage={
+          parseInt(formData.kuotaPembelianPerUser) === 0
+            ? "Kuota harus lebih dari 0"
+            : undefined
+        }
       />
     </>
   );

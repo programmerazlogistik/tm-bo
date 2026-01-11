@@ -65,6 +65,7 @@ const ConfirmationModal = ({
     big: "w-modal-big",
   };
   const modalClassname = modalClassnames[size] || modalClassnames.small;
+  // 26. 03 - TM - LB - 0014
 
   return (
     <Modal
@@ -89,7 +90,7 @@ const ConfirmationModal = ({
               </div>
               <IconComponent
                 className="text-primary-700"
-                onClick={onCancel}
+                onClick={() => setIsOpen(false)}
                 src="/icons/silang8.svg"
                 width={8}
                 height={8}

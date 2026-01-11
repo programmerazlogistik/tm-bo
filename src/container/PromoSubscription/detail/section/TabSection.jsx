@@ -1,14 +1,15 @@
 import { cn } from "@muatmuat/lib/utils";
 
 const TabSection = ({ currentTab, setCurrentTab }) => {
+  // 26. 03 - TM - LB - 0033
   return (
-    <div className="my-4 grid w-max cursor-pointer grid-cols-[124_124] overflow-hidden rounded-md border-2 text-xs font-semibold">
+    <div className="my-4 ml-auto flex w-fit cursor-pointer overflow-hidden rounded-[6px] border border-[#A8A8A8] text-sm font-semibold">
       <div
         className={cn(
-          "flex w-full items-center justify-center border-r-2 py-2",
+          "flex h-8 w-full items-center justify-center px-8 transition-colors",
           currentTab === "main"
             ? "bg-neutral-400 text-gray-900"
-            : "border-gray-300 text-gray-900"
+            : "bg-white text-[#868686] hover:bg-neutral-50"
         )}
         onClick={() => setCurrentTab("main")}
       >
@@ -16,10 +17,10 @@ const TabSection = ({ currentTab, setCurrentTab }) => {
       </div>
       <div
         className={cn(
-          "flex w-full items-center justify-center py-2",
+          "flex h-8 w-full items-center justify-center px-8 transition-colors",
           currentTab === "history"
             ? "bg-neutral-400 text-gray-900"
-            : "border-gray-300 text-gray-900"
+            : "bg-white text-[#868686] hover:bg-neutral-50"
         )}
         onClick={() => setCurrentTab("history")}
       >

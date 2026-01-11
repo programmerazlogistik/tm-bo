@@ -29,6 +29,15 @@ const PromoSubscriptionList = () => {
   const [sorting, setSorting] = useState([]);
   const [filters, setFilters] = useState({});
 
+  // Reset pagination and sorting when tab changes
+  useEffect(() => {
+    setPagination({
+      pageIndex: 0,
+      pageSize: limit,
+    });
+    setSorting([]);
+  }, [currentTab, limit]);
+
   // State for History tab
   const [historyPagination, setHistoryPagination] = useState({
     pageIndex: 0,
@@ -37,6 +46,17 @@ const PromoSubscriptionList = () => {
 
   const [historySorting, setHistorySorting] = useState([]);
   const [historySearch, setHistorySearch] = useState("");
+
+  // Reset history pagination and sorting when tab changes to history
+  useEffect(() => {
+    if (currentTab === "history") {
+      setHistoryPagination({
+        pageIndex: 0,
+        pageSize: limit,
+      });
+      setHistorySorting([]);
+    }
+  }, [currentTab, limit]);
 
   // Debounce history search with 300ms delay
   const debouncedHistorySearch = useDebounce(historySearch, 300);
@@ -59,10 +79,6 @@ const PromoSubscriptionList = () => {
       setPagination((prev) => {
         const newState =
           typeof updater === "function" ? updater(prev) : updater;
-
-        if (newState.pageIndex !== prev.pageIndex) {
-          // setPage(newState.pageIndex + 1);
-        }
 
         // Update store if page size changed
         if (newState.pageSize !== prev.pageSize) {
@@ -100,7 +116,7 @@ const PromoSubscriptionList = () => {
     sorting: sorting,
     filters: {
       ...filters,
-      search,
+      search: search.trim(),
     },
   });
 

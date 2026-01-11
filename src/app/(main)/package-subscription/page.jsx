@@ -39,6 +39,8 @@ const transformPackageItem = (item) => {
 };
 
 export default function PackageSubscriptionPage() {
+  // 26. 03 - TM - LB - 0006
+  // 26. 03 - TM - LB - 0007
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -167,6 +169,7 @@ export default function PackageSubscriptionPage() {
       inputValue={inputValue}
       onSortingChange={handleSortingChange}
       sorting={sorting}
+      pagination={pagination}
     />
   );
 }

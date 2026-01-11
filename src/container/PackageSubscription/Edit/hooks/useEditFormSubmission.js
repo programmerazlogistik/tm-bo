@@ -1,8 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
-import { toast } from "@muatmuat/ui/Toaster";
-
 import { useUpdatePackageSubscription } from "@/services/package-subscription/useUpdatePackageSubscription";
 
 import { sweetAlert } from "@/lib/sweetAlert";
@@ -15,15 +13,32 @@ import { useFormValidation } from "../../Add/hooks/useFormValidation";
  * Custom hook for edit form submission logic
  */
 export const useEditFormSubmission = (packageId, formData, showWarning) => {
+  // 26. 03 - TM - LB - 0013
+  // 26. 03 - TM - LB - 0015
   const router = useRouter();
+  const [errorModalState, setErrorModalState] = useState({
+    isOpen: false,
+    message: "",
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const { updatePackageSubscription } = useUpdatePackageSubscription();
-  const { validateFields } = useFormValidation(formData, showWarning);
+  const { validateFields, validateUniqueness } = useFormValidation(
+    formData,
+    showWarning,
+    packageId
+  );
 
   const submitForm = useCallback(async () => {
     setIsLoading(true);
 
     try {
+      const isUnique = await validateUniqueness();
+      if (!isUnique) {
+        setIsLoading(false);
+        return false;
+      }
+
       const payload = mapFormDataToPayload(formData);
       await updatePackageSubscription(packageId, payload);
 
@@ -41,12 +56,18 @@ export const useEditFormSubmission = (packageId, formData, showWarning) => {
     } catch (error) {
       const errorMessage =
         error?.response?.data?.Message?.Text || ERROR_MESSAGES.SAVE_ERROR;
-      toast.error(errorMessage);
+      setErrorModalState({ isOpen: true, message: errorMessage });
       return false;
     } finally {
       setIsLoading(false);
     }
-  }, [packageId, formData, updatePackageSubscription, router]);
+  }, [
+    packageId,
+    formData,
+    updatePackageSubscription,
+    router,
+    validateUniqueness,
+  ]);
 
   const handleSubmit = useCallback(() => {
     if (validateFields()) {
@@ -59,5 +80,7 @@ export const useEditFormSubmission = (packageId, formData, showWarning) => {
     isLoading,
     submitForm,
     handleSubmit,
+    errorModalState,
+    setErrorModalState,
   };
 };

@@ -11,7 +11,7 @@ import { UserTypeLabel } from "@/container/PromoSubscription/utils/enum";
 
 const TableHistorySection = ({
   promos = [],
-  pagination: _externalPagination,
+  pagination: externalPagination,
   setPagination: setExternalPagination,
   sorting: externalSorting,
   setSorting: setExternalSorting,
@@ -23,7 +23,16 @@ const TableHistorySection = ({
 }) => {
   const router = useRouter();
 
-  const { sorting, setSorting, pagination, setPagination } = useDataTable();
+  const {
+    sorting,
+    setSorting,
+    pagination: internalPagination,
+    setPagination: setInternalPagination,
+  } = useDataTable();
+
+  // Use external state if provided, otherwise fallback to internal
+  const pagination = externalPagination || internalPagination;
+  const setPagination = setExternalPagination || setInternalPagination;
 
   // Sync external sorting with internal state if provided
   useEffect(() => {
@@ -162,6 +171,7 @@ const TableHistorySection = ({
           return UserTypeLabel[userTypes] || userTypes;
         },
         enableSorting: true,
+        sortDescFirst: false,
       },
       {
         headerClassName: "font-semibold",
@@ -171,6 +181,7 @@ const TableHistorySection = ({
           return row.original.promoTypesLabel || "-";
         },
         enableSorting: true,
+        sortDescFirst: false,
       },
       {
         headerClassName: "font-semibold",
@@ -198,6 +209,7 @@ const TableHistorySection = ({
           );
         },
         enableSorting: true,
+        sortDescFirst: false,
       },
       {
         headerClassName: "font-semibold",
@@ -230,6 +242,7 @@ const TableHistorySection = ({
           );
         },
         enableSorting: true,
+        sortDescFirst: false,
       },
     ],
     [handleDetail]
@@ -278,7 +291,7 @@ const TableHistorySection = ({
             itemsPerPage: pagination?.pageSize || 10,
           }}
           pagination={pagination}
-          onPaginationChange={setExternalPagination || setPagination}
+          onPaginationChange={setPagination}
           sorting={externalSorting || sorting}
           onSortingChange={setExternalSorting || setSorting}
         >

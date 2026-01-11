@@ -44,11 +44,13 @@ const EditPackageSubscription = ({ id }) => {
     setWarningModalState({ isOpen: true, message });
   };
 
-  const { isLoading, submitForm, handleSubmit } = useEditFormSubmission(
-    id,
-    formData,
-    showWarning
-  );
+  const {
+    isLoading,
+    submitForm,
+    handleSubmit,
+    errorModalState,
+    setErrorModalState,
+  } = useEditFormSubmission(id, formData, showWarning);
 
   const handleBack = () => {
     if (hasChanges()) {
@@ -141,6 +143,11 @@ const EditPackageSubscription = ({ id }) => {
         isOpen={warningModalState.isOpen}
         setOpen={(isOpen) => setWarningModalState({ isOpen, message: "" })}
         message={warningModalState.message}
+      />
+      <WarningModal
+        isOpen={errorModalState.isOpen}
+        setOpen={() => setErrorModalState({ isOpen: false, message: "" })}
+        message={errorModalState.message}
       />
     </div>
   );

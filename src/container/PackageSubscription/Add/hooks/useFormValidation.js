@@ -7,10 +7,12 @@ import { parseCurrency, parseNumber } from "../helpers";
 /**
  * Custom hook for form validation
  */
-export const useFormValidation = (formData, showWarning) => {
+export const useFormValidation = (formData, showWarning, excludeId = null) => {
   /**
    * Validate required fields
    */
+  // 26. 03 - TM - LB - 0013
+  // 26. 03 - TM - LB - 0015
   const validateRequiredFields = () => {
     const requiredFields = [
       "namaPaket",
@@ -88,6 +90,16 @@ export const useFormValidation = (formData, showWarning) => {
       showWarning(VALIDATION_MESSAGES.INVALID_QUOTA);
       return false;
     }
+    // 26. 03 - TM - LB - 0012
+
+    if (
+      formData.batasPembelianPaket &&
+      formData.kuotaPembelianPerUser &&
+      parseInt(parseNumber(formData.kuotaPembelianPerUser)) === 0
+    ) {
+      showWarning("Kuota harus lebih dari 0");
+      return false;
+    }
 
     return true;
   };
@@ -105,7 +117,10 @@ export const useFormValidation = (formData, showWarning) => {
   const validateUniqueness = async () => {
     try {
       // Validate name uniqueness
-      const nameResult = await validateNameUnique(formData.namaPaket);
+      const nameResult = await validateNameUnique(
+        formData.namaPaket,
+        excludeId
+      );
       if (!nameResult?.Data?.isAvailable) {
         showWarning(
           nameResult?.Data?.message ||
@@ -116,7 +131,8 @@ export const useFormValidation = (formData, showWarning) => {
 
       // Validate position uniqueness
       const positionResult = await validatePositionUnique(
-        formData.posisiPaketPembelian
+        formData.posisiPaketPembelian,
+        excludeId
       );
       if (!positionResult?.Data?.isAvailable) {
         showWarning(

@@ -11,6 +11,7 @@ import { useGetPackageHistory } from "@/services/package-subscription/useGetPack
 import { useGetPackageSubscriptionDetail } from "@/services/package-subscription/useGetPackageSubscriptionDetail";
 
 import BackButton from "../Add/components/BackButton";
+import { WarningModal } from "../Add/components/Modals";
 import ConfirmationModal from "../List/components/ConfirmationModal";
 import { PackageFormDisplay } from "../shared/DisplayComponents";
 import { TabNavigation } from "./components/TabNavigation";
@@ -134,16 +135,10 @@ const DetailPackageSubscription = ({ id }) => {
         disabled={isDeleting}
       />
 
-      <ConfirmationModal
+      <WarningModal
         isOpen={errorModalState.isOpen}
-        setIsOpen={() => setErrorModalState({ isOpen: false, message: "" })}
-        title={{ text: "Warning" }}
-        description={{
-          className: "w-[337px]",
-          text: errorModalState.message,
-        }}
-        withCancel={false}
-        withConfirm={false}
+        setOpen={() => setErrorModalState({ isOpen: false, message: "" })}
+        message={errorModalState.message}
       />
     </div>
   );

@@ -27,6 +27,7 @@ const TableCell = ({ value, isBold = false }) => {
  * @param {Function} handlers.onRefresh - Refresh handler
  */
 export const createColumns = ({ onDetail, onEdit, onDelete, onRefresh }) => {
+  // 26. 03 - TM - LB - 0003
   return [
     {
       id: "actions",
@@ -77,6 +78,7 @@ export const createColumns = ({ onDetail, onEdit, onDelete, onRefresh }) => {
       header: "Posisi",
       size: 90,
       enableSorting: true,
+      sortDescFirst: false,
       cell: ({ row }) => <TableCell value={row.original.posisi} />,
     },
     {

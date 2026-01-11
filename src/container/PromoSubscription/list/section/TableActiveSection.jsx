@@ -23,11 +23,21 @@ const TableActiveSection = ({
   loading = false,
   mutate,
 }) => {
+  // 26. 03 - TM - LB - 0021
   const router = useRouter();
   const { cancelSubscription, isLoading: isCancelLoading } =
     useCancelPromoSubscription();
 
-  const { sorting, setSorting, pagination, setPagination } = useDataTable();
+  const {
+    sorting,
+    setSorting,
+    pagination: internalPagination,
+    setPagination: setInternalPagination,
+  } = useDataTable();
+
+  // Use external state if provided, otherwise fallback to internal
+  const pagination = externalPagination || internalPagination;
+  const setPagination = setExternalPagination || setInternalPagination;
 
   // Sync external sorting with internal state if provided
   useEffect(() => {
@@ -198,6 +208,7 @@ const TableActiveSection = ({
         accessorKey: "packageName",
         header: "Nama Paket",
         enableSorting: true,
+        sortDescFirst: false,
       },
       {
         headerClassName: "font-semibold",
@@ -221,6 +232,7 @@ const TableActiveSection = ({
           return row.original.userTypesLabel || "-";
         },
         enableSorting: true,
+        sortDescFirst: false,
       },
       {
         headerClassName: "font-semibold",
@@ -230,6 +242,7 @@ const TableActiveSection = ({
           return row.original.promoTypesLabel || "-";
         },
         enableSorting: true,
+        sortDescFirst: false,
       },
       {
         headerClassName: "font-semibold",
@@ -257,6 +270,7 @@ const TableActiveSection = ({
           );
         },
         enableSorting: true,
+        sortDescFirst: false,
       },
       {
         headerClassName: "font-semibold",
@@ -289,6 +303,7 @@ const TableActiveSection = ({
           );
         },
         enableSorting: true,
+        sortDescFirst: false,
       },
     ],
     []
@@ -311,7 +326,7 @@ const TableActiveSection = ({
           itemsPerPage: pagination?.pageSize || 10,
         }}
         pagination={pagination}
-        onPaginationChange={setExternalPagination || setPagination}
+        onPaginationChange={setPagination}
         sorting={externalSorting || sorting}
         onSortingChange={setExternalSorting || setSorting}
       >

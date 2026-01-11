@@ -7,6 +7,7 @@ import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
 
 import PageTitle from "@/components/PageTitle/PageTitle";
 
+import { WarningModal } from "../Add/components/Modals";
 import ConfirmationModal from "./components/ConfirmationModal";
 import TableHeader from "./components/TableHeader";
 import { createColumns } from "./components/table/columns";
@@ -23,7 +24,10 @@ const PackageSubscriptionList = ({
   inputValue: externalInputValue,
   onSortingChange: onSortingChangeProp,
   sorting: externalSorting,
+  pagination: externalPagination,
 }) => {
+  // 26. 03 - TM - LB - 0006
+  // 26. 03 - TM - LB - 0007
   const {
     sorting,
     setSorting,
@@ -72,6 +76,8 @@ const PackageSubscriptionList = ({
     externalInputValue !== undefined ? externalInputValue : inputValue;
   const currentSorting =
     externalSorting !== undefined ? externalSorting : sorting;
+  const currentPagination =
+    externalPagination !== undefined ? externalPagination : pagination;
 
   return (
     <div>
@@ -89,7 +95,7 @@ const PackageSubscriptionList = ({
         data={tableData}
         pageCount={pageCount}
         paginationData={paginationData}
-        pagination={pagination}
+        pagination={currentPagination}
         onPaginationChange={onPaginationChange || setPagination}
         sorting={currentSorting}
         onSortingChange={(updater) => {
@@ -140,17 +146,10 @@ const PackageSubscriptionList = ({
         disabled={isDeleting}
       />
 
-      {/* Error Modal */}
-      <ConfirmationModal
+      <WarningModal
         isOpen={errorModalState.isOpen}
-        setIsOpen={() => setErrorModalState({ isOpen: false, message: "" })}
-        title={{ text: "Warning" }}
-        description={{
-          className: "w-[337px]",
-          text: errorModalState.message,
-        }}
-        withCancel={false}
-        withConfirm={false}
+        setOpen={() => setErrorModalState({ isOpen: false, message: "" })}
+        message={errorModalState.message}
       />
     </div>
   );

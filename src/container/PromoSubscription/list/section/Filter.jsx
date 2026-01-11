@@ -79,6 +79,7 @@ const Filter = ({ onFilterSubmit, onResetFilters }) => {
             >
               Pencarian :
             </label>
+            {/* 26. 03 - TM - LB - 0024 */}
             <div className="w-[240px]">
               <Input
                 id="search"
@@ -86,6 +87,7 @@ const Filter = ({ onFilterSubmit, onResetFilters }) => {
                 placeholder="Cari Promo"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
+                withReset
               />
             </div>
           </div>

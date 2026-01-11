@@ -2,7 +2,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@muatmuat/ui/Button";
-import { DateTimePickerWeb } from "@muatmuat/ui/Calendar";
 import { Input } from "@muatmuat/ui/Form";
 import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { toast } from "@muatmuat/ui/Toaster";
@@ -16,9 +15,14 @@ import { useUpdatePromoSubscription } from "@/services/promo-subscription/useUpd
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { MultiSelect } from "@/components/Select/MultiSelect";
 
+import { DateTimePickerWeb } from "@/container/PackageSubscription/Add/components/DateTimePickerWeb";
+
 import { PromoStatus, UserType, UserTypeLabel } from "../utils/enum";
 
 const FormEditPromoSubscription = ({ promoId }) => {
+  // 26. 03 - TM - LB - 0027
+  // 26. 03 - TM - LB - 0028
+  // 26. 03 - TM - LB - 0032
   const router = useRouter();
   const { data: promoData, isLoading: isDataLoading } =
     useGetPromoSubscriptionById(promoId);
@@ -485,16 +489,14 @@ const FormEditPromoSubscription = ({ promoId }) => {
                 value={field.value ? [field.value] : []}
                 onValueChange={handlePackageChange}
                 options={packageOptions}
-                placeholder={
-                  isLoadingPackages ? "Loading..." : "Pilih Nama Paket"
-                }
+                placeholder={isLoadingPackages ? "Loading..." : "Pilih Paket"}
                 enableSelectAll={false}
                 disabled={isFieldDisabled("packageName")}
               >
                 <MultiSelect.Trigger className="w-full" />
                 <MultiSelect.Content>
                   <MultiSelect.Search placeholder="Cari Nama Paket" />
-                  <MultiSelect.List className="h-max" />
+                  <MultiSelect.List className="max-h-[150px] overflow-y-auto" />
                 </MultiSelect.Content>
               </MultiSelect.Root>
             )}
@@ -514,7 +516,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
                 value={field.value}
                 onValueChange={field.onChange}
                 options={userTypeOptions}
-                placeholder="Pilih tipe user"
+                placeholder="Pilih Tipe User"
                 enableSelectAll={false}
                 disabled={isFieldDisabled("userTypes")}
               >
@@ -540,10 +542,11 @@ const FormEditPromoSubscription = ({ promoId }) => {
                 <DateTimePickerWeb
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Pilih tanggal dan waktu"
+                  placeholder="Pilih Periode Awal"
                   dateFormat="dd MMM yyyy, HH:mm"
                   showTime={true}
                   disabled={isFieldDisabled("startDate")}
+                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                 />
               )}
             />
@@ -555,10 +558,11 @@ const FormEditPromoSubscription = ({ promoId }) => {
                 <DateTimePickerWeb
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Pilih tanggal dan waktu"
+                  placeholder="Pilih Periode Akhir"
                   dateFormat="dd MMM yyyy, HH:mm"
                   showTime={true}
                   disabled={isFieldDisabled("endDate")}
+                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                 />
               )}
             />
@@ -578,7 +582,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
                 value={field.value}
                 onValueChange={field.onChange}
                 options={promoTypeOptions}
-                placeholder="Pilih tipe promo"
+                placeholder="Pilih Tipe Promo"
                 enableSelectAll={false}
                 disabled={isFieldDisabled("promoTypes")}
               >
