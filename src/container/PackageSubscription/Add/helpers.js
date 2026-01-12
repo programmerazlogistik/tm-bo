@@ -21,7 +21,13 @@ export const formatCurrency = (value) => {
  */
 export const parseCurrency = (value) => {
   if (!value) return "";
-  return value.replace(/[^\d]/g, "");
+  // Handle case where user might paste or type decimal with comma (Indonesian format)
+  // We only want the integer part
+  let cleanValue = String(value);
+  if (cleanValue.includes(",")) {
+    cleanValue = cleanValue.split(",")[0];
+  }
+  return cleanValue.replace(/[^\d]/g, "");
 };
 
 /**

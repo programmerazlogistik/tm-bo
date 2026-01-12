@@ -21,7 +21,7 @@ export const useEditFormState = (packageData) => {
         subUserYangDiperoleh: String(packageData.subUsersEarned || ""),
         batasPembelianPaket: packageData.isLimitedPurchase || false,
         kuotaPembelianPerUser: String(packageData.maxPurchasePerUser || ""),
-        harga: String(packageData.price || ""),
+        harga: String(packageData.price || "").split(".")[0],
         koin: packageData.isUnlimitedCoin
           ? "0"
           : String(packageData.coinEarned || ""),

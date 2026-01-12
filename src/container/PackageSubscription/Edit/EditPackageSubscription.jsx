@@ -28,7 +28,7 @@ const EditPackageSubscription = ({ id }) => {
   const router = useRouter();
   const { data: packageData, isLoading: isFetching } =
     useGetPackageSubscriptionDetail(id);
-  const { data: popularData } = useGetPopularPackage();
+  const { data: popularData } = useGetPopularPackage(id);
 
   const { formData, handleInputChange, hasChanges } =
     useEditFormState(packageData);

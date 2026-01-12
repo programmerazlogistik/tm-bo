@@ -167,7 +167,7 @@ export const StatusSection = ({ formData, onInputChange, popularData }) => {
         label="Jadikan sebagai Paket Populer"
         value={formData.isPaketPopuler}
         onChange={(value) => onInputChange("isPaketPopuler", value)}
-        disabled={popularData?.hasPopular}
+        disabled={!formData.isPaketPopuler && popularData?.hasPopular}
         additionalInfo={
           popularData?.hasPopular && (
             <div className="flex w-[205px] items-center gap-2 rounded-md bg-[#176CF7] px-2 py-1">
