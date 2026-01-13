@@ -5,9 +5,11 @@ import { cn } from "@muatmuat/lib/utils";
 import { Button } from "@muatmuat/ui/Button";
 import { Input } from "@muatmuat/ui/Form";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
-import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
+
+import { DataTableBO, TableBO, useDataTable } from "@/components/Table";
 
 import { UserTypeLabel } from "@/container/PromoSubscription/utils/enum";
+
 // 26. 03 - TM - LB - 0128
 const TableHistorySection = ({
   promos = [],
@@ -247,7 +249,7 @@ const TableHistorySection = ({
     ],
     [handleDetail]
   );
-
+  // 26. 03 - TM - LB - 0023
   return (
     <>
       <section className="my-4 flex items-center justify-between">
@@ -302,7 +304,14 @@ const TableHistorySection = ({
             </div>
           ) : (
             <>
-              <DataTableBO.Content Table={TableBO} />
+              <DataTableBO.Content
+                Table={TableBO}
+                emptyContent={
+                  <p className="text-xs font-normal text-[#1B1B1B]">
+                    Tidak Ada Data Dalam Tabel Ini
+                  </p>
+                }
+              />
               <DataTableBO.Pagination />
             </>
           )}

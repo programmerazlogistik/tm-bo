@@ -25,6 +25,8 @@ const FormEditPromoSubscription = ({ promoId }) => {
   // 26. 03 - TM - LB - 0032
   // 26. 03 - TM - LB - 0121
   // 26. 03 - TM - LB - 0124
+  // 26. 03 - TM - LB - 0030
+  // 26. 03 - TM - LB - 0125
   const router = useRouter();
   const { data: promoData, isLoading: isDataLoading } =
     useGetPromoSubscriptionById(promoId);
@@ -195,6 +197,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
       limit: 50,
       sort_by: "packageName",
       sort_order: "asc",
+      is_active: true,
     });
 
   const packageOptions = useMemo(
@@ -316,6 +319,12 @@ const FormEditPromoSubscription = ({ promoId }) => {
     if (isDiscountSelected && data.discountAmount > data.normalPrice) {
       console.log("Discount amount is above normal price");
       setIsDiscountAboveNormalModalOpen(true);
+      return;
+    }
+
+    // Check if form has changes
+    if (!isDirty) {
+      handleSaveConfirmation();
       return;
     }
 
@@ -505,7 +514,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
                 <MultiSelect.Trigger className="w-full" />
                 <MultiSelect.Content>
                   <MultiSelect.Search placeholder="Cari Nama Paket" />
-                  <MultiSelect.List className="max-h-[150px] overflow-y-auto" />
+                  <MultiSelect.List className="h-full max-h-[150px] overflow-y-auto" />
                 </MultiSelect.Content>
               </MultiSelect.Root>
             )}

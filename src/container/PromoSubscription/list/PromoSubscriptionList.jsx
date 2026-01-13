@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { useDebounce } from "@muatmuat/hooks/use-debounce";
@@ -17,6 +18,7 @@ import TableActiveSection from "./section/TableActiveSection";
 import TableHistorySection from "./section/TableHistorySection";
 
 const PromoSubscriptionList = () => {
+  const router = useRouter();
   const { search, currentTab, setSearch, limit, setLimit } =
     usePromoSubscriptionStore();
 
@@ -166,6 +168,7 @@ const PromoSubscriptionList = () => {
         appearance={{
           iconClassName: "size-6",
         }}
+        onBackClick={() => router.push("/")}
       >
         Master Promo Subscription
       </PageTitle>

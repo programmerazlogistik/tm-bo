@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@muatmuat/ui/Button";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
@@ -20,8 +20,28 @@ import { usePackageData } from "./hooks/usePackageData";
 import { usePackageDelete } from "./hooks/usePackageDelete";
 
 const DetailPackageSubscription = ({ id }) => {
+  // LB - 0120
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("home");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const activeTab = searchParams.get("tab") || "home";
+
+  const handleTabChange = useCallback(
+    (tab) => {
+      const params = new URLSearchParams(searchParams);
+      params.set("tab", tab);
+      router.replace(`${pathname}?${params.toString()}`);
+    },
+    [pathname, router, searchParams]
+  );
+
+  useEffect(() => {
+    if (!searchParams.get("tab")) {
+      handleTabChange("home");
+    }
+  }, [handleTabChange, searchParams]);
+
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
   const { data: packageData, isLoading: isFetching } =
@@ -80,7 +100,7 @@ const DetailPackageSubscription = ({ id }) => {
               : "Log Paket Subscription"
           }
         />
-        <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+        <TabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
 
       {activeTab === "home" && (

@@ -18,6 +18,7 @@ import {
 
 const TabMainSection = ({ promoData, isHistoryView = false, mutate }) => {
   // 26. 03 - TM - LB - 0035
+  // 26. 03 - TM - LB - 0126
   const router = useRouter();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const { cancelSubscription, isLoading: isCancelLoading } =
@@ -50,14 +51,22 @@ const TabMainSection = ({ promoData, isHistoryView = false, mutate }) => {
         userTypes: promoData.userTypes || [],
         startDate: promoData.startDate ? new Date(promoData.startDate) : null,
         endDate: promoData.endDate ? new Date(promoData.endDate) : null,
-        promoTypes: promoData.promoTypes || [],
-        normalPrice: promoData.discount?.normalPrice || 0,
-        discountAmount: promoData.discount?.discountAmount || 0,
-        discountPercentage: promoData.discount?.discountPercentage || 0,
-        finalPrice: promoData.discount?.finalPrice || 0,
-        normalCoinsEarned: promoData.coin?.normalCoins || 0,
-        freeCoinsEarned: promoData.coin?.bonusCoins || 0, // Maps to freeCoinsEarned/bonusCoins
-        finalCoinsEarned: promoData.coin?.totalCoins || 0, // Maps to finalCoinsEarned/totalCoins
+        promoTypes: promoData.promoTypes || promoData.promoType || [],
+        normalPrice:
+          promoData.discount?.normalPrice || promoData.normalPrice || 0,
+        discountAmount:
+          promoData.discount?.discountAmount || promoData.discountAmount || 0,
+        discountPercentage:
+          promoData.discount?.discountPercentage ||
+          promoData.discountPercentage ||
+          0,
+        finalPrice: promoData.discount?.finalPrice || promoData.finalPrice || 0,
+        normalCoinsEarned:
+          promoData.coin?.normalCoins || promoData.normalCoinsEarned || 0,
+        freeCoinsEarned:
+          promoData.coin?.bonusCoins || promoData.freeCoinsEarned || 0,
+        finalCoinsEarned:
+          promoData.coin?.totalCoins || promoData.finalCoinsEarned || 0,
       });
     }
   }, [promoData, reset]);

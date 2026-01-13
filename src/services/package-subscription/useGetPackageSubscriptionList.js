@@ -172,7 +172,7 @@ export const getPackageSubscriptionList = async (params = {}) => {
  * @param {object} [swrOptions] - Additional SWR options
  * @returns {{
  *   data: PackageSubscriptionListResponse | undefined,
- *   isLoading: boolean,
+ *   MultiSelect.TriggerisLoading: boolean,
  *   isValidating: boolean,
  *   error: Error | undefined,
  *   mutate: Function

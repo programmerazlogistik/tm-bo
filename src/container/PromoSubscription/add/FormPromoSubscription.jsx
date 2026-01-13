@@ -24,6 +24,7 @@ const FormPromoSubscription = () => {
   // 26. 03 - TM - LB - 0032
   // 26. 03 - TM - LB - 0117
   // 26. 03 - TM - LB - 0124
+  // 26. 03 - TM - LB - 0030
   const router = useRouter();
   const { createSubscription, isLoading } = useCreatePromoSubscription();
 
@@ -169,6 +170,7 @@ const FormPromoSubscription = () => {
       limit: 50,
       sort_by: "packageName",
       sort_order: "asc",
+      is_active: true,
     });
 
   const packageOptions = useMemo(
@@ -423,7 +425,7 @@ const FormPromoSubscription = () => {
                 <MultiSelect.Trigger className="w-full" />
                 <MultiSelect.Content>
                   <MultiSelect.Search placeholder="Cari Nama Paket" />
-                  <MultiSelect.List className="max-h-[150px] overflow-y-auto" />
+                  <MultiSelect.List className="h-full max-h-[150px] overflow-y-auto" />
                 </MultiSelect.Content>
               </MultiSelect.Root>
             )}

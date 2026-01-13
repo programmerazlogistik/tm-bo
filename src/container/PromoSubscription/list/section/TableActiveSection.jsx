@@ -4,12 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { cn } from "@muatmuat/lib/utils";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
 import { ConfirmationModal } from "@muatmuat/ui/Modal";
-import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
 import { toast } from "@muatmuat/ui/Toaster";
 
 import { useCancelPromoSubscription } from "@/services/promo-subscription/useCancelPromoSubscription";
 
 import { ActionDropdown } from "@/components/Dropdown/ActionDropdown";
+import { DataTableBO, TableBO, useDataTable } from "@/components/Table";
 
 import { PromoStatus } from "@/container/PromoSubscription/utils/enum";
 
@@ -308,7 +308,7 @@ const TableActiveSection = ({
     ],
     []
   );
-
+  // 26. 03 - TM - LB - 0023
   return (
     <>
       <DataTableBO.Root
@@ -336,7 +336,14 @@ const TableActiveSection = ({
           </div>
         ) : (
           <>
-            <DataTableBO.Content Table={TableBO} />
+            <DataTableBO.Content
+              Table={TableBO}
+              emptyContent={
+                <p className="text-xs font-normal text-[#1B1B1B]">
+                  Tidak Ada Data Dalam Tabel Ini
+                </p>
+              }
+            />
             <DataTableBO.Pagination />
           </>
         )}
