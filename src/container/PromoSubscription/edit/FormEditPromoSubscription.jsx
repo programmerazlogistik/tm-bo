@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@muatmuat/ui/Button";
 import { Input } from "@muatmuat/ui/Form";
-import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { toast } from "@muatmuat/ui/Toaster";
 import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
@@ -12,6 +11,7 @@ import { useGetPackageSubscriptionList } from "@/services/package-subscription/u
 import { useGetPromoSubscriptionById } from "@/services/promo-subscription/useGetPromoSubscriptionById";
 import { useUpdatePromoSubscription } from "@/services/promo-subscription/useUpdatePromoSubscription";
 
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { MultiSelect } from "@/components/Select/MultiSelect";
 
@@ -27,6 +27,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
   // 26. 03 - TM - LB - 0124
   // 26. 03 - TM - LB - 0030
   // 26. 03 - TM - LB - 0125
+  // 26. 03 - TM - LB - 0122
   const router = useRouter();
   const { data: promoData, isLoading: isDataLoading } =
     useGetPromoSubscriptionById(promoId);
@@ -315,9 +316,11 @@ const FormEditPromoSubscription = ({ promoId }) => {
       return;
     }
 
-    // Check if discount amount is above normal price
-    if (isDiscountSelected && data.discountAmount > data.normalPrice) {
-      console.log("Discount amount is above normal price");
+    // Check if discount percentage is above 100% or discount amount is above normal price
+    if (
+      isDiscountSelected &&
+      (data.discountPercentage > 100 || data.discountAmount > data.normalPrice)
+    ) {
       setIsDiscountAboveNormalModalOpen(true);
       return;
     }
@@ -514,7 +517,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
                 <MultiSelect.Trigger className="w-full" />
                 <MultiSelect.Content>
                   <MultiSelect.Search placeholder="Cari Nama Paket" />
-                  <MultiSelect.List className="h-full max-h-[150px] overflow-y-auto" />
+                  <MultiSelect.List className="h-full max-h-[130px] overflow-y-auto" />
                 </MultiSelect.Content>
               </MultiSelect.Root>
             )}
@@ -909,9 +912,11 @@ const FormEditPromoSubscription = ({ promoId }) => {
         description={{
           text: "Harga diskon harus di bawah harga normal",
         }}
+        confirm={{
+          classname: "hidden",
+        }}
         cancel={{
-          text: "Tutup",
-          showOnlyCancel: true,
+          classname: "hidden",
         }}
       />
 

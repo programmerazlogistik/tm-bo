@@ -425,7 +425,7 @@ const FormPromoSubscription = () => {
                 <MultiSelect.Trigger className="w-full" />
                 <MultiSelect.Content>
                   <MultiSelect.Search placeholder="Cari Nama Paket" />
-                  <MultiSelect.List className="h-full max-h-[150px] overflow-y-auto" />
+                  <MultiSelect.List className="h-full max-h-[130px] overflow-y-auto" />
                 </MultiSelect.Content>
               </MultiSelect.Root>
             )}
