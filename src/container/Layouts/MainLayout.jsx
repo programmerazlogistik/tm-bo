@@ -40,4 +40,4 @@ const useDefaultTimeoutLoading = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
-console.warn("FE Version: v1.0.21");
+console.warn("FE Version: v1.0.22");
