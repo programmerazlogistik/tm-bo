@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 
+import { ArrowLeft } from "@muatmuat/icons";
 import { cn } from "@muatmuat/lib/utils";
-import { IconComponent } from "@muatmuat/ui/IconComponent";
 
 const PageTitle = ({
   className,
@@ -40,10 +40,11 @@ const PageTitle = ({
           className={appearance.iconClassName}
           onClick={onBackClick || handleBackClick}
         >
-          <IconComponent
-            src="/icons/arrow-left.svg"
-            size={20}
-            className={cn("text-[#176CF7]", appearance.iconClassName)}
+          <ArrowLeft
+            className={cn(
+              "stroke-[#176CF7] stroke-2 font-bold text-[#176CF7]",
+              appearance.iconClassName
+            )}
           />
         </button>
       )}

@@ -20,10 +20,10 @@ export const fetcherMPPInter = createAxios(
 
 export const fetcherMPPDom = createAxios(process.env.NEXT_PUBLIC_MPP_DOM_API);
 
-export const fetcherMuatparts = createAxios(
-  process.env.NEXT_PUBLIC_INTERNAL_API
-);
+export const fetcherMuatparts = createAxios(process.env.NEXT_PUBLIC_TM_API);
 
 export const fetcherMock = createAxios(
   `${process.env.NEXT_PUBLIC_ASSET_REVERSE}/api`
 );
+
+export const fetcherAuth = createAxios(process.env.NEXT_PUBLIC_MPP_INTER_API);

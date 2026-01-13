@@ -19,13 +19,17 @@ const Toggle = ({
 
   const buttonClasses = [
     "relative w-[40px] h-[24px] shadow-muat rounded-full transition-colors",
-    value
-      ? type === "primary"
-        ? "bg-primary-700"
-        : "bg-secondary-500"
-      : "bg-[#868686]",
-    // disabled && (value ? "disabled:bg-primary-200" : "disabled:bg-neutral-400"),
-    "disabled:cursor-not-allowed",
+    disabled
+      ? value
+        ? type === "primary"
+          ? "bg-primary-700 cursor-not-allowed opacity-50"
+          : "bg-secondary-500 cursor-not-allowed opacity-50"
+        : "bg-neutral-400 cursor-not-allowed opacity-50"
+      : value
+        ? type === "primary"
+          ? "bg-primary-700"
+          : "bg-secondary-500"
+        : "bg-[#868686]",
   ]
     .filter(Boolean)
     .join(" ");
