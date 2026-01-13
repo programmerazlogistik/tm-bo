@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { LoadingStatic } from "@muatmuat/ui/Loading";
@@ -29,6 +30,7 @@ const PackageSubscriptionList = ({
   // 26. 03 - TM - LB - 0006
   // 26. 03 - TM - LB - 0007
   // 26. 03 - TM - LB - 0005
+  const router = useRouter();
   const [sorting, setSorting] = useState([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -89,6 +91,7 @@ const PackageSubscriptionList = ({
         appearance={{
           iconClassName: "size-6",
         }}
+        onBackClick={() => router.push("/")}
       >
         Master Paket Subscription
       </PageTitle>
