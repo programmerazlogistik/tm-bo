@@ -23,6 +23,8 @@ const FormEditPromoSubscription = ({ promoId }) => {
   // 26. 03 - TM - LB - 0027
   // 26. 03 - TM - LB - 0028
   // 26. 03 - TM - LB - 0032
+  // 26. 03 - TM - LB - 0121
+  // 26. 03 - TM - LB - 0124
   const router = useRouter();
   const { data: promoData, isLoading: isDataLoading } =
     useGetPromoSubscriptionById(promoId);
@@ -93,6 +95,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
   const normalPrice = watch("normalPrice");
   const freeCoinsEarned = watch("freeCoinsEarned");
   const normalCoinsEarned = watch("normalCoinsEarned");
+  const startDate = watch("startDate");
 
   // Reset discount fields when discount is deselected
   useEffect(() => {
@@ -434,7 +437,13 @@ const FormEditPromoSubscription = ({ promoId }) => {
     <section>
       <PageTitle
         withBack={true}
-        onBack={() => setIsNavigationConfirmationModalOpen(true)}
+        onBackClick={() => {
+          if (isDirty) {
+            setIsNavigationConfirmationModalOpen(true);
+          } else {
+            router.back();
+          }
+        }}
         className="mb-2.5 text-[24px] font-bold text-[#176CF7]"
         appearance={{
           iconClassName: "size-6",
@@ -562,7 +571,11 @@ const FormEditPromoSubscription = ({ promoId }) => {
                   dateFormat="dd MMM yyyy, HH:mm"
                   showTime={true}
                   disabled={isFieldDisabled("endDate")}
-                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
+                  minDate={
+                    startDate
+                      ? new Date(new Date(startDate).setHours(0, 0, 0, 0))
+                      : new Date(new Date().setHours(0, 0, 0, 0))
+                  }
                 />
               )}
             />

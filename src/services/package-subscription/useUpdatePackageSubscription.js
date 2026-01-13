@@ -2,6 +2,7 @@ import useSWRMutation from "swr/mutation";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
+// 26. 03 - TM - LB - 0017
 const updatePackageSubscriptionFn = async (url, { arg }) => {
   const { id, data } = arg;
   const response = await fetcherMuatparts.put(
@@ -16,7 +17,7 @@ export const useUpdatePackageSubscription = () => {
     "/v1/bo/subscription-tm/packages/update",
     updatePackageSubscriptionFn,
     {
-      throwOnError: false,
+      throwOnError: true,
     }
   );
 

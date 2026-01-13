@@ -8,7 +8,7 @@ import { LoadingStatic } from "@muatmuat/ui/Loading";
 import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
 
 import { UserTypeLabel } from "@/container/PromoSubscription/utils/enum";
-
+// 26. 03 - TM - LB - 0128
 const TableHistorySection = ({
   promos = [],
   pagination: externalPagination,
@@ -265,6 +265,7 @@ const TableHistorySection = ({
               placeholder="Cari Promo"
               value={searchValue}
               onChange={(e) => onSearchChange(e.target.value)}
+              withReset
             />
           </div>
         </div>

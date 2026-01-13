@@ -22,6 +22,8 @@ const FormPromoSubscription = () => {
   // 26. 03 - TM - LB - 0027
   // 26. 03 - TM - LB - 0028
   // 26. 03 - TM - LB - 0032
+  // 26. 03 - TM - LB - 0117
+  // 26. 03 - TM - LB - 0124
   const router = useRouter();
   const { createSubscription, isLoading } = useCreatePromoSubscription();
 
@@ -67,6 +69,7 @@ const FormPromoSubscription = () => {
   const normalPrice = watch("normalPrice");
   const freeCoinsEarned = watch("freeCoinsEarned");
   const normalCoinsEarned = watch("normalCoinsEarned");
+  const startDate = watch("startDate");
 
   // Reset discount fields when discount is deselected
   useEffect(() => {
@@ -378,7 +381,13 @@ const FormPromoSubscription = () => {
     <section>
       <PageTitle
         withBack={true}
-        onBackClick={() => setIsNavigationConfirmationModalOpen(true)}
+        onBackClick={() => {
+          if (isDirty) {
+            setIsNavigationConfirmationModalOpen(true);
+          } else {
+            router.back();
+          }
+        }}
         className="mb-2.5 text-[24px] font-bold text-[#176CF7]"
         appearance={{
           iconClassName: "size-6",
@@ -477,7 +486,11 @@ const FormPromoSubscription = () => {
                   placeholder="Pilih tanggal dan waktu"
                   dateFormat="dd MMM yyyy, HH:mm"
                   showTime={true}
-                  minDate={new Date(new Date().setHours(0, 0, 0, 0))}
+                  minDate={
+                    startDate
+                      ? new Date(new Date(startDate).setHours(0, 0, 0, 0))
+                      : new Date(new Date().setHours(0, 0, 0, 0))
+                  }
                 />
               )}
             />

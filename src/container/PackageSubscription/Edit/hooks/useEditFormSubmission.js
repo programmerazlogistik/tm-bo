@@ -15,6 +15,7 @@ import { useFormValidation } from "../../Add/hooks/useFormValidation";
 export const useEditFormSubmission = (packageId, formData, showWarning) => {
   // 26. 03 - TM - LB - 0013
   // 26. 03 - TM - LB - 0015
+  // 26. 03 - TM - LB - 0017
   const router = useRouter();
   const [errorModalState, setErrorModalState] = useState({
     isOpen: false,
@@ -55,7 +56,9 @@ export const useEditFormSubmission = (packageId, formData, showWarning) => {
       return true;
     } catch (error) {
       const errorMessage =
-        error?.response?.data?.Message?.Text || ERROR_MESSAGES.SAVE_ERROR;
+        error?.response?.data?.Data ||
+        error?.response?.data?.Message?.Text ||
+        ERROR_MESSAGES.SAVE_ERROR;
       setErrorModalState({ isOpen: true, message: errorMessage });
       return false;
     } finally {

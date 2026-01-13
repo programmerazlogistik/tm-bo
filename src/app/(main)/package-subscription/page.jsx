@@ -41,6 +41,7 @@ const transformPackageItem = (item) => {
 export default function PackageSubscriptionPage() {
   // 26. 03 - TM - LB - 0006
   // 26. 03 - TM - LB - 0007
+  // 26. 03 - TM - LB - 0102
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -57,6 +58,7 @@ export default function PackageSubscriptionPage() {
     periode: "period",
     price: "price",
     koin: "coinsEarned",
+    isPopuler: "isPopular",
   };
 
   // Calculate API params

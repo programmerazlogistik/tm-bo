@@ -28,6 +28,8 @@ const TableCell = ({ value, isBold = false }) => {
  */
 export const createColumns = ({ onDetail, onEdit, onDelete, onRefresh }) => {
   // 26. 03 - TM - LB - 0003
+  // 26. 03 - TM - LB - 0105
+  // 26. 03 - TM - LB - 0106
   return [
     {
       id: "actions",
@@ -116,13 +118,15 @@ export const createColumns = ({ onDetail, onEdit, onDelete, onRefresh }) => {
       header: "Koin",
       size: 100,
       enableSorting: true,
+      sortDescFirst: false,
       cell: ({ row }) => <TableCell value={formatNumber(row.original.koin)} />,
     },
     {
+      id: "isPopuler",
       accessorKey: "terpopuler",
       header: "Terpopuler",
       size: 120,
-      enableSorting: false,
+      enableSorting: true,
       cell: ({ row }) => {
         const isPopular = row.original.terpopuler === "Ya";
         return (

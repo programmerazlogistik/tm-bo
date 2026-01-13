@@ -131,7 +131,7 @@ const PromoSubscriptionList = () => {
     limit: historyPagination.pageSize,
     sorting: historySorting,
     filters: {
-      search: debouncedHistorySearch,
+      search: debouncedHistorySearch.trim(),
     },
   });
 
