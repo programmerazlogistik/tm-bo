@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { cn } from "@muatmuat/lib/utils";
 import { LoadingStatic } from "@muatmuat/ui/Loading";
@@ -24,13 +24,12 @@ const TableActiveSection = ({
   mutate,
 }) => {
   // 26. 03 - TM - LB - 0021
+  // LB - 0036
   const router = useRouter();
   const { cancelSubscription, isLoading: isCancelLoading } =
     useCancelPromoSubscription();
 
   const {
-    sorting,
-    setSorting,
     pagination: internalPagination,
     setPagination: setInternalPagination,
   } = useDataTable();
@@ -39,31 +38,9 @@ const TableActiveSection = ({
   const pagination = externalPagination || internalPagination;
   const setPagination = setExternalPagination || setInternalPagination;
 
-  // Sync external sorting with internal state if provided
-  useEffect(() => {
-    if (externalSorting && setSorting) {
-      // Only update if the sorting actually changed
-      setSorting((prevSorting) => {
-        if (JSON.stringify(prevSorting) === JSON.stringify(externalSorting)) {
-          return prevSorting;
-        }
-        return externalSorting;
-      });
-    }
-  }, [externalSorting, setSorting]);
-
-  // Sync internal sorting with external state if provided
-  useEffect(() => {
-    if (setExternalSorting) {
-      // Only update if the sorting actually changed
-      setExternalSorting((prevSorting) => {
-        if (JSON.stringify(prevSorting) === JSON.stringify(sorting)) {
-          return prevSorting;
-        }
-        return sorting;
-      });
-    }
-  }, [sorting, setExternalSorting]);
+  // Use external sorting directly, no need for internal state or syncing
+  const sorting = externalSorting || [];
+  const setSorting = setExternalSorting || (() => {});
 
   const [modalState, setModalState] = useState({
     isOpen: false,
@@ -100,10 +77,6 @@ const TableActiveSection = ({
     },
     [router]
   );
-
-  const handleAdd = useCallback(() => {
-    router.push("/promo-subscription/add");
-  }, [router]);
 
   const openConfirmationModal = useCallback((type, promo) => {
     setModalState({ isOpen: true, type, promo });
@@ -306,7 +279,7 @@ const TableActiveSection = ({
         sortDescFirst: false,
       },
     ],
-    []
+    [handleDetail, handleEdit, openConfirmationModal]
   );
   // 26. 03 - TM - LB - 0023
   return (
@@ -327,8 +300,8 @@ const TableActiveSection = ({
         }}
         pagination={pagination}
         onPaginationChange={setPagination}
-        sorting={externalSorting || sorting}
-        onSortingChange={setExternalSorting || setSorting}
+        sorting={sorting}
+        onSortingChange={setSorting}
       >
         {loading ? (
           <div className="flex h-64 items-center justify-center">
@@ -404,7 +377,7 @@ const TableActiveSection = ({
               }
             } else if (modalState.type === "delete") {
               // Handle deletion logic here
-              console.log(`Promo ${modalState.promo.id} deleted`);
+              console.warn(`Promo ${modalState.promo.id} deleted`);
               // Simulate API call delay
               await new Promise((resolve) => setTimeout(resolve, 1000));
             }

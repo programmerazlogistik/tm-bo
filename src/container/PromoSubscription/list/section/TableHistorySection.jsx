@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import { cn } from "@muatmuat/lib/utils";
 import { Button } from "@muatmuat/ui/Button";
@@ -11,6 +11,7 @@ import { DataTableBO, TableBO, useDataTable } from "@/components/Table";
 import { UserTypeLabel } from "@/container/PromoSubscription/utils/enum";
 
 // 26. 03 - TM - LB - 0128
+// LB - 0036
 const TableHistorySection = ({
   promos = [],
   pagination: externalPagination,
@@ -26,8 +27,6 @@ const TableHistorySection = ({
   const router = useRouter();
 
   const {
-    sorting,
-    setSorting,
     pagination: internalPagination,
     setPagination: setInternalPagination,
   } = useDataTable();
@@ -36,31 +35,9 @@ const TableHistorySection = ({
   const pagination = externalPagination || internalPagination;
   const setPagination = setExternalPagination || setInternalPagination;
 
-  // Sync external sorting with internal state if provided
-  useEffect(() => {
-    if (externalSorting && setSorting) {
-      // Only update if the sorting actually changed
-      setSorting((prevSorting) => {
-        if (JSON.stringify(prevSorting) === JSON.stringify(externalSorting)) {
-          return prevSorting;
-        }
-        return externalSorting;
-      });
-    }
-  }, [externalSorting, setSorting]);
-
-  // Sync internal sorting with external state if provided
-  useEffect(() => {
-    if (setExternalSorting) {
-      // Only update if the sorting actually changed
-      setExternalSorting((prevSorting) => {
-        if (JSON.stringify(prevSorting) === JSON.stringify(sorting)) {
-          return prevSorting;
-        }
-        return sorting;
-      });
-    }
-  }, [sorting, setExternalSorting]);
+  // Use external sorting directly, no need for internal state or syncing
+  const sorting = externalSorting || [];
+  const setSorting = setExternalSorting || (() => {});
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "-";
@@ -295,8 +272,8 @@ const TableHistorySection = ({
           }}
           pagination={pagination}
           onPaginationChange={setPagination}
-          sorting={externalSorting || sorting}
-          onSortingChange={setExternalSorting || setSorting}
+          sorting={sorting}
+          onSortingChange={setSorting}
         >
           {loading ? (
             <div className="flex h-64 items-center justify-center">
