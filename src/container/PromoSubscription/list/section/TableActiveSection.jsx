@@ -291,11 +291,7 @@ const TableActiveSection = ({
         paginationData={{
           currentPage: pagination?.pageIndex + 1 || 1,
           totalPages: data?.pagination?.totalPages || 1,
-          totalItems:
-            data?.pagination?.totalItems ||
-            data?.pagination?.totalRecords ||
-            data?.pagination?.TotalData ||
-            0,
+          totalItems: data?.pagination?.totalRecords || 0,
           itemsPerPage: pagination?.pageSize || 10,
         }}
         pagination={pagination}

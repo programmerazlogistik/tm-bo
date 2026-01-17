@@ -3,8 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { useDebounce } from "@muatmuat/hooks/use-debounce";
-
 import { useGetPromoSubscriptionsHistory } from "@/services/promo-subscription/useGetPromoSubscriptionsHistory";
 import { useGetPromoSubscriptionsList } from "@/services/promo-subscription/useGetPromoSubscriptionsList";
 
@@ -18,6 +16,7 @@ import TableActiveSection from "./section/TableActiveSection";
 import TableHistorySection from "./section/TableHistorySection";
 
 const PromoSubscriptionList = () => {
+  // LB - 0181
   const router = useRouter();
   const { search, currentTab, setSearch, limit, setLimit } =
     usePromoSubscriptionStore();
@@ -47,7 +46,8 @@ const PromoSubscriptionList = () => {
   });
 
   const [historySorting, setHistorySorting] = useState([]);
-  const [historySearch, setHistorySearch] = useState("");
+  const [historySearchTerm, setHistorySearchTerm] = useState("");
+  const [historyInputValue, setHistoryInputValue] = useState("");
 
   // Reset history pagination and sorting when tab changes to history
   useEffect(() => {
@@ -59,9 +59,6 @@ const PromoSubscriptionList = () => {
       setHistorySorting([]);
     }
   }, [currentTab, limit]);
-
-  // Debounce history search with 300ms delay
-  const debouncedHistorySearch = useDebounce(historySearch, 300);
 
   // Synchronize store limit with component pagination state
   useEffect(() => {
@@ -133,7 +130,7 @@ const PromoSubscriptionList = () => {
     limit: historyPagination.pageSize,
     sorting: historySorting,
     filters: {
-      search: debouncedHistorySearch.trim(),
+      search: historySearchTerm.trim(),
     },
   });
 
@@ -153,11 +150,34 @@ const PromoSubscriptionList = () => {
     handlePaginationChange((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
-  // Function to handle history search change
+  // Function to handle history search input change
   const handleHistorySearchChange = (value) => {
-    setHistorySearch(value);
-    // Reset to first page when searching
-    setHistoryPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setHistoryInputValue(value);
+    // If input is cleared (empty), reset search immediately
+    if (value.trim() === "") {
+      setHistorySearchTerm("");
+      setHistoryPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }
+  };
+
+  // Function to handle history search submit
+  const handleHistorySearchSubmit = () => {
+    // Only search if input has at least 3 characters or is empty (to clear search)
+    if (
+      historyInputValue.trim().length >= 3 ||
+      historyInputValue.trim().length === 0
+    ) {
+      setHistorySearchTerm(historyInputValue.trim());
+      // Reset to first page when searching
+      setHistoryPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    }
+  };
+
+  // Function to handle Enter key press for history search
+  const handleHistoryKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleHistorySearchSubmit();
+    }
   };
 
   return (
@@ -212,8 +232,9 @@ const PromoSubscriptionList = () => {
             setSorting={setHistorySorting}
             data={historyData}
             loading={historyLoading}
-            searchValue={historySearch}
+            searchValue={historyInputValue}
             onSearchChange={handleHistorySearchChange}
+            onKeyPress={handleHistoryKeyPress}
           />
         </>
       )}

@@ -12,6 +12,7 @@ import { UserTypeLabel } from "@/container/PromoSubscription/utils/enum";
 
 // 26. 03 - TM - LB - 0128
 // LB - 0036
+// LB - 0181
 const TableHistorySection = ({
   promos = [],
   pagination: externalPagination,
@@ -22,6 +23,7 @@ const TableHistorySection = ({
   loading = false,
   searchValue,
   onSearchChange,
+  onKeyPress,
   historyError,
 }) => {
   const router = useRouter();
@@ -244,6 +246,7 @@ const TableHistorySection = ({
               placeholder="Cari Promo"
               value={searchValue}
               onChange={(e) => onSearchChange(e.target.value)}
+              onKeyPress={onKeyPress}
               withReset
             />
           </div>

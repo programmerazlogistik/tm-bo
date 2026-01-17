@@ -118,30 +118,32 @@ const FilterSection = ({
               >
                 Paket
               </label>
-              <Controller
-                name="paketSubscription"
-                control={control}
-                render={({ field }) => (
-                  <MultiSelect.Root
-                    value={Array.isArray(field.value) ? field.value : []}
-                    onValueChange={field.onChange}
-                    options={paketOptions}
-                    placeholder={
-                      isLoadingPackages
-                        ? "Loading..."
-                        : "Pilih Paket Subscription"
-                    }
-                    selectAllText="Semua Paket"
-                    disabled={isLoadingPackages}
-                  >
-                    <MultiSelect.Trigger className="flex-1" />
-                    <MultiSelect.Content>
-                      <MultiSelect.Search placeholder="Cari Disini Paket Subscription" />
-                      <MultiSelect.List />
-                    </MultiSelect.Content>
-                  </MultiSelect.Root>
-                )}
-              />
+              <div className="min-w-0 flex-1">
+                <Controller
+                  name="paketSubscription"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect.Root
+                      value={Array.isArray(field.value) ? field.value : []}
+                      onValueChange={field.onChange}
+                      options={paketOptions}
+                      placeholder={
+                        isLoadingPackages
+                          ? "Loading..."
+                          : "Pilih Paket Subscription"
+                      }
+                      selectAllText="Semua Paket"
+                      disabled={isLoadingPackages}
+                    >
+                      <MultiSelect.Trigger className="w-full" />
+                      <MultiSelect.Content>
+                        <MultiSelect.Search placeholder="Cari Disini Paket Subscription" />
+                        <MultiSelect.List />
+                      </MultiSelect.Content>
+                    </MultiSelect.Root>
+                  )}
+                />
+              </div>
             </div>
 
             {/* Masa Berlaku */}

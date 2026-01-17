@@ -71,6 +71,20 @@ const FormPromoSubscription = () => {
   const freeCoinsEarned = watch("freeCoinsEarned");
   const normalCoinsEarned = watch("normalCoinsEarned");
   const startDate = watch("startDate");
+  // LB - 0174
+  const endDate = watch("endDate");
+
+  // Validate that end date is at least 1 minute after start date
+  const isDateTimeValid = useMemo(() => {
+    if (!startDate || !endDate) return true; // Allow empty dates
+
+    const startTime = new Date(startDate).getTime();
+    const endTime = new Date(endDate).getTime();
+    const oneMinuteInMs = 60 * 1000; // 1 minute in milliseconds
+
+    // End date must be at least 1 minute after start date
+    return endTime >= startTime + oneMinuteInMs;
+  }, [startDate, endDate]);
 
   // Reset discount fields when discount is deselected
   useEffect(() => {
@@ -225,10 +239,14 @@ const FormPromoSubscription = () => {
       setValue("finalCoinsEarned", selectedPackage.coinEarned);
     }
   };
-
+  // LB - 0173
   const userTypeOptions = useMemo(
     () => [
-      { value: UserType.NEW_USER, label: UserTypeLabel[UserType.NEW_USER] },
+      {
+        value: UserType.NEW_USER,
+        label: "User Baru (User yang belum pernah membeli paket)",
+        shortLabel: UserTypeLabel[UserType.NEW_USER],
+      },
       {
         value: UserType.EXISTING_USER,
         label: UserTypeLabel[UserType.EXISTING_USER],
@@ -236,19 +254,25 @@ const FormPromoSubscription = () => {
     ],
     []
   );
-
+  // LB - 0175
   const promoTypeOptions = useMemo(() => {
-    const options = [
+    let options = [
       { value: "DISCOUNT", label: "Discount" },
       { value: "FREE_COIN", label: "Free Coin" },
     ];
 
+    // Remove FREE_COIN if package has unlimited coins
     if (isUnlimitedCoin) {
-      return options.filter((o) => o.value !== "FREE_COIN");
+      options = options.filter((o) => o.value !== "FREE_COIN");
+    }
+
+    // Remove DISCOUNT if package price is 0
+    if (normalPrice === 0 || normalPrice === "0" || normalPrice === "0.00") {
+      options = options.filter((o) => o.value !== "DISCOUNT");
     }
 
     return options;
-  }, [isUnlimitedCoin]);
+  }, [isUnlimitedCoin, normalPrice]);
 
   // Handle form submission
   const onSubmit = (data) => {
@@ -490,7 +514,7 @@ const FormPromoSubscription = () => {
                   showTime={true}
                   minDate={
                     startDate
-                      ? new Date(new Date(startDate).setHours(0, 0, 0, 0))
+                      ? startDate
                       : new Date(new Date().setHours(0, 0, 0, 0))
                   }
                 />
@@ -498,6 +522,14 @@ const FormPromoSubscription = () => {
             />
           </div>
         </div>
+        {!isDateTimeValid && startDate && endDate && (
+          <div className="grid grid-cols-[280px_1fr] items-center">
+            <div></div>
+            <p className="text-xs text-red-500">
+              Tanggal selesai harus minimal 1 menit setelah tanggal mulai
+            </p>
+          </div>
+        )}
 
         {/* Tipe Promo */}
         <div className="grid grid-cols-[280px_1fr] items-center">
@@ -752,7 +784,7 @@ const FormPromoSubscription = () => {
             type="submit"
             variant="muatparts-primary"
             className="flex items-center gap-2 rounded-[20px] px-6 py-2 text-sm font-semibold"
-            disabled={isLoading}
+            disabled={isLoading || !isDateTimeValid}
           >
             {isLoading ? <>Menyimpan...</> : <>Simpan</>}
           </Button>

@@ -18,6 +18,7 @@ import { ChevronDown, X } from "lucide-react";
 export interface MultiSelectOption {
   value: string;
   label: string;
+  shortLabel?: string;
 }
 
 interface MultiSelectContextProps {
@@ -159,12 +160,12 @@ const Trigger = React.forwardRef<
     () => options.filter((opt) => selectedValues.includes(opt.value)),
     [options, selectedValues]
   );
-
+  // LB - 0177
   return (
     <PopoverPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex h-8 w-full min-w-0 items-center justify-between gap-2 rounded-[6px] border border-[#A8A8A8] bg-white px-2 py-[7px] text-xs font-medium transition-colors",
+        "flex min-h-8 w-full min-w-0 items-center justify-between gap-2 rounded-[6px] border border-[#A8A8A8] bg-white px-2 py-[7px] text-xs font-medium transition-colors",
         "focus:outline-none focus:ring-1 focus:ring-offset-0",
         isOpen
           ? "border-[#176CF7]"
@@ -173,7 +174,7 @@ const Trigger = React.forwardRef<
       )}
       {...props}
     >
-      <div className="flex flex-1 flex-wrap items-center gap-1 overflow-hidden">
+      <div className="flex flex-1 flex-wrap items-center gap-1">
         {selectedOptions.length === 0 ? (
           <span className="font-medium text-[#868686]">{placeholder}</span>
         ) : (
@@ -183,7 +184,7 @@ const Trigger = React.forwardRef<
               className="flex h-[19px] items-center gap-1 rounded-[4px] bg-[#868686] px-1 py-0.5"
             >
               <span className="text-[12px] font-medium text-white">
-                {option.label}
+                {option.shortLabel || option.label}
               </span>
               <X
                 className="h-3 w-3 cursor-pointer text-white"

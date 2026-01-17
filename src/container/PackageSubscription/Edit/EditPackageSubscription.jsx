@@ -65,10 +65,14 @@ const EditPackageSubscription = ({ id }) => {
     setBackModalOpen(false);
     router.push("/package-subscription");
   };
-
-  const handleFormSubmit = () => {
+  // LB - 0171
+  const handleFormSubmit = async () => {
     if (handleSubmit()) {
-      setConfirmModalOpen(true);
+      if (!hasChanges()) {
+        await submitForm();
+      } else {
+        setConfirmModalOpen(true);
+      }
     }
   };
 

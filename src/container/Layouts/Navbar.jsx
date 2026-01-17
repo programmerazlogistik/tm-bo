@@ -7,6 +7,7 @@ import { IconComponent } from "@muatmuat/ui/IconComponent";
 
 import LoginButton from "@/components/Auth/LoginButton";
 
+// LB - 0202
 const Navbar = ({ toggleSidebar }) => {
   return (
     <div className="bg-primary sticky left-0 top-0 z-30 flex h-[58px] w-screen items-center justify-between px-7 text-white">
@@ -29,12 +30,12 @@ const Navbar = ({ toggleSidebar }) => {
               <Image
                 src="/svg/logo-muatmuat.svg"
                 alt="MuatMuat Logo"
-                width={120}
+                width={136}
                 height={32}
               />
             </div>
-            <div className="-mt-2 text-center text-sm font-semibold text-white">
-              <p>admin muatparts +</p>
+            <div className="-mt-2 mr-2 text-right text-xs font-bold text-white">
+              <p>Transport Market</p>
             </div>
           </Link>
         </div>
