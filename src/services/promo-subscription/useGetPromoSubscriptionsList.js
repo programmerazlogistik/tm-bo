@@ -5,7 +5,7 @@ import { fetcherMuatparts } from "@/lib/axios";
 // --- Mock Data (API Contract Compliant) ---
 const useMock = false;
 const endpoint = "/v1/bo/subscription-tm/promos/active";
-
+// LB - 0176
 const MOCK_DATA = [
   {
     id: "34b3da79-cf07-4923-a6a6-5cfca6906daf",
@@ -342,20 +342,11 @@ const fetcher = async (params) => {
           })()
         : undefined,
 
-      filterStatus: params.filters?.status
-        ?.map((s) => mapStatus[s] || s)
-        .filter(Boolean)
-        .join(","),
+      filterStatus: params.filters?.status?.filter(Boolean).join(","),
 
-      filterUserTypes: params.filters?.user
-        ?.map((u) => mapUserType[u])
-        .filter(Boolean)
-        .join(","),
+      filterUserTypes: params.filters?.user?.filter(Boolean).join(","),
 
-      filterPromoTypes: params.filters?.tipePromo
-        ?.map((t) => mapPromoType[t] || t)
-        .filter(Boolean)
-        .join(","),
+      filterPromoTypes: params.filters?.tipePromo?.filter(Boolean).join(","),
     };
 
     // Remove undefined/null/empty params
@@ -375,6 +366,7 @@ const fetcher = async (params) => {
     return {
       items: data?.items || data?.promos || [],
       pagination: data?.pagination || {},
+      filterOptions: data?.filterOptions || {},
     };
   }
 };

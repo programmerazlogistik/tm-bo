@@ -32,8 +32,9 @@ const defaultFilterValues = {
   tipePromo: [],
 };
 
-const Filter = ({ onFilterSubmit, onResetFilters }) => {
+const Filter = ({ onFilterSubmit, onResetFilters, filterOptions }) => {
   // LB - 0181
+  // LB - 0176
   const router = useRouter();
 
   const { setSearch, currentTab } = usePromoSubscriptionStore();
@@ -67,13 +68,11 @@ const Filter = ({ onFilterSubmit, onResetFilters }) => {
   };
 
   const onSubmit = (data) => {
-    console.log("Filter submitted:", data);
     if (onFilterSubmit) onFilterSubmit(data);
   };
 
   const handleResetFilter = () => {
     reset(defaultFilterValues);
-    console.log("Filter reset");
     if (onResetFilters) onResetFilters();
   };
 
@@ -133,6 +132,7 @@ const Filter = ({ onFilterSubmit, onResetFilters }) => {
         onApplyFilter={onSubmit}
         handleResetFilter={handleResetFilter}
         activeTab={currentTab === "active" ? "active" : "history"}
+        filterOptions={filterOptions}
       />
     </main>
   );

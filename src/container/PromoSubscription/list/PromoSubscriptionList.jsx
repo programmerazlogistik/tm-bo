@@ -17,6 +17,7 @@ import TableHistorySection from "./section/TableHistorySection";
 
 const PromoSubscriptionList = () => {
   // LB - 0181
+  // LB - 0176
   const router = useRouter();
   const { search, currentTab, setSearch, limit, setLimit } =
     usePromoSubscriptionStore();
@@ -201,6 +202,7 @@ const PromoSubscriptionList = () => {
           <Filter
             onFilterSubmit={handleFilterSubmit}
             onResetFilters={handleResetFilters}
+            filterOptions={data?.filterOptions}
           />
 
           {/* Show error state */}
