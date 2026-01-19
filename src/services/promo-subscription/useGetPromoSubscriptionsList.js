@@ -5,7 +5,7 @@ import { fetcherMuatparts } from "@/lib/axios";
 // --- Mock Data (API Contract Compliant) ---
 const useMock = false;
 const endpoint = "/v1/bo/subscription-tm/promos/active";
-// LB - 0176
+// 26. 03 - TM - LB - 0176
 const MOCK_DATA = [
   {
     id: "34b3da79-cf07-4923-a6a6-5cfca6906daf",

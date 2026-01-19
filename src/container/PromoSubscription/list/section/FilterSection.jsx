@@ -19,7 +19,7 @@ const FilterSection = ({
   _activeTab,
   filterOptions = {},
 }) => {
-  // LB - 0176
+  // 26. 03 - TM - LB - 0176
   // Transform filterOptions from API to dropdown format
   const paketOptions =
     filterOptions?.package?.map((pkg) => ({

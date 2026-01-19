@@ -99,7 +99,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
   const freeCoinsEarned = watch("freeCoinsEarned");
   const normalCoinsEarned = watch("normalCoinsEarned");
   const startDate = watch("startDate");
-  // LB - 0174
+  // 26. 03 - TM - LB - 0174
   const endDate = watch("endDate");
 
   // Validate that end date is at least 1 minute after start date
@@ -262,7 +262,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
       setValue("normalCoinsEarned", selectedPackage.coinEarned);
     }
   };
-  // LB - 0173
+  // 26. 03 - TM - LB - 0173
   const userTypeOptions = useMemo(
     () => [
       {
@@ -277,7 +277,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
     ],
     []
   );
-  // LB - 0175
+  // 26. 03 - TM - LB - 0175
   const promoTypeOptions = useMemo(() => {
     let options = [
       { value: "DISCOUNT", label: "Discount" },

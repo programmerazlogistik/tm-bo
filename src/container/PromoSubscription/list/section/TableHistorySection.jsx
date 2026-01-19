@@ -12,7 +12,7 @@ import { UserTypeLabel } from "@/container/PromoSubscription/utils/enum";
 
 // 26. 03 - TM - LB - 0128
 // LB - 0036
-// LB - 0181
+// 26. 03 - TM - LB - 0181
 const TableHistorySection = ({
   promos = [],
   pagination: externalPagination,

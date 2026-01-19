@@ -16,8 +16,8 @@ import TableActiveSection from "./section/TableActiveSection";
 import TableHistorySection from "./section/TableHistorySection";
 
 const PromoSubscriptionList = () => {
-  // LB - 0181
-  // LB - 0176
+  // 26. 03 - TM - LB - 0181
+  // 26. 03 - TM - LB - 0176
   const router = useRouter();
   const { search, currentTab, setSearch, limit, setLimit } =
     usePromoSubscriptionStore();

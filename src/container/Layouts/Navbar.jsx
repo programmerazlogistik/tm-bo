@@ -7,7 +7,7 @@ import { IconComponent } from "@muatmuat/ui/IconComponent";
 
 import LoginButton from "@/components/Auth/LoginButton";
 
-// LB - 0202
+// 26. 03 - TM - LB - 0202
 const Navbar = ({ toggleSidebar }) => {
   return (
     <div className="bg-primary sticky left-0 top-0 z-30 flex h-[58px] w-screen items-center justify-between px-7 text-white">
