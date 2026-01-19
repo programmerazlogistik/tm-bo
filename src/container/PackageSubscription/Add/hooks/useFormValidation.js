@@ -103,7 +103,7 @@ export const useFormValidation = (formData, showWarning, excludeId = null) => {
 
     // Validate price range
     const price = parseInt(parseCurrency(formData.harga));
-    if (price <= 0 || price >= 10000000000) {
+    if (price >= 10000000000) {
       showWarning(VALIDATION_MESSAGES.PRICE_RANGE);
       return false;
     }

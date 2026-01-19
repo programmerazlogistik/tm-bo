@@ -212,13 +212,12 @@ function Page() {
         setErrorMessage("Anda belum mengisi Field yang dibutuhkan");
         return;
       }
-    }
-
-    // Check if Durasi Fitur (menit) is a valid number
-    const durasiFiturValue = parseFloat(formData.durasiFitur);
-    if (isNaN(durasiFiturValue) || durasiFiturValue <= 0) {
-      setErrorMessage("Nilai durasi fitur harus lebih dari 0");
-      return;
+      // Check if Durasi Fitur (menit) is a valid number
+      const durasiFiturValue = parseFloat(formData.durasiFitur);
+      if (isNaN(durasiFiturValue) || durasiFiturValue <= 0) {
+        setErrorMessage("Nilai durasi fitur harus lebih dari 0");
+        return;
+      }
     }
 
     return setOpenConfirmation(true);

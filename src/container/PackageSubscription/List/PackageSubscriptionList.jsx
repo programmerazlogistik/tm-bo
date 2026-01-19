@@ -1,11 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 import { LoadingStatic } from "@muatmuat/ui/Loading";
-import { DataTableBO, TableBO, useDataTable } from "@muatmuat/ui/Table";
 
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { DataTableBO, TableBO } from "@/components/Table";
 
 import { WarningModal } from "../Add/components/Modals";
 import ConfirmationModal from "./components/ConfirmationModal";
@@ -28,14 +29,18 @@ const PackageSubscriptionList = ({
 }) => {
   // 26. 03 - TM - LB - 0006
   // 26. 03 - TM - LB - 0007
-  const {
-    sorting,
-    setSorting,
-    pagination,
-    setPagination,
-    inputValue,
-    onSearchChange,
-  } = useDataTable();
+  // 26. 03 - TM - LB - 0005
+  const router = useRouter();
+  const [sorting, setSorting] = useState([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [inputValue, setInputValue] = useState("");
+
+  const onSearchChange = (value) => {
+    setInputValue(value);
+  };
 
   const {
     modalState,
@@ -86,6 +91,7 @@ const PackageSubscriptionList = ({
         appearance={{
           iconClassName: "size-6",
         }}
+        onBackClick={() => router.push("/")}
       >
         Master Paket Subscription
       </PageTitle>
@@ -122,7 +128,14 @@ const PackageSubscriptionList = ({
             <LoadingStatic />
           </div>
         ) : (
-          <DataTableBO.Content Table={TableBO} />
+          <DataTableBO.Content
+            Table={TableBO}
+            emptyContent={
+              <p className="text-xs font-normal text-[#1B1B1B]">
+                Tidak Ada Data Dalam Tabel Ini
+              </p>
+            }
+          />
         )}
 
         {!isLoading && <DataTableBO.Pagination />}

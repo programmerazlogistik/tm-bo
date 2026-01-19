@@ -1,3 +1,5 @@
+import { useRouter } from "next/navigation";
+
 import { Modal, ModalContent } from "@muatmuat/ui/Modal";
 import { DataTableBO, TableBO } from "@muatmuat/ui/Table";
 
@@ -34,6 +36,7 @@ export const SettingPenguranganList = ({
   setSorting,
   isLoading,
 }) => {
+  const router = useRouter();
   return (
     <>
       <PageTitle
@@ -41,6 +44,7 @@ export const SettingPenguranganList = ({
         appearance={{
           iconClassName: "size-6",
         }}
+        onBackClick={() => router.push("/")}
       >
         Setting Pengurangan Koin
       </PageTitle>

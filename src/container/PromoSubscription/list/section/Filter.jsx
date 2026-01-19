@@ -1,8 +1,7 @@
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { useDebounce } from "@muatmuat/hooks/use-debounce";
 import { Plus } from "@muatmuat/icons";
 import { Button } from "@muatmuat/ui/Button";
 import { Input } from "@muatmuat/ui/Form";
@@ -33,38 +32,47 @@ const defaultFilterValues = {
   tipePromo: [],
 };
 
-const Filter = ({ onFilterSubmit, onResetFilters }) => {
+const Filter = ({ onFilterSubmit, onResetFilters, filterOptions }) => {
+  // LB - 0181
+  // LB - 0176
   const router = useRouter();
 
-  const { search, setSearch, currentTab } = usePromoSubscriptionStore();
+  const { setSearch, currentTab } = usePromoSubscriptionStore();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [inputValue, setInputValue] = useState(search);
-
-  // Debounce search input with 300ms delay
-  const debouncedSearch = useDebounce(inputValue, 300);
-
-  // Update store search when debounced value changes
-  useEffect(() => {
-    if (debouncedSearch.length === 0 || debouncedSearch.length >= 3) {
-      setSearch(debouncedSearch);
-    } else {
-      setSearch("");
-    }
-  }, [debouncedSearch, setSearch]);
+  const [inputValue, setInputValue] = useState("");
 
   const { control, register, handleSubmit, reset } = useForm({
     resolver: valibotResolver(filterSchema),
     defaultValues: defaultFilterValues,
   });
 
+  const handleSearchChange = (value) => {
+    setInputValue(value);
+    // If input is cleared (empty), reset search immediately
+    if (value.trim() === "") {
+      setSearch("");
+    }
+  };
+
+  const handleSearchSubmit = () => {
+    // Only search if input has at least 3 characters or is empty (to clear search)
+    if (inputValue.trim().length >= 3 || inputValue.trim().length === 0) {
+      setSearch(inputValue.trim());
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
+  };
+
   const onSubmit = (data) => {
-    console.log("Filter submitted:", data);
     if (onFilterSubmit) onFilterSubmit(data);
   };
 
   const handleResetFilter = () => {
     reset(defaultFilterValues);
-    console.log("Filter reset");
     if (onResetFilters) onResetFilters();
   };
 
@@ -86,7 +94,8 @@ const Filter = ({ onFilterSubmit, onResetFilters }) => {
                 name="search"
                 placeholder="Cari Promo"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                onKeyPress={handleKeyPress}
                 withReset
               />
             </div>
@@ -123,6 +132,7 @@ const Filter = ({ onFilterSubmit, onResetFilters }) => {
         onApplyFilter={onSubmit}
         handleResetFilter={handleResetFilter}
         activeTab={currentTab === "active" ? "active" : "history"}
+        filterOptions={filterOptions}
       />
     </main>
   );

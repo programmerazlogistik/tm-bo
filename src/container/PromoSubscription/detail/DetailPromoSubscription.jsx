@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 import { useGetPromoSubscriptionById } from "@/services/promo-subscription/useGetPromoSubscriptionById";
 
@@ -9,10 +10,30 @@ import TabMainSection from "./section/TabMainSection";
 import TabSection from "./section/TabSection";
 
 const DetailPromoSubscription = ({ promoId }) => {
+  // 26. 03 - TM - LB - 0119
   const { data: promoData, isLoading: isDataLoading } =
     useGetPromoSubscriptionById(promoId);
 
-  const [currentTab, setCurrentTab] = useState("main");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const currentTab = searchParams.get("tab") || "main";
+
+  const handleTabChange = useCallback(
+    (tab) => {
+      const params = new URLSearchParams(searchParams);
+      params.set("tab", tab);
+      router.replace(`${pathname}?${params.toString()}`);
+    },
+    [pathname, router, searchParams]
+  );
+
+  useEffect(() => {
+    if (!searchParams.get("tab")) {
+      handleTabChange("main");
+    }
+  }, [handleTabChange, searchParams]);
 
   // State for History tab
   const [historyPagination, setHistoryPagination] = useState({
@@ -41,7 +62,7 @@ const DetailPromoSubscription = ({ promoId }) => {
             ? "Detail Promo Subscription"
             : "Log Promo Subscription"}
         </PageTitle>
-        <TabSection currentTab={currentTab} setCurrentTab={setCurrentTab} />
+        <TabSection currentTab={currentTab} setCurrentTab={handleTabChange} />
       </div>
       {currentTab === "main" ? (
         <TabMainSection promoData={promoData} />

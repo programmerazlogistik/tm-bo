@@ -6,36 +6,7 @@ import { DatePickerWeb } from "@muatmuat/ui/Calendar";
 import { Input } from "@muatmuat/ui/Form";
 import { Controller } from "react-hook-form";
 
-import { useGetPackageSubscriptionList } from "@/services/package-subscription/useGetPackageSubscriptionList";
-
 import { MultiSelect } from "@/components/Select/MultiSelect";
-
-const statusOptions = [
-  { value: "Berjalan", label: "Berjalan" },
-  { value: "Akan Datang", label: "Akan Datang" },
-];
-
-const userOptions = [
-  {
-    value: "User Baru",
-    label: "User Baru",
-  },
-  {
-    value: "User Lama",
-    label: "User Lama",
-  },
-];
-
-const tipePromoOptions = [
-  {
-    value: "Discount",
-    label: "Discount",
-  },
-  {
-    value: "Free Coin",
-    label: "Free Coin",
-  },
-];
 
 const FilterSection = ({
   isFilterOpen,
@@ -45,20 +16,33 @@ const FilterSection = ({
   onApplyFilter,
   handleResetFilter,
   handleSubmit,
-  activeTab,
+  _activeTab,
+  filterOptions = {},
 }) => {
-  // Fetch packages for filter options
-  const { data: packageData, isLoading: isLoadingPackages } =
-    useGetPackageSubscriptionList({
-      limit: 50, // Fetch enough to show in dropdown
-      sort_by: "packageName",
-      sort_order: "asc",
-    });
-
+  // LB - 0176
+  // Transform filterOptions from API to dropdown format
   const paketOptions =
-    packageData?.packages?.map((pkg) => ({
-      value: pkg.id,
-      label: pkg.packageName,
+    filterOptions?.package?.map((pkg) => ({
+      value: pkg.value,
+      label: pkg.name,
+    })) || [];
+
+  const statusOptions =
+    filterOptions?.status?.map((status) => ({
+      value: status.value,
+      label: status.name,
+    })) || [];
+
+  const userOptions =
+    filterOptions?.userType?.map((user) => ({
+      value: user.value,
+      label: user.name,
+    })) || [];
+
+  const tipePromoOptions =
+    filterOptions?.promoType?.map((promo) => ({
+      value: promo.value,
+      label: promo.name,
     })) || [];
 
   if (!isFilterOpen) return null;
@@ -118,30 +102,27 @@ const FilterSection = ({
               >
                 Paket
               </label>
-              <Controller
-                name="paketSubscription"
-                control={control}
-                render={({ field }) => (
-                  <MultiSelect.Root
-                    value={Array.isArray(field.value) ? field.value : []}
-                    onValueChange={field.onChange}
-                    options={paketOptions}
-                    placeholder={
-                      isLoadingPackages
-                        ? "Loading..."
-                        : "Pilih Paket Subscription"
-                    }
-                    selectAllText="Semua Paket"
-                    disabled={isLoadingPackages}
-                  >
-                    <MultiSelect.Trigger className="flex-1" />
-                    <MultiSelect.Content>
-                      <MultiSelect.Search placeholder="Cari Disini Paket Subscription" />
-                      <MultiSelect.List />
-                    </MultiSelect.Content>
-                  </MultiSelect.Root>
-                )}
-              />
+              <div className="min-w-0 flex-1">
+                <Controller
+                  name="paketSubscription"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect.Root
+                      value={Array.isArray(field.value) ? field.value : []}
+                      onValueChange={field.onChange}
+                      options={paketOptions}
+                      placeholder="Pilih Paket Subscription"
+                      selectAllText="Semua Paket"
+                    >
+                      <MultiSelect.Trigger className="w-full" />
+                      <MultiSelect.Content>
+                        <MultiSelect.Search placeholder="Cari Disini Paket Subscription" />
+                        <MultiSelect.List />
+                      </MultiSelect.Content>
+                    </MultiSelect.Root>
+                  )}
+                />
+              </div>
             </div>
 
             {/* Masa Berlaku */}

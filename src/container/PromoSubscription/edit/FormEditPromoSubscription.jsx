@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@muatmuat/ui/Button";
 import { Input } from "@muatmuat/ui/Form";
-import { ConfirmationModal } from "@muatmuat/ui/Modal";
 import { toast } from "@muatmuat/ui/Toaster";
 import { Controller, useForm } from "react-hook-form";
 import { mutate } from "swr";
@@ -12,6 +11,7 @@ import { useGetPackageSubscriptionList } from "@/services/package-subscription/u
 import { useGetPromoSubscriptionById } from "@/services/promo-subscription/useGetPromoSubscriptionById";
 import { useUpdatePromoSubscription } from "@/services/promo-subscription/useUpdatePromoSubscription";
 
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { MultiSelect } from "@/components/Select/MultiSelect";
 
@@ -25,6 +25,9 @@ const FormEditPromoSubscription = ({ promoId }) => {
   // 26. 03 - TM - LB - 0032
   // 26. 03 - TM - LB - 0121
   // 26. 03 - TM - LB - 0124
+  // 26. 03 - TM - LB - 0030
+  // 26. 03 - TM - LB - 0125
+  // 26. 03 - TM - LB - 0122
   const router = useRouter();
   const { data: promoData, isLoading: isDataLoading } =
     useGetPromoSubscriptionById(promoId);
@@ -96,6 +99,20 @@ const FormEditPromoSubscription = ({ promoId }) => {
   const freeCoinsEarned = watch("freeCoinsEarned");
   const normalCoinsEarned = watch("normalCoinsEarned");
   const startDate = watch("startDate");
+  // LB - 0174
+  const endDate = watch("endDate");
+
+  // Validate that end date is at least 1 minute after start date
+  const isDateTimeValid = useMemo(() => {
+    if (!startDate || !endDate) return true; // Allow empty dates
+
+    const startTime = new Date(startDate).getTime();
+    const endTime = new Date(endDate).getTime();
+    const oneMinuteInMs = 60 * 1000; // 1 minute in milliseconds
+
+    // End date must be at least 1 minute after start date
+    return endTime >= startTime + oneMinuteInMs;
+  }, [startDate, endDate]);
 
   // Reset discount fields when discount is deselected
   useEffect(() => {
@@ -195,6 +212,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
       limit: 50,
       sort_by: "packageName",
       sort_order: "asc",
+      is_active: true,
     });
 
   const packageOptions = useMemo(
@@ -244,10 +262,14 @@ const FormEditPromoSubscription = ({ promoId }) => {
       setValue("normalCoinsEarned", selectedPackage.coinEarned);
     }
   };
-
+  // LB - 0173
   const userTypeOptions = useMemo(
     () => [
-      { value: UserType.NEW_USER, label: UserTypeLabel[UserType.NEW_USER] },
+      {
+        value: UserType.NEW_USER,
+        label: "User Baru (User yang belum pernah membeli paket)",
+        shortLabel: UserTypeLabel[UserType.NEW_USER],
+      },
       {
         value: UserType.EXISTING_USER,
         label: UserTypeLabel[UserType.EXISTING_USER],
@@ -255,19 +277,25 @@ const FormEditPromoSubscription = ({ promoId }) => {
     ],
     []
   );
-
+  // LB - 0175
   const promoTypeOptions = useMemo(() => {
-    const options = [
+    let options = [
       { value: "DISCOUNT", label: "Discount" },
       { value: "FREE_COIN", label: "Free Coin" },
     ];
 
+    // Remove FREE_COIN if package has unlimited coins
     if (isUnlimitedCoin) {
-      return options.filter((o) => o.value !== "FREE_COIN");
+      options = options.filter((o) => o.value !== "FREE_COIN");
+    }
+
+    // Remove DISCOUNT if package price is 0
+    if (normalPrice === 0 || normalPrice === "0" || normalPrice === "0.00") {
+      options = options.filter((o) => o.value !== "DISCOUNT");
     }
 
     return options;
-  }, [isUnlimitedCoin]);
+  }, [isUnlimitedCoin, normalPrice]);
 
   // Handle form submission
   const onSubmit = (data) => {
@@ -312,10 +340,18 @@ const FormEditPromoSubscription = ({ promoId }) => {
       return;
     }
 
-    // Check if discount amount is above normal price
-    if (isDiscountSelected && data.discountAmount > data.normalPrice) {
-      console.log("Discount amount is above normal price");
+    // Check if discount percentage is above 100% or discount amount is above normal price
+    if (
+      isDiscountSelected &&
+      (data.discountPercentage > 100 || data.discountAmount > data.normalPrice)
+    ) {
       setIsDiscountAboveNormalModalOpen(true);
+      return;
+    }
+
+    // Check if form has changes
+    if (!isDirty) {
+      handleSaveConfirmation();
       return;
     }
 
@@ -505,7 +541,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
                 <MultiSelect.Trigger className="w-full" />
                 <MultiSelect.Content>
                   <MultiSelect.Search placeholder="Cari Nama Paket" />
-                  <MultiSelect.List className="max-h-[150px] overflow-y-auto" />
+                  <MultiSelect.List className="h-full max-h-[130px] overflow-y-auto" />
                 </MultiSelect.Content>
               </MultiSelect.Root>
             )}
@@ -573,7 +609,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
                   disabled={isFieldDisabled("endDate")}
                   minDate={
                     startDate
-                      ? new Date(new Date(startDate).setHours(0, 0, 0, 0))
+                      ? startDate
                       : new Date(new Date().setHours(0, 0, 0, 0))
                   }
                 />
@@ -581,6 +617,14 @@ const FormEditPromoSubscription = ({ promoId }) => {
             />
           </div>
         </div>
+        {!isDateTimeValid && startDate && endDate && (
+          <div className="grid grid-cols-[280px_1fr] items-center">
+            <div></div>
+            <p className="text-xs text-red-500">
+              Tanggal selesai harus minimal 1 menit setelah tanggal mulai
+            </p>
+          </div>
+        )}
 
         {/* Tipe Promo */}
         <div className="grid grid-cols-[280px_1fr] items-center">
@@ -839,7 +883,7 @@ const FormEditPromoSubscription = ({ promoId }) => {
             type="submit"
             variant="muatparts-primary"
             className="flex items-center gap-2 rounded-[20px] px-6 py-2 text-sm font-semibold"
-            disabled={isUpdating}
+            disabled={isUpdating || !isDateTimeValid}
           >
             {isUpdating ? <>Menyimpan...</> : <>Simpan</>}
           </Button>
@@ -900,9 +944,11 @@ const FormEditPromoSubscription = ({ promoId }) => {
         description={{
           text: "Harga diskon harus di bawah harga normal",
         }}
+        confirm={{
+          classname: "hidden",
+        }}
         cancel={{
-          text: "Tutup",
-          showOnlyCancel: true,
+          classname: "hidden",
         }}
       />
 

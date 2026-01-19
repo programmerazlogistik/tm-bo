@@ -264,6 +264,35 @@ const DateTimePickerWebImplementation = (
     newDate.setMinutes(minute);
     setTempDateTime(newDate);
   };
+  // LB - 0174
+
+  // Validate if the selected date/time meets the constraints
+  const isDateTimeValid = useMemo(() => {
+    if (!tempDateTime) return true;
+
+    // Check if tempDateTime is at least 1 minute after minDate
+    if (minDate) {
+      const tempTime = tempDateTime.getTime();
+      const minTime = minDate.getTime();
+      const oneMinuteInMs = 60 * 1000;
+
+      // Require at least 1 minute difference
+      if (tempTime < minTime + oneMinuteInMs) {
+        return false;
+      }
+    }
+
+    // Check if tempDateTime is after maxDate (using millisecond comparison)
+    if (maxDate) {
+      const tempTime = tempDateTime.getTime();
+      const maxTime = maxDate.getTime();
+      if (tempTime > maxTime) {
+        return false;
+      }
+    }
+
+    return true;
+  }, [tempDateTime, minDate, maxDate]);
 
   const showErrorState = status === "error";
 
@@ -325,8 +354,36 @@ const DateTimePickerWebImplementation = (
               minDate={minDate}
               maxDate={maxDate}
               disabled={[
-                (date) => (minDate ? date < minDate : false),
-                (date) => (maxDate ? date > maxDate : false),
+                (date) => {
+                  if (!minDate) return false;
+                  // Compare only the date portion (ignore time)
+                  const dateOnly = new Date(
+                    date.getFullYear(),
+                    date.getMonth(),
+                    date.getDate()
+                  );
+                  const minDateOnly = new Date(
+                    minDate.getFullYear(),
+                    minDate.getMonth(),
+                    minDate.getDate()
+                  );
+                  return dateOnly < minDateOnly;
+                },
+                (date) => {
+                  if (!maxDate) return false;
+                  // Compare only the date portion (ignore time)
+                  const dateOnly = new Date(
+                    date.getFullYear(),
+                    date.getMonth(),
+                    date.getDate()
+                  );
+                  const maxDateOnly = new Date(
+                    maxDate.getFullYear(),
+                    maxDate.getMonth(),
+                    maxDate.getDate()
+                  );
+                  return dateOnly > maxDateOnly;
+                },
                 disabled
                   ? { from: new Date(0), to: new Date(8640000000000000) }
                   : undefined,
@@ -371,6 +428,7 @@ const DateTimePickerWebImplementation = (
                 variant="muatparts-primary"
                 className="rounded-full"
                 onClick={handleApply}
+                disabled={!isDateTimeValid}
               >
                 Terapkan
               </Button>
