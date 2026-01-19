@@ -24,7 +24,7 @@ const TableActiveSection = ({
   mutate,
 }) => {
   // 26. 03 - TM - LB - 0021
-  // LB - 0036
+  // 26. 03 - TM - LB - 0036
   const router = useRouter();
   const { cancelSubscription, isLoading: isCancelLoading } =
     useCancelPromoSubscription();

@@ -11,7 +11,7 @@ import { DataTableBO, TableBO, useDataTable } from "@/components/Table";
 import { UserTypeLabel } from "@/container/PromoSubscription/utils/enum";
 
 // 26. 03 - TM - LB - 0128
-// LB - 0036
+// 26. 03 - TM - LB - 0036
 // 26. 03 - TM - LB - 0181
 const TableHistorySection = ({
   promos = [],
