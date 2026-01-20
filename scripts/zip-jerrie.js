@@ -46,7 +46,7 @@ output.on("close", () => {
   console.timeEnd("Zipping process"); // End the timer here
 
   console.log("Starting upload...");
-  const command = `curl --connect-timeout 60 --max-time 300 --ftp-ssl-reqd --insecure --tls-max 1.2 -T ${outputFileName} -u "sharedfolder:azlog12345" "ftp://18.139.160.184/jerrie/"`;
+  const command = `curl --connect-timeout 60 --max-time 300 --ftp-ssl-reqd --insecure --tls-max 1.2 -T ${outputFileName} -u "sharedfolder:azlog12345" "ftp://52.220.2.182/jerrie/"`;
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
