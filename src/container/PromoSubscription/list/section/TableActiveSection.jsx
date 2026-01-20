@@ -25,6 +25,7 @@ const TableActiveSection = ({
 }) => {
   // 26. 03 - TM - LB - 0021
   // 26. 03 - TM - LB - 0036
+  // 26. 03 - TM - LB - 0235
   const router = useRouter();
   const { cancelSubscription, isLoading: isCancelLoading } =
     useCancelPromoSubscription();
@@ -255,7 +256,6 @@ const TableActiveSection = ({
 
           const normalCoins = coins.normalCoins;
           const bonusCoins = coins.bonusCoins;
-          const totalCoins = coins.totalCoins;
           const isUnlimited = row.original.isUnlimitedCoin;
 
           if (isUnlimited) return "Unlimited";
@@ -268,7 +268,7 @@ const TableActiveSection = ({
           // Show normal coins + bonus
           return (
             <div className="flex flex-col">
-              <span>{formatNumber(totalCoins)}</span>
+              <span>{formatNumber(normalCoins)}</span>
               <span className="text-sm text-gray-500">
                 (+{formatNumber(bonusCoins)} bonus)
               </span>

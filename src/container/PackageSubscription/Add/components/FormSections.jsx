@@ -20,6 +20,7 @@ export const BasicInfoSection = ({ formData, onInputChange }) => {
   // 26. 03 - TM - LB - 0009
   // 26. 03 - TM - LB - 0011
   // 26. 03 - TM - LB - 0102
+  // 26. 03 - TM - LB - 0236
   return (
     <>
       <TextInputField
@@ -81,7 +82,7 @@ export const UserQuotaSection = ({ formData, onInputChange }) => {
             : ""
         }
         onChange={(value) => handleNumberChange("subUserYangDiperoleh", value)}
-        placeholder="Masukkan Jumlah Sub User yang diperoleh (0 Koin untuk membuat paket ini menjadi Unlimited)"
+        placeholder="Masukkan Jumlah Sub User yang diperoleh"
       />
 
       <ToggleField
